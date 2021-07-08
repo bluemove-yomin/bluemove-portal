@@ -1141,7 +1141,6 @@ def applymembership(request):
         if request.method == "GET"
         else request.POST.get("wantedIdPost")
     )
-    # wanted_title = request.POST.get("wantedTitlePost")
     wanted_list = []
     wanted = ""
     self_intro = request.POST.get("appSelfIntro")
@@ -1271,9 +1270,9 @@ def applymembership(request):
                                 app_submitted = True
                                 client = WebClient(token=slack_bot_token)
                                 try:
-                                    # client.conversations_join(channel=management_all_channel_id)
                                     client.conversations_join(
-                                        channel=management_dev_channel_id
+                                        channel=management_all_channel_id
+                                        # channel=management_dev_channel_id
                                     )
                                 except:
                                     pass
@@ -1283,8 +1282,8 @@ def applymembership(request):
                                     obj_app=app,
                                 )
                                 client.chat_postMessage(
-                                    # channel=management_all_channel_id,
-                                    channel=management_dev_channel_id,
+                                    channel=management_all_channel_id,
+                                    # channel=management_dev_channel_id,
                                     link_names=True,
                                     as_user=True,
                                     blocks=blocks,
@@ -1311,8 +1310,8 @@ def applymembership(request):
                     app.save()
                     client = WebClient(token=slack_bot_token)
                     try:
-                        # client.conversations_join(channel=management_all_channel_id)
-                        client.conversations_join(channel=management_dev_channel_id)
+                        client.conversations_join(channel=management_all_channel_id)
+                        # client.conversations_join(channel=management_dev_channel_id)
                     except:
                         pass
                     blocks, text = slack_blocks_and_text(
@@ -1321,8 +1320,8 @@ def applymembership(request):
                         obj_app=app,
                     )
                     client.chat_postMessage(
-                        # channel=management_all_channel_id,
-                        channel=management_dev_channel_id,
+                        channel=management_all_channel_id,
+                        # channel=management_dev_channel_id,
                         link_names=True,
                         as_user=True,
                         blocks=blocks,
