@@ -1115,9 +1115,13 @@ def slack_blocks_and_text(
 
 def cron_delete_all_data():
     apps_notified = Applymembership.objects.filter(notified=True)
+    notis_sent = ApplymembershipNoti.objects.filter(sent=True)
     for app in apps_notified:
         if app.will_be_deleted_at < datetime.datetime.now():
             app.delete()
+    for noti in notis_sent:
+        if noti.will_be_deleted_at < datetime.datetime.now():
+            noti.delete()
 
 
 ####

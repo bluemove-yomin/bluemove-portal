@@ -676,7 +676,7 @@
             content: {
                 title: document.querySelector("#wanted_title").innerText,
                 description: document.querySelector("#wanted_datetime").innerText,
-                imageUrl: "{% static 'images/ogImage.png' %}",
+                imageUrl: location.protocol + "//" + location.host + "{% static 'images/ogImage.png' %}",
                 link: {
                     mobileWebUrl: location.protocol + "//" + location.host + location.pathname + location.search,
                     webUrl: location.protocol + "//" + location.host + location.pathname + location.search,
@@ -1151,27 +1151,27 @@
     $("#appSelfIntro").keyup(function (e) {
         var text = $(this).val();
         $("#appSelfIntroLength").text("(" + text.length + "/250)");
-        if (text.length > 500) {
+        if (text.length > 250) {
             alert("자기소개는 최대 500자까지 입력 가능합니다.");
-            $(this).val(text.substring(0, 500));
+            $(this).val(text.substring(0, 250));
             $("#appSelfIntroLength").text("(250/250)");
         }
     });
     $("#appReason").keyup(function (e) {
         var text = $(this).val();
         $("#appReasonLength").text("(" + text.length + "/250)");
-        if (text.length > 500) {
+        if (text.length > 250) {
             alert("지원동기는 최대 500자까지 입력 가능합니다.");
-            $(this).val(text.substring(0, 500));
+            $(this).val(text.substring(0, 250));
             $("#appReasonLength").text("(250/250)");
         }
     });
     $("#appPlan").keyup(function (e) {
         var text = $(this).val();
         $("#appPlanLength").text("(" + text.length + "/250)");
-        if (text.length > 500) {
+        if (text.length > 250) {
             alert("활동계획은 최대 500자까지 입력 가능합니다.");
-            $(this).val(text.substring(0, 500));
+            $(this).val(text.substring(0, 250));
             $("#appPlanLength").text("(250/250)");
         }
     });
