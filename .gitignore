@@ -247,3 +247,4 @@ googleSACreds.json
 tests.py
 .vscode/
 .static/
+pem/

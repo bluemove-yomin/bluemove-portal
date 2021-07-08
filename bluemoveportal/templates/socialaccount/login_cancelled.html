@@ -133,4 +133,13 @@
         footer.hidden = true;
     }
 </script>
+<script type="text/javascript">
+    (function blockKakaoTalk() {
+        let agent = navigator.userAgent.toLowerCase();
+        console.log((agent.indexOf("kakaotalk")) !== -1)
+        if ((agent.indexOf("kakaotalk")) !== -1) {
+            alert("죄송합니다.\nGoogle 보안 정책에 의해 카카오톡 인앱 브라우저에서는 Google 계정 로그인이 불가합니다.\n번거로우시겠지만 블루무브 포털에 최적화된 Chrome으로 이용 부탁드립니다. 🙏");
+        }
+    })();
+</script>
 {% endblock %}

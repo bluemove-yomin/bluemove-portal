@@ -676,7 +676,7 @@
             content: {
                 title: document.querySelector("#wanted_title").innerText,
                 description: document.querySelector("#wanted_datetime").innerText,
-                imageUrl: "https://docs.bluemove.or.kr/static/images/slide01.png",
+                imageUrl: "{% static 'images/ogImage.png' %}",
                 link: {
                     mobileWebUrl: location.protocol + "//" + location.host + location.pathname + location.search,
                     webUrl: location.protocol + "//" + location.host + location.pathname + location.search,
