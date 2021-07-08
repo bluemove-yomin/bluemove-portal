@@ -1,0 +1,247 @@
+{% extends 'base.html' %}
+
+{% load static %}
+
+{% block meta %}
+<meta name="robots" content="index,follow">
+<meta name="description" content="블루무브 포털 - 활동증명서 진위 확인">
+<meta name="subject" content="블루무브 포털 - 활동증명서 진위 확인">
+<meta property="og:url" content="{% url 'checknissue:checkcert' %}">
+<meta property="og:type" content="website">
+<meta property="og:title" content="블루무브 포털 - 활동증명서 진위 확인">
+<meta property="og:image" content="https://docs.bluemove.or.kr/static/images/slide01.png">
+<meta property="og:image:alt" content="파란물결 블루무브 종합정보시스템 '블루무브 포털'">
+<meta property="og:image:width" content="900px">
+<meta property="og:image:height" content="450px">
+<meta property="og:description" content="블루무브 포털 - 활동증명서 진위 확인">
+<meta property="og:site_name" content="블루무브 포털">
+<meta property="og:locale" content="ko_KR">
+{% endblock %}
+
+{% block title %} 블루무브 포털 - 활동증명서 진위 확인 {% endblock %}
+
+{% block breadcrumb %}
+<div class="breadcrumb-screen breadcrumb-base breadcrumb-checkcert">
+    <div class="d-flex align-items-center breadcrumb-layer">
+        <div class="container-lg text-center">
+            <h1 class="screenLarge m-0" style="color: #FFFFFF; text-shadow: 1px 1px 5px #212529;">활동증명서 진위 확인</h1>
+            <h2 class="screenSmall m-0" style="color: #FFFFFF; text-shadow: 1px 1px 5px #212529;">활동증명서 진위 확인</h2>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block content %}
+<!--
+---- inner content 01 (check)
+-->
+<div class="card shadow-hover mb-4">
+    <div class="card-body" style="background-color: rgba(0,0,0,.025);">
+        <h5 class="card-title pb-1">유효성 확인</h5>
+        <!-- alert -->
+        {% if verified %}
+        <!-- boolean VERIFIED -->
+        <div class="alert alert-primary d-flex align-items-center" role="alert">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor"
+                class="bi bi-shield-check flex-shrink-0 me-2" viewBox="0 0 16 16">
+                <path
+                    d="M5.338 1.59a61.44 61.44 0 0 0-2.837.856.481.481 0 0 0-.328.39c-.554 4.157.726 7.19 2.253 9.188a10.725 10.725 0 0 0 2.287 2.233c.346.244.652.42.893.533.12.057.218.095.293.118a.55.55 0 0 0 .101.025.615.615 0 0 0 .1-.025c.076-.023.174-.061.294-.118.24-.113.547-.29.893-.533a10.726 10.726 0 0 0 2.287-2.233c1.527-1.997 2.807-5.031 2.253-9.188a.48.48 0 0 0-.328-.39c-.651-.213-1.75-.56-2.837-.855C9.552 1.29 8.531 1.067 8 1.067c-.53 0-1.552.223-2.662.524zM5.072.56C6.157.265 7.31 0 8 0s1.843.265 2.928.56c1.11.3 2.229.655 2.887.87a1.54 1.54 0 0 1 1.044 1.262c.596 4.477-.787 7.795-2.465 9.99a11.775 11.775 0 0 1-2.517 2.453 7.159 7.159 0 0 1-1.048.625c-.28.132-.581.24-.829.24s-.548-.108-.829-.24a7.158 7.158 0 0 1-1.048-.625 11.777 11.777 0 0 1-2.517-2.453C1.928 10.487.545 7.169 1.141 2.692A1.54 1.54 0 0 1 2.185 1.43 62.456 62.456 0 0 1 5.072.56z" />
+                <path
+                    d="M10.854 5.146a.5.5 0 0 1 0 .708l-3 3a.5.5 0 0 1-.708 0l-1.5-1.5a.5.5 0 1 1 .708-.708L7.5 7.793l2.646-2.647a.5.5 0 0 1 .708 0z" />
+            </svg>
+            <div class="vertical">
+                파란물결 블루무브에서 발급한 활동증명서입니다.
+            </div>
+        </div>
+        {% elif unable_to_verify %}
+        <!-- boolean UNABLE_TO_VERIFY -->
+        <div class="alert alert-secondary alert-dismissible fade show d-flex align-items-center" role="alert">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor"
+                class="bi bi-emoji-neutral flex-shrink-0 me-2" viewBox="0 0 16 16">
+                <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z" />
+                <path
+                    d="M4 10.5a.5.5 0 0 0 .5.5h7a.5.5 0 0 0 0-1h-7a.5.5 0 0 0-.5.5zm3-4C7 5.672 6.552 5 6 5s-1 .672-1 1.5S5.448 8 6 8s1-.672 1-1.5zm4 0c0-.828-.448-1.5-1-1.5s-1 .672-1 1.5S9.448 8 10 8s1-.672 1-1.5z" />
+            </svg>
+            <div class="vertical">
+                유효성을 확인할 수 없습니다. 혹시 오탈자가 있나요?
+            </div>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="안내창 닫기"></button>
+        </div>
+        {% endif %}
+        <!-- form -->
+        <form action="{% url 'checknissue:checkcert' %}" method="POST" enctype="multipart/form-data" id="formCheckcert"
+            onsubmit="return validation(this)">
+            {% csrf_token %}
+            <div class="row row-cols-1 row-cols-md-2 g-3">
+                <div class="col">
+                    <label for="alumniId" class="form-label">회번</label>
+                    <input type="text" class="form-control" id="alumniId" name="alumniId" placeholder="회번을 입력하세요."
+                        aria-label="회번 입력" minlength="1" value="{{ alumni_id|default_if_none:'' }}"
+                        onkeypress="onlyNumbers(event)" required>
+                </div>
+                <div class="col">
+                    <label for="dCode" class="form-label">문서 코드
+                        <a href="#none" class="ms-1" data-bs-toggle="tooltip" data-bs-placement="right" title=""
+                            data-bs-original-title="문서 코드는 활동증명서에 적혀 있습니다." style="color: #545859 !important;"
+                            aria-label="도움말">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                                class="bi bi-question-circle" viewBox="0 0 16 16" style="margin-bottom: .2rem;">
+                                <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z" />
+                                <path
+                                    d="M5.255 5.786a.237.237 0 0 0 .241.247h.825c.138 0 .248-.113.266-.25.09-.656.54-1.134 1.342-1.134.686 0 1.314.343 1.314 1.168 0 .635-.374.927-.965 1.371-.673.489-1.206 1.06-1.168 1.987l.003.217a.25.25 0 0 0 .25.246h.811a.25.25 0 0 0 .25-.25v-.105c0-.718.273-.927 1.01-1.486.609-.463 1.244-.977 1.244-2.056 0-1.511-1.276-2.241-2.673-2.241-1.267 0-2.655.59-2.75 2.286zm1.557 5.763c0 .533.425.927 1.01.927.609 0 1.028-.394 1.028-.927 0-.552-.42-.94-1.029-.94-.584 0-1.009.388-1.009.94z" />
+                            </svg>
+                        </a>
+                    </label>
+                    <input type="text" class="form-control" id="dCode" name="dCode" placeholder="문서 코드를 입력하세요."
+                        aria-label="문서 코드 입력" minlength="19" maxlength="19" value="{{ d_code|default_if_none:'' }}"
+                        required>
+                </div>
+            </div>
+            <div class="d-grid" style="padding-top: 1.25rem !important;">
+                <button type="submit" class="btn btn-outline-secondary" id="btnCheckcert" aria-label="유효성 확인">
+                    <i class="bi bi-check2 me-2"></i>확인</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!--
+---- inner script for content 01 (check)
+-->
+<script type="text/javascript">
+    // validation
+    $("#alumniId").keyup(function () {
+        var foo = $(this).val().replace(/[^0-9]/g, "");
+        $(this).val(foo);
+    });
+    $("#dCode").keyup(function () {
+        var foo = $(this).val().replace(/[^a-zA-Z0-9]/g, "").toUpperCase();
+        if (foo.length > 0) {
+            foo = foo.match(new RegExp(".{1,4}", "g")).join("-");
+        }
+        $(this).val(foo);
+    });
+    function onlyNumbers(e) {
+        var regInt = /[^0-9]/gi;
+        var inputKeyChar = String.fromCharCode(event.keyCode);
+        if (regInt.test(inputKeyChar)) {
+            event.returnValue = false;
+        }
+    }
+    function validation() {
+        var alumniId = document.querySelector("#alumniId");
+        var dCode = document.querySelector("#dCode");
+        if (alumniId.value == "") {
+            alert("회번을 입력해주세요.")
+            return false;
+        }
+        if (dCode.value.length !== 19) {
+            alert("올바른 문서 코드를 입력해주세요.");
+            return false;
+        };
+        // call 'spinner (transition)' function
+        fadeOut();
+        // call 'avoiding duplicate requests (btn disabled)' function
+        setTimeout(inProgress, 0);
+    };
+</script>
+
+<!--
+---- inner content 02 (check result)
+-->
+{% if verified %}
+<!-- boolean VERIFIED -->
+<div class="card shadow-hover-strong linear border-0">
+    <div class="card-body">
+        <h5 class="card-title pb-1" style="color: white; text-shadow: 1px 1px 2.5px rgba(0,0,0,.3);">
+            내용 확인
+        </h5>
+        {% for alumni_row in alumni_list %}
+        <div class="px-4 pt-3 pb-4" style="background-color: rgba(255,255,255,.4); border-radius: .25rem;">
+            <div class="d-flex justify-content-between border-bottom pb-1 mb-4"
+                style="border-bottom-color: rgba(255,255,255,.3) !important;">
+                <div class="vertical pb-1">
+                    <span style="color: #545859; font-size: 2rem; font-weight: bolder;">{{ alumni_row.2 }}</span><span
+                        style="color: #545859; font-size: 1.25rem;" class="ms-2">{{ alumni_row.1 }}</span>
+                </div>
+                <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1"
+                    id="Layer_1" x="0px" y="0px" viewBox="0 0 265.6 265.59"
+                    style="enable-background:new 0 0 265.6 265.59;" xml:space="preserve" width="30" height="30"
+                    class="flex-shrink-0 align-self-center" fill="rgba(255,255,255,.5)">
+                    <g>
+                        <g>
+                            <path
+                                d="M133.81,0C59.91,0,0,59.45,0,132.8c0,73.34,59.91,132.79,133.81,132.79c40.08,0,76.02-17.51,100.54-45.23    c0.29-0.31,0.29-0.78,0-1.1c-0.27-0.32-0.75-0.38-1.1-0.14c-10.21,6.85-21.98,11.86-34.65,14.9v-0.13l-4.69,0.33    c-1.46,0.11-2.91,0.22-4.41,0.22c-44.03,0-79.85-35.56-79.85-79.26c0-26.68,13.42-51.19,35.86-65.92    c1.2,6.68-0.05,13.65-2.91,18.92c-0.08,0.15-0.07,0.34,0.04,0.47c0.11,0.13,0.29,0.19,0.45,0.14c11-2.98,21.08,0.09,26.34,6.36    c4.81,5.7,6.4,13.36,3,22.26c-0.22,0.57-0.44,1.13-0.65,1.65c-1.59,3.92-4.09,7.35-7.3,10.11c-2.17,1.85-3.53,4.59-3.53,7.65    c0,5.6,4.58,10.14,10.23,10.14c5.11,0,9.63-3.82,10.12-9.1c0.04-0.39,0.15-0.77,0.2-1.16c0.68-10.37,9.29-18.6,19.91-18.6    c8.13,0,15.08,4.84,18.2,11.77c0.15,0.33,0.29,0.72,0.42,1.12c0.04,0.09,0.14,0.15,0.23,0.12c0.09-0.02,0.15-0.11,0.15-0.2    c-0.05-0.39-0.08-0.77-0.08-1.35c-0.04-9.87,8.48-19.47,20.05-19.47c10.3,0,18.74,7.74,19.84,17.68c0.01,0.15,0.14,0.27,0.29,0.29    c0.15,0.02,0.3-0.07,0.35-0.21C282.73,91.13,226.99,0,133.81,0z M102.68,155.19c0,37.9,24.8,70.1,59.13,81.61    c-27.47-2.48-51.73-14.65-68.4-32.7c-55.01-59.58-6.44-141.85,33.68-133.92c3.24,0.64,6.41,1.94,9.44,4.17    c3.08,2.27,5.28,5.01,6.81,7.98l-0.49,0.31C117.7,98.56,102.68,125.68,102.68,155.19z">
+                            </path>
+                        </g>
+                    </g>
+                </svg>
+            </div>
+            <div class="row row-cols-1 row-cols-sm-2 g-4">
+                <div class="col">
+                    <div class="card border-0" style="background-color: transparent;">
+                        <div class="card-body p-0">
+                            <h5 class="card-title" style="font-weight: bolder;"><span class="badge text-dark"
+                                    style="background-color: rgba(255,255,255,.6);">회번</span></h5>
+                            <p class="card-text">{{ alumni_row.0 }}번</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col">
+                    <div class="card border-0" style="background-color: transparent;">
+                        <div class="card-body p-0">
+                            <h5 class="card-title" style="font-weight: bolder;"><span class="badge text-dark"
+                                    style="background-color: rgba(255,255,255,.6);">소속 및 역할</span></h5>
+                            <p class="card-text">{{ alumni_row.3 }}</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col">
+                    <div class="card border-0" style="background-color: transparent;">
+                        <div class="card-body p-0">
+                            <h5 class="card-title" style="font-weight: bolder;"><span class="badge text-dark"
+                                    style="background-color: rgba(255,255,255,.6);">활동 내용</span></h5>
+                            <p class="card-text">{{ alumni_row.8 }}</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col">
+                    <div class="card border-0" style="background-color: transparent;">
+                        <div class="card-body p-0">
+                            <h5 class="card-title" style="font-weight: bolder;"><span class="badge text-dark"
+                                    style="background-color: rgba(255,255,255,.6);">활동 기간</span></h5>
+                            {% if alumni_row.6 == "현재" %}
+                            <p class="card-text">{{ alumni_row.4|slice:":4" }}년 {{ alumni_row.4|slice:"5:7" }}월
+                                {{alumni_row.4|slice:"8:" }}일 ~ {{ alumni_row.6 }}</p>
+                            {% else %}
+                            <p class="card-text">{{ alumni_row.4|slice:":4" }}년 {{ alumni_row.4|slice:"5:7" }}월
+                                {{alumni_row.4|slice:"8:" }}일 ~ {{ alumni_row.6|slice:":4" }}년
+                                {{alumni_row.6|slice:"5:7" }}월 {{ alumni_row.6|slice:"8:" }}일</p>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+        <div class="text-end mt-2" style="color: rgba(255,255,255,.5);">
+            <small>{{ issue_date }} 발급</small>
+        </div>
+    </div>
+</div>
+{% else %}
+<!-- boolean UNABLE_TO_VERIFY (default) -->
+<div class="card" style="border-style: dashed; border-color: rgba(0,0,0,.25)">
+    <div class="card-body">
+        <h5 class="card-title pb-1">
+            내용 확인
+        </h5>
+        <div class="text-center my-4">
+            <h2 style="color: rgba(0,0,0,.25); font-weight: bolder;"><i class="bi bi-hand-index-thumb me-2"></i>위쪽 먼저!
+            </h2>
+            <p class="text-muted m-0">먼저 유효성 확인을 진행해주세요.</p>
+        </div>
+    </div>
+</div>
+{% endif %}
+{% endblock %}

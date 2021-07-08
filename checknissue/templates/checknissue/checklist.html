@@ -1,0 +1,308 @@
+{% extends 'base.html' %}
+
+{% load static %}
+
+{% block meta %}
+<meta name="robots" content="index,follow">
+<meta name="description" content="블루무브 포털 - 블루무버 명단 조회">
+<meta name="subject" content="블루무브 포털 - 블루무버 명단 조회">
+<meta property="og:url" content="{% url 'checknissue:checklist' %}">
+<meta property="og:type" content="website">
+<meta property="og:title" content="블루무브 포털 - 블루무버 명단 조회">
+<meta property="og:image" content="https://docs.bluemove.or.kr/static/images/slide01.png">
+<meta property="og:image:alt" content="파란물결 블루무브 종합정보시스템 '블루무브 포털'">
+<meta property="og:image:width" content="900px">
+<meta property="og:image:height" content="450px">
+<meta property="og:description" content="블루무브 포털 - 블루무버 명단 조회">
+<meta property="og:site_name" content="블루무브 포털">
+<meta property="og:locale" content="ko_KR">
+{% endblock %}
+
+{% block title %} 블루무브 포털 - 블루무버 명단 조회 {% endblock %}
+
+{% block breadcrumb %}
+<div class="breadcrumb-screen breadcrumb-base breadcrumb-checklist">
+    <div class="d-flex align-items-center breadcrumb-layer">
+        <div class="container-lg text-center">
+            <h1 class="screenLarge m-0" style="color: #FFFFFF; text-shadow: 1px 1px 5px #212529;">블루무버 명단 조회</h1>
+            <h2 class="screenSmall m-0" style="color: #FFFFFF; text-shadow: 1px 1px 5px #212529;">블루무버 명단 조회</h2>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block content %}
+<!--
+---- inner content 01 (search)
+-->
+<div class="card shadow-hover mb-4">
+    <div class="card-body" style="background-color: rgba(0,0,0,.025);">
+        <h5 class="card-title pb-1">명단 검색</h5>
+        <form action="{% url 'checknissue:checklist' %}" method="GET" onsubmit="return validation(this)">
+            <div class="input-group">
+                <input type="text" class="form-control" id="q" name="q" placeholder="검색어를 입력하세요." aria-label="검색어 입력"
+                    value="{{ q|default_if_none:'' }}" required>
+                <button type="submit" class="btn btn-outline-secondary" aria-label="검색">
+                    <i class="bi bi-search me-2"></i>검색</button>
+                {% if '?q=' in request.get_full_path %}
+                <button type="button" class="btn btn-outline-secondary dropdown-toggle dropdown-toggle-split"
+                    data-bs-toggle="dropdown" aria-expanded="false" aria-label="검색 옵션"></button>
+                <ul class="dropdown-menu dropdown-menu-end">
+                    <li><a class="dropdown-item fade-onclick" href="{% url 'checknissue:checklist' %}">검색 초기화</a></li>
+                </ul>
+                {% endif %}
+            </div>
+        </form>
+    </div>
+</div>
+
+<!--
+---- inner script for content 01 (search)
+-->
+<script type="text/javascript">
+    // validation
+    function validation() {
+        if (document.querySelector("#q").value.length <= 1) {
+            alert("검색어는 두 글자 이상 입력해주세요.");
+            return false;
+        };
+        // call 'spinner (transition)' function
+        fadeOut();
+        // call 'avoiding duplicate requests (btn disabled)' function
+        setTimeout(inProgress, 0);
+    };
+</script>
+
+<!--
+---- inner content 02 (Bluemover list)
+-->
+<!-- content large -->
+<table class="table screenLarge m-0">
+    <thead>
+        <tr class="text-center" style="color: #545859;">
+            <th class="pt-0" scope="col">회번</th>
+            <th class="pt-0" scope="col">기간</th>
+            <th class="pt-0" scope="col">성명</th>
+            <th class="pt-0" scope="col">소속 및 역할</th>
+            <th class="pt-0" scope="col">가입일</th>
+            <th class="pt-0" scope="col">비고</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for bluemover_row in bluemover_list %}
+        <tr class="text-center">
+            <th scope="row" style="color: #545859;">
+                <!-- 회번 -->
+                {{ bluemover_row.0 }}
+            </th>
+            <td>
+                <!-- 기간 -->
+                {{ bluemover_row.1 }}
+            </td>
+            <td>
+                <!-- 성명 -->
+                {{ bluemover_row.2 }}
+            </td>
+            <td>
+                <!-- 소속 및 역할 -->
+                {{ bluemover_row.3 }}
+            </td>
+            <td>
+                <!-- 가입일 -->
+                {{ bluemover_row.4 }}
+            </td>
+            <td style="color: #0077C8;">
+                <!-- 비고 -->
+                {{ bluemover_row.5 }}
+            </td>
+        </tr>
+        {% empty %}
+        <tr>
+            <td colspan="6">
+                <div class="text-center my-4">
+                    <h2 class="mb-2" style="color: rgba(0,0,0,.25); font-weight: bolder;"><i
+                            class="bi bi-tornado me-2"></i>휑...</h2>
+                    <p class="text-muted m-0">불러올 정보가 없습니다. 혹시 오탈자가 있나요?</p>
+                </div>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+<!-- content small -->
+<div class="screenSmall">
+    <ul class="list-group list-group-flush">
+        {% for bluemover_row in bluemover_list %}
+        <li class="list-group-item px-0">
+            <div class="d-flex justify-content-between">
+                <h3>
+                    <!-- 성명 -->
+                    {{ bluemover_row.2 }}
+                </h3>
+                <p style="color: #0077C8;">
+                    {% if not bluemover_row.5 == None %}
+                    <!-- 비고 -->
+                    <i class="bi bi-stars me-1"></i>{{ bluemover_row.5 }}
+                    {% endif %}
+                </p>
+            </div>
+            <small>
+                <div class="d-flex justify-content-between">
+                    <span>
+                        <!-- 회번 -->
+                        {{ bluemover_row.0 }}
+                    </span>
+                    <span>
+                        <!-- 소속 및 역할 -->
+                        {{ bluemover_row.3 }}
+                    </span>
+                </div>
+                <div class="d-flex justify-content-between">
+                    <span>
+                        <!-- 기간 -->
+                        {{ bluemover_row.1 }}
+                    </span>
+                    <span>
+                        <!-- 가입일 -->
+                        {{ bluemover_row.4 }} 가입
+                    </span>
+                </div>
+            </small>
+        </li>
+        {% empty %}
+        <li class="list-group-item text-center px-0">
+            <h2 class="mb-2" style="color: rgba(0,0,0,.25); font-weight: bolder;"><i class="bi bi-tornado me-2"></i>휑...
+            </h2>
+            <p class="text-muted m-0">불러올 정보가 없습니다.<br>혹시 오탈자가 있나요?</p>
+        </li>
+        {% endfor %}
+    </ul>
+</div>
+
+<!--
+---- inner content 03 (paginator)
+-->
+{% if '?q=' in request.get_full_path %}
+{% if bluemover_list.has_other_pages %}
+<!-- when searching -->
+<div class="mt-4 p-0">
+    <nav aria-label="페이지 내비게이터" style="background-color: transparent;">
+        <!-- content large -->
+        <div class="screenLarge">
+            <ul class="pagination justify-content-center m-0">
+                {% if bluemover_list.has_previous %}
+                <li class="page-item">
+                    <a class="page-link fade-onclick" href="{{ request.path }}?q={{ q }}&page=1">맨 앞</a>
+                </li>
+                {% endif %}
+                {% for i in bluemover_list.paginator.page_range %}
+                {% if bluemover_list.number == i %}
+                <li class="page-item active" aria-current="page">
+                    <span class="page-link">{{ i }}</span>
+                </li>
+                {% elif i > bluemover_list.number|add:'-7' and bluemover_list.number|add:'7' > i %}
+                <li class="page-item">
+                    <a class="page-link fade-onclick" href="{{ request.path }}?q={{ q }}&page={{ i }}">{{ i }}</a>
+                </li>
+                {% endif %}
+                {% endfor %}
+                {% if bluemover_list.has_next %}
+                <li class="page-item">
+                    <a class="page-link fade-onclick"
+                        href="{{ request.path }}?q={{ q }}&page={{ bluemover_list.paginator.num_pages }}">맨 뒤</a>
+                </li>
+                {% endif %}
+            </ul>
+        </div>
+        <!-- content small -->
+        <div class="screenSmall">
+            <ul class="pagination justify-content-center m-0">
+                {% if bluemover_list.has_previous %}
+                <li class="page-item">
+                    <a class="page-link fade-onclick" href="{{ request.path }}?q={{ q }}&page=1">맨 앞</a>
+                </li>
+                {% endif %}
+                {% for i in bluemover_list.paginator.page_range %}
+                {% if bluemover_list.number == i %}
+                <li class="page-item active" aria-current="page">
+                    <span class="page-link">{{ i }}</span>
+                </li>
+                {% elif i > bluemover_list.number|add:'-3' and bluemover_list.number|add:'3' > i %}
+                <li class="page-item">
+                    <a class="page-link fade-onclick" href="{{ request.path }}?q={{ q }}&page={{ i }}">{{ i }}</a>
+                </li>
+                {% endif %}
+                {% endfor %}
+                {% if bluemover_list.has_next %}
+                <li class="page-item">
+                    <a class="page-link fade-onclick"
+                        href="{{ request.path }}?q={{ q }}&page={{ bluemover_list.paginator.num_pages }}">맨 뒤</a>
+                </li>
+                {% endif %}
+            </ul>
+        </div>
+    </nav>
+</div>
+{% endif %}
+{% else %}
+{% if bluemover_list.has_other_pages %}
+<!-- when not searching (default) -->
+<div class="mt-4 p-0">
+    <nav aria-label="페이지 내비게이터" style="background-color: transparent;">
+        <!-- content large -->
+        <div class="screenLarge">
+            <ul class="pagination justify-content-center m-0">
+                {% if bluemover_list.has_previous %}
+                <li class="page-item">
+                    <a class="page-link fade-onclick" href="?page=1">맨 앞</a>
+                </li>
+                {% endif %}
+                {% for i in bluemover_list.paginator.page_range %}
+                {% if bluemover_list.number == i %}
+                <li class="page-item active" aria-current="page">
+                    <span class="page-link">{{ i }}</span>
+                </li>
+                {% elif i > bluemover_list.number|add:'-7' and bluemover_list.number|add:'7' > i %}
+                <li class="page-item">
+                    <a class="page-link fade-onclick" href="?page={{ i }}">{{ i }}</a>
+                </li>
+                {% endif %}
+                {% endfor %}
+                {% if bluemover_list.has_next %}
+                <li class="page-item">
+                    <a class="page-link fade-onclick" href="?page={{ bluemover_list.paginator.num_pages }}">맨 뒤</a>
+                </li>
+                {% endif %}
+            </ul>
+        </div>
+        <!-- content small -->
+        <div class="screenSmall">
+            <ul class="pagination justify-content-center m-0">
+                {% if bluemover_list.has_previous %}
+                <li class="page-item">
+                    <a class="page-link fade-onclick" href="?page=1">맨 앞</a>
+                </li>
+                {% endif %}
+                {% for i in bluemover_list.paginator.page_range %}
+                {% if bluemover_list.number == i %}
+                <li class="page-item active" aria-current="page">
+                    <span class="page-link">{{ i }}</span>
+                </li>
+                {% elif i > bluemover_list.number|add:'-3' and bluemover_list.number|add:'3' > i %}
+                <li class="page-item">
+                    <a class="page-link fade-onclick" href="?page={{ i }}">{{ i }}</a>
+                </li>
+                {% endif %}
+                {% endfor %}
+                {% if bluemover_list.has_next %}
+                <li class="page-item">
+                    <a class="page-link fade-onclick" href="?page={{ bluemover_list.paginator.num_pages }}">맨 뒤</a>
+                </li>
+                {% endif %}
+            </ul>
+        </div>
+    </nav>
+</div>
+{% endif %}
+{% endif %}
+{% endblock %}

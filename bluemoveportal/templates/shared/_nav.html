@@ -1,0 +1,295 @@
+{% load static %}
+
+<!--
+---- nav large (dropdown)
+-->
+<div class="screenLarge container-lg">
+    <div class="d-flex justify-content-between">
+        <div class="d-flex align-items-center">
+            <!-- Bluemove logo -->
+            <a href="{% url 'home:main' %}" class="p-nav-sign fade-onclick">
+                <img src="{% static 'images/bluemovePortalSign.svg' %}" alt="블루무브 로고" height="28">
+            </a>
+            <!-- dropdown -->
+            <a href="#" id="menuChecknissueLarge" class="a-nav-item p-nav-item" data-bs-toggle="dropdown"
+                aria-expanded="false"><i class="bi bi-files me-2"></i>조회/발급</a>
+            <ul class="dropdown-menu text-small shadow" aria-labelledby="menuChecknissueLarge">
+                <li><a class="dropdown-item fade-onclick" href="{% url 'checknissue:checklist' %}">블루무버 명단
+                        조회</a></li>
+                <li><a class="dropdown-item fade-onclick" href="{% url 'checknissue:checkcert' %}">활동증명서 진위
+                        확인</a></li>
+                <li><a class="dropdown-item fade-onclick" href="{% url 'checknissue:issuecert' %}">활동증명서
+                        발급</a></li>
+            </ul>
+            <a href="#" id="menuApplynsubmitLarge" class="a-nav-item p-nav-item" data-bs-toggle="dropdown"
+                aria-expanded="false"><i class="bi bi-box-arrow-in-up-right me-2"></i>신청/제출</a>
+            <ul class="dropdown-menu text-small shadow" aria-labelledby="menuApplynsubmitLarge">
+                <li><a class="dropdown-item fade-onclick" href="{% url 'applynsubmit:applymembership' %}">블루무브 가입 지원</a>
+                </li>
+                <li><a class="dropdown-item fade-onclick" href="#">블루무브 탈퇴 신청</a></li>
+                <li><a class="dropdown-item fade-onclick" href="#">총회의결권위임장 제출</a></li>
+                <li><a class="dropdown-item fade-onclick" href="#">임시총회소집요구서 제출</a></li>
+                <li><a class="dropdown-item fade-onclick" href="#">임시이사회소집요구서 제출</a></li>
+                <li><a class="dropdown-item fade-onclick" href="#">임원입후보신청서 제출</a></li>
+            </ul>
+            <a href="#" id="menu03Large" class="a-nav-item p-nav-item" data-bs-toggle="dropdown"
+                aria-expanded="false"><i class="bi bi-briefcase me-2"></i>기안/결재</a>
+            <ul class="dropdown-menu text-small shadow" aria-labelledby="menu03Large">
+                <li><a class="dropdown-item fade-onclick" href="#">일일활동보고서</a></li>
+                <li><a class="dropdown-item fade-onclick" href="#">공문</a></li>
+                <li><a class="dropdown-item fade-onclick" href="#">지출품의서</a></li>
+                <li><a class="dropdown-item fade-onclick" href="#">지출결의서</a></li>
+                <li><a class="dropdown-item fade-onclick" href="#">사업계획서</a></li>
+                <li><a class="dropdown-item fade-onclick" href="#">사업보고서</a></li>
+                <li><a class="dropdown-item fade-onclick" href="#">수지예산서</a></li>
+                <li><a class="dropdown-item fade-onclick" href="#">수지결산서</a></li>
+            </ul>
+            <a href="#" id="menu04Large" class="a-nav-item p-nav-item" data-bs-toggle="dropdown"
+                aria-expanded="false"><i class="bi bi-calendar4-event me-2"></i>의결/공유</a>
+            <ul class="dropdown-menu text-small shadow" aria-labelledby="menu04Large">
+                <li><a class="dropdown-item fade-onclick" href="#">회의 소집</a></li>
+                <li><a class="dropdown-item fade-onclick" href="#">회의 출석</a></li>
+                <li><a class="dropdown-item fade-onclick" href="#">정기이사회의사록</a></li>
+                <li><a class="dropdown-item fade-onclick" href="#">임시이사회의사록</a></li>
+                <li><a class="dropdown-item fade-onclick" href="#">정기총회의사록</a></li>
+                <li><a class="dropdown-item fade-onclick" href="#">임시총회의사록</a></li>
+                <li><a class="dropdown-item fade-onclick" href="#">데이터 외부 공유</a></li>
+                <li><a class="dropdown-item fade-onclick" href="#">블뭅 링크 관리</a></li>
+            </ul>
+        </div>
+        <!-- account -->
+        <div class="d-flex align-items-center">
+            {% if user.is_authenticated %}
+            <!-- logged in -->
+            <a href="#" id="dropdownUserLarge" class="p-nav-account" data-bs-toggle="dropdown" aria-expanded="false">
+                {% for account in user.socialaccount_set.all %}
+                <img alt="Google 계정 프로필 사진" height="28" class="rounded-circle" src="{{ account.get_avatar_url }}">
+                {% empty %}
+                <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" fill="rgba(0,0,0,.2)" class="bi bi-nut"
+                    viewBox="0 0 16 16">
+                    <path
+                        d="m11.42 2 3.428 6-3.428 6H4.58L1.152 8 4.58 2h6.84zM4.58 1a1 1 0 0 0-.868.504l-3.428 6a1 1 0 0 0 0 .992l3.428 6A1 1 0 0 0 4.58 15h6.84a1 1 0 0 0 .868-.504l3.429-6a1 1 0 0 0 0-.992l-3.429-6A1 1 0 0 0 11.42 1H4.58z" />
+                    <path
+                        d="M6.848 5.933a2.5 2.5 0 1 0 2.5 4.33 2.5 2.5 0 0 0-2.5-4.33zm-1.78 3.915a3.5 3.5 0 1 1 6.061-3.5 3.5 3.5 0 0 1-6.062 3.5z" />
+                </svg>
+                {% endfor %}
+            </a>
+            <ul class="dropdown-menu dropdown-menu-end text-small shadow" aria-labelledby="dropdownUserLarge">
+                <li><a class="dropdown-item fade-onclick" href="#">내 계정</a></li>
+                <li>
+                    <form method="POST" action="{% url 'account_logout' %}?next={{ request.get_full_path }}">
+                        {% csrf_token %}
+                        <button type="submit" class="dropdown-item fade-onclick" href="#">로그아웃</button>
+                    </form>
+                </li>
+            </ul>
+            {% else %}
+            <!-- logged out -->
+            <a href="{% url 'account_login' %}?next={{ request.get_full_path }}" class="p-nav-account fade-onclick">
+                <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" fill="rgba(0,0,0,.2)"
+                    class="bi bi-person-circle" viewBox="0 0 16 16">
+                    <path d="M11 6a3 3 0 1 1-6 0 3 3 0 0 1 6 0z" />
+                    <path fill-rule="evenodd"
+                        d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8zm8-7a7 7 0 0 0-5.468 11.37C3.242 11.226 4.805 10 8 10s4.757 1.225 5.468 2.37A7 7 0 0 0 8 1z" />
+                </svg>
+            </a>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<!--
+---- nav small (offcanvas)
+-->
+<div class="screenSmall p-3 border-bottom">
+    <div class="container-fluid d-flex align-items-center justify-content-between">
+        <!-- offcanvas -->
+        <div class="dropdown">
+            <a class="d-flex align-items-center link-dark text-decoration-none" data-bs-toggle="offcanvas"
+                href="#menuSmall" role="button" aria-controls="menuSmall">
+                <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" fill="#212529" class="bi bi-list"
+                    viewBox="2 0 16 16">
+                    <path fill-rule="evenodd"
+                        d="M2.5 12a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5zm0-4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5zm0-4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5z" />
+                </svg>
+            </a>
+            <div class="offcanvas offcanvas-start" tabindex="-1" id="menuSmall" aria-labelledby="menuSmallLabel">
+                <div class="offcanvas-header">
+                    <h5 class="offcanvas-title" id="menuSmallLabel">메뉴</h5>
+                    <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas"
+                        aria-label="Close"></button>
+                </div>
+                <div class="offcanvas-body">
+                    <div class="accordion accordion-flush" id="menuSmallAccordion">
+                        <div class="accordion-item">
+                            <h2 class="accordion-header" id="menuChecknissueSmallHeading">
+                                <button class="accordion-button accordion-button-1rem collapsed" type="button" data-bs-toggle="collapse"
+                                    data-bs-target="#menuChecknissueSmall" aria-expanded="false"
+                                    aria-controls="menuChecknissueSmall">
+                                    <i class="bi bi-files me-2"></i>조회/발급
+                                </button>
+                            </h2>
+                            <div id="menuChecknissueSmall" class="accordion-collapse collapse"
+                                aria-labelledby="menuChecknissueSmallHeading" data-bs-parent="#menuSmallAccordion">
+                                <div class="accordion-body accordion-body-0">
+                                    <ul class="list-group list-group-flush">
+                                        <li><a class="list-group-item nav-small-item no-border fade-onclick"
+                                                href="{% url 'checknissue:checklist' %}">블루무버 명단 조회</a></li>
+                                        <li><a class="list-group-item nav-small-item no-border fade-onclick"
+                                                href="{% url 'checknissue:checkcert' %}">활동증명서 진위 확인</a></li>
+                                        <li><a class="list-group-item nav-small-item no-border fade-onclick"
+                                                href="{% url 'checknissue:issuecert' %}">활동증명서 발급</a></li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="accordion-item">
+                            <h2 class="accordion-header" id="menuApplynsubmitSmallHeading">
+                                <button class="accordion-button accordion-button-1rem collapsed" type="button" data-bs-toggle="collapse"
+                                    data-bs-target="#menuApplynsubmitSmall" aria-expanded="false"
+                                    aria-controls="menuApplynsubmitSmall">
+                                    <i class="bi bi-box-arrow-in-up-right me-2"></i>신청/제출
+                                </button>
+                            </h2>
+                            <div id="menuApplynsubmitSmall" class="accordion-collapse collapse"
+                                aria-labelledby="menuApplynsubmitSmallHeading" data-bs-parent="#menuSmallAccordion">
+                                <div class="accordion-body accordion-body-0">
+                                    <ul class="list-group list-group-flush">
+                                        <li><a class="list-group-item nav-small-item no-border fade-onclick"
+                                                href="{% url 'applynsubmit:applymembership' %}">블루무브 가입 지원</a></li>
+                                        <li><a class="list-group-item nav-small-item no-border fade-onclick" href="#">
+                                                블루무브 탈퇴 신청</a></li>
+                                        <li><a class="list-group-item nav-small-item no-border fade-onclick"
+                                                href="#">총회의결권위임장 제출</a>
+                                        </li>
+                                        <li><a class="list-group-item nav-small-item no-border fade-onclick"
+                                                href="#">임시총회소집요구서 제출</a>
+                                        </li>
+                                        <li><a class="list-group-item nav-small-item no-border fade-onclick"
+                                                href="#">임시이사회소집요구서 제출</a>
+                                        </li>
+                                        <li><a class="list-group-item nav-small-item no-border fade-onclick"
+                                                href="#">임원입후보신청서 제출</a>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="accordion-item">
+                            <h2 class="accordion-header" id="flush-heading03">
+                                <button class="accordion-button accordion-button-1rem collapsed" type="button" data-bs-toggle="collapse"
+                                    data-bs-target="#flush-collapse03" aria-expanded="false"
+                                    aria-controls="flush-collapse03">
+                                    <i class="bi bi-briefcase me-2"></i>기안/결재
+                                </button>
+                            </h2>
+                            <div id="flush-collapse03" class="accordion-collapse collapse"
+                                aria-labelledby="flush-heading03" data-bs-parent="#menuSmallAccordion">
+                                <div class="accordion-body accordion-body-0">
+                                    <ul class="list-group list-group-flush">
+                                        <li><a class="list-group-item nav-small-item no-border fade-onclick"
+                                                href="#">일일활동보고서</a></li>
+                                        <li><a class="list-group-item nav-small-item no-border fade-onclick"
+                                                href="#">공문</a></li>
+                                        <li><a class="list-group-item nav-small-item no-border fade-onclick"
+                                                href="#">지출품의서</a></li>
+                                        <li><a class="list-group-item nav-small-item no-border fade-onclick"
+                                                href="#">지출결의서</a></li>
+                                        <li><a class="list-group-item nav-small-item no-border fade-onclick"
+                                                href="#">사업계획서</a></li>
+                                        <li><a class="list-group-item nav-small-item no-border fade-onclick"
+                                                href="#">사업보고서</a></li>
+                                        <li><a class="list-group-item nav-small-item no-border fade-onclick"
+                                                href="#">수지예산서</a></li>
+                                        <li><a class="list-group-item nav-small-item no-border fade-onclick"
+                                                href="#">수지결산서</a></li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="accordion-item">
+                            <h2 class="accordion-header" id="flush-heading04">
+                                <button class="accordion-button accordion-button-1rem collapsed" type="button" data-bs-toggle="collapse"
+                                    data-bs-target="#flush-collapse04" aria-expanded="false"
+                                    aria-controls="flush-collapse04">
+                                    <i class="bi bi-calendar4-event me-2"></i>의결/공유
+                                </button>
+                            </h2>
+                            <div id="flush-collapse04" class="accordion-collapse collapse"
+                                aria-labelledby="flush-heading04" data-bs-parent="#menuSmallAccordion">
+                                <div class="accordion-body accordion-body-0">
+                                    <ul class="list-group list-group-flush">
+                                        <li><a class="list-group-item nav-small-item no-border fade-onclick" href="#">회의
+                                                소집</a></li>
+                                        <li><a class="list-group-item nav-small-item no-border fade-onclick" href="#">회의
+                                                출석</a></li>
+                                        <li><a class="list-group-item nav-small-item no-border fade-onclick"
+                                                href="#">정기이사회의사록</a></li>
+                                        <li><a class="list-group-item nav-small-item no-border fade-onclick"
+                                                href="#">임시이사회의사록</a></li>
+                                        <li><a class="list-group-item nav-small-item no-border fade-onclick"
+                                                href="#">정기총회의사록</a></li>
+                                        <li><a class="list-group-item nav-small-item no-border fade-onclick"
+                                                href="#">임시총회의사록</a></li>
+                                        <li><a class="list-group-item nav-small-item no-border fade-onclick"
+                                                href="#">데이터 외부 공유</a></li>
+                                        <li><a class="list-group-item nav-small-item no-border fade-onclick" href="#">블뭅
+                                                링크 관리</a></li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Bluemove logo -->
+        <a href="{% url 'home:main' %}" class="fade-onclick">
+            <img src="{% static 'images/bluemovePortalSign.svg' %}" alt="블루무브 로고" height="28">
+        </a>
+        <!-- account -->
+        <div class="d-flex flex-row-reverse align-items-center ms-2">
+            {% if user.is_authenticated %}
+            <!-- logged in -->
+            <div class="flex-shrink-0 dropdown">
+                <a href="#" class="d-flex align-items-center link-dark text-decoration-none" id="dropdownUserSmall"
+                    data-bs-toggle="dropdown" aria-expanded="false">
+                    {% for account in user.socialaccount_set.all %}
+                    <img alt="Google 계정 프로필 사진" height="28" class="rounded-circle" src="{{ account.get_avatar_url }}">
+                    {% empty %}
+                    <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" fill="rgba(0,0,0,.2)"
+                        class="bi bi-nut" viewBox="0 0 16 16">
+                        <path
+                            d="m11.42 2 3.428 6-3.428 6H4.58L1.152 8 4.58 2h6.84zM4.58 1a1 1 0 0 0-.868.504l-3.428 6a1 1 0 0 0 0 .992l3.428 6A1 1 0 0 0 4.58 15h6.84a1 1 0 0 0 .868-.504l3.429-6a1 1 0 0 0 0-.992l-3.429-6A1 1 0 0 0 11.42 1H4.58z" />
+                        <path
+                            d="M6.848 5.933a2.5 2.5 0 1 0 2.5 4.33 2.5 2.5 0 0 0-2.5-4.33zm-1.78 3.915a3.5 3.5 0 1 1 6.061-3.5 3.5 3.5 0 0 1-6.062 3.5z" />
+                    </svg>
+                    {% endfor %}
+                </a>
+                <ul class="dropdown-menu text-small shadow" aria-labelledby="dropdownUserSmall">
+                    <li><a class="dropdown-item fade-onclick" href="#">내 계정</a></li>
+                    <li>
+                        <form method="POST" action="{% url 'account_logout' %}?next={{ request.get_full_path }}">
+                            {% csrf_token %}
+                            <button type="submit" class="dropdown-item fade-onclick" href="#">로그아웃</button>
+                        </form>
+                    </li>
+                </ul>
+            </div>
+            {% else %}
+            <!-- logged out -->
+            <div class="flex-shrink-0">
+                <a href="{% url 'account_login' %}?next={{ request.get_full_path }}"
+                    class="d-flex align-items-center link-dark text-decoration-none fade-onclick">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" fill="rgba(0,0,0,.2)"
+                        class="bi bi-person-circle" viewBox="0 0 16 16">
+                        <path d="M11 6a3 3 0 1 1-6 0 3 3 0 0 1 6 0z" />
+                        <path fill-rule="evenodd"
+                            d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8zm8-7a7 7 0 0 0-5.468 11.37C3.242 11.226 4.805 10 8 10s4.757 1.225 5.468 2.37A7 7 0 0 0 8 1z" />
+                    </svg>
+                </a>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>

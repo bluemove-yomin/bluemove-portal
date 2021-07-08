@@ -1,0 +1,133 @@
+{% extends 'base.html' %}
+
+{% load static %}
+
+{% block meta %}
+<meta name="robots" content="index,follow">
+<meta name="description" content="파란물결 블루무브 종합정보시스템 '블루무브 포털'">
+<meta name="subject" content="파란물결 블루무브 종합정보시스템 '블루무브 포털'">
+<meta property="og:url" content="{% url 'home:main' %}">
+<meta property="og:type" content="website">
+<meta property="og:title" content="블루무브 포털">
+<meta property="og:image" content="https://docs.bluemove.or.kr/static/images/slide01.png">
+<meta property="og:image:alt" content="파란물결 블루무브 종합정보시스템 '블루무브 포털'">
+<meta property="og:image:width" content="900px">
+<meta property="og:image:height" content="450px">
+<meta property="og:description" content="파란물결 블루무브 종합정보시스템 '블루무브 포털'">
+<meta property="og:site_name" content="블루무브 포털">
+<meta property="og:locale" content="ko_KR">
+{% endblock %}
+
+{% block title %} 블루무브 포털 {% endblock %}
+
+{% block banner %}
+<!--
+---- banner large (1800x450)
+-->
+<div id="mainCarousel" class="screenLarge carousel slide pointer-event" data-bs-ride="carousel">
+    <div class="carousel-indicators">
+        <button type="button" data-bs-target="#mainCarousel" data-bs-slide-to="0" aria-label="Slide 1"
+            class=""></button>
+        <button type="button" data-bs-target="#mainCarousel" data-bs-slide-to="1" aria-label="Slide 2" class="active"
+            aria-current="true"></button>
+        <button type="button" data-bs-target="#mainCarousel" data-bs-slide-to="2" aria-label="Slide 3"
+            class=""></button>
+    </div>
+    <div class="carousel-inner">
+        <div class="carousel-item">
+            <img src="{% static 'images/1800x450Default.png' %}" class="lozad d-block w-100">
+        </div>
+        <div class="carousel-item active">
+            <img src="{% static 'images/1800x450Default.png' %}" class="lozad d-block w-100">
+        </div>
+        <div class="carousel-item">
+            <img src="{% static 'images/1800x450Default.png' %}" class="lozad d-block w-100">
+        </div>
+    </div>
+    <button class="carousel-control-prev" type="button" data-bs-target="#mainCarousel" data-bs-slide="prev">
+        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+        <span class="visually-hidden">Previous</span>
+    </button>
+    <button class="carousel-control-next" type="button" data-bs-target="#mainCarousel" data-bs-slide="next">
+        <span class="carousel-control-next-icon" aria-hidden="true"></span>
+        <span class="visually-hidden">Next</span>
+    </button>
+</div>
+
+<!--
+---- banner small (900x450)
+-->
+<div id="mainCarousel" class="screenSmall carousel slide pointer-event" data-bs-ride="carousel">
+    <div class="carousel-indicators">
+        <button type="button" data-bs-target="#mainCarousel" data-bs-slide-to="0" aria-label="Slide 1"
+            class=""></button>
+        <button type="button" data-bs-target="#mainCarousel" data-bs-slide-to="1" aria-label="Slide 2" class="active"
+            aria-current="true"></button>
+        <button type="button" data-bs-target="#mainCarousel" data-bs-slide-to="2" aria-label="Slide 3"
+            class=""></button>
+    </div>
+    <div class="carousel-inner">
+        <div class="carousel-item">
+            <img src="{% static 'images/1800x900Default.png' %}" class="lozad d-block w-100">
+        </div>
+        <div class="carousel-item active">
+            <img src="{% static 'images/1800x900Default.png' %}" class="lozad d-block w-100">
+        </div>
+        <div class="carousel-item">
+            <img src="{% static 'images/1800x900Default.png' %}" class="lozad d-block w-100">
+        </div>
+    </div>
+    <button class="carousel-control-prev" type="button" data-bs-target="#mainCarousel" data-bs-slide="prev">
+        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+        <span class="visually-hidden">Previous</span>
+    </button>
+    <button class="carousel-control-next" type="button" data-bs-target="#mainCarousel" data-bs-slide="next">
+        <span class="carousel-control-next-icon" aria-hidden="true"></span>
+        <span class="visually-hidden">Next</span>
+    </button>
+</div>
+{% endblock %}
+
+{% block content %}
+<!--
+---- inner contents
+-->
+<div class="row row-cols-1 row-cols-md-2 g-4">
+    <div class="col">
+        <div class="card border-0">
+            <div class="card-body p-0">
+                <h5 class="card-title" style="font-weight: bolder;">조회/발급</h5>
+                <p class="card-text">This is a longer card with supporting text below as a natural lead-in to additional
+                    content. This content is a little bit longer.</p>
+            </div>
+        </div>
+    </div>
+    <div class="col">
+        <div class="card border-0">
+            <div class="card-body p-0">
+                <h5 class="card-title" style="font-weight: bolder;">신청/제출</h5>
+                <p class="card-text">This is a longer card with supporting text below as a natural lead-in to additional
+                    content. This content is a little bit longer.</p>
+            </div>
+        </div>
+    </div>
+    <div class="col">
+        <div class="card border-0">
+            <div class="card-body p-0">
+                <h5 class="card-title" style="font-weight: bolder;">기안/결재</h5>
+                <p class="card-text">This is a longer card with supporting text below as a natural lead-in to additional
+                    content.</p>
+            </div>
+        </div>
+    </div>
+    <div class="col">
+        <div class="card border-0">
+            <div class="card-body p-0">
+                <h5 class="card-title" style="font-weight: bolder;">의결/공유</h5>
+                <p class="card-text">This is a longer card with supporting text below as a natural lead-in to additional
+                    content. This content is a little bit longer.</p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,244 @@
+{% load static %}
+
+<!doctype html>
+<html lang="ko">
+
+<head>
+    <!--
+    ---- meta tags
+    -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="theme-color" content="#0077C8">
+    <meta name="format-detection" content="telephone=no">
+    <meta name="keywords" content="블루무브 포털, 파란물결 블루무브, 블루무브, 블루무버">
+    {% block meta %}
+    {% endblock %}
+
+    <!--
+    ---- fonts, icons
+    -->
+    <!-- favicons -->
+    <link rel="apple-touch-icon" sizes="57x57" href="/static/images/favicons/apple-icon-57x57.png">
+    <link rel="apple-touch-icon" sizes="60x60" href="/static/images/favicons/apple-icon-60x60.png">
+    <link rel="apple-touch-icon" sizes="72x72" href="/static/images/favicons/apple-icon-72x72.png">
+    <link rel="apple-touch-icon" sizes="76x76" href="/static/images/favicons/apple-icon-76x76.png">
+    <link rel="apple-touch-icon" sizes="114x114" href="/static/images/favicons/apple-icon-114x114.png">
+    <link rel="apple-touch-icon" sizes="120x120" href="/static/images/favicons/apple-icon-120x120.png">
+    <link rel="apple-touch-icon" sizes="144x144" href="/static/images/favicons/apple-icon-144x144.png">
+    <link rel="apple-touch-icon" sizes="152x152" href="/static/images/favicons/apple-icon-152x152.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="/static/images/favicons/apple-icon-180x180.png">
+    <link rel="icon" type="image/png" sizes="192x192" href="/static/images/favicons/android-icon-192x192.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/static/images/favicons/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="96x96" href="/static/images/favicons/favicon-96x96.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/static/images/favicons/favicon-16x16.png">
+    <link rel="manifest" href="/static/images/favicons/manifest.json">
+    <meta name="msapplication-TileColor" content="#0077C8">
+    <meta name="msapplication-TileImage" content="/static/images/favicons/ms-icon-144x144.png">
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@100;300;400;500;700;900&display=swap"
+        rel="stylesheet">
+    <!-- Font Awesome -->
+    <script src="https://kit.fontawesome.com/0675dc33e9.js" crossorigin="anonymous"></script>
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css">
+
+    <!--
+    ---- CSS, JS, SDK (exclude fonts, icons)
+    -->
+    <!-- CSS Bluemove Portal -->
+    <link href="{% static 'css/base.css' %}" rel="stylesheet">
+    <!-- CSS Bootstrap -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-+0n0xVW2eSR5OomGNYDnhzAbDsOXxcvSN1TPprVMTNDbiYZCxYbOOl7+AMvyTG2x" crossorigin="anonymous">
+    <!-- jQuery, Bootstrap Bundle (Popper, Bootstrap JS) -->
+    <script src="https://code.jquery.com/jquery-3.6.0.slim.min.js"
+        integrity="sha256-u7e5khyithlIdTpu22PHhENmPcRdFiHRjhAuHcs05RI=" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-gtEjrD/SeCtmISkJkNUaaKMoLD0//ElJ19smozuHV6z3Iehds+3Ulb9Bn9Plx0x4"
+        crossorigin="anonymous"></script>
+    <!-- axios -->
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <!-- SDK Kakao -->
+    <script src="https://developers.kakao.com/sdk/js/kakao.js"></script>
+
+    <!--
+    ---- styles
+    -->
+    <style type="text/css">
+        body {
+            font-family: "Noto Sans KR", "-apple-system", "sans-serif";
+        }
+    </style>
+
+    <title>{% block title %} title 오버라이딩 {% endblock %}</title>
+</head>
+
+<body>
+    <!--
+    ---- inner body
+    -->
+    <div id="innerBody" class="fade-in">
+        <!-- nav -->
+        <nav>
+            {% include 'shared/_nav.html' %}
+        </nav>
+        <!-- banner -->
+        {% block banner %}
+        {% endblock %}
+        <!-- breadcrumb -->
+        {% block breadcrumb %}
+        {% endblock %}
+        <!-- contents -->
+        <div id="contents" class="p-3 my-3">
+            <div class="container-lg">
+                {% block content %}
+                override body
+                {% endblock %}
+            </div>
+        </div>
+        <!-- footer -->
+        <footer>
+            {% include 'shared/_footer.html' %}
+        </footer>
+    </div>
+
+    <!--
+    ---- alert body
+    -->
+    <div id="alertBody" class="container text-center" hidden>
+        <div class="d-flex justify-content-center mb-3">
+            <div class="spinner-border text-secondary" role="status">
+                <span class="visually-hidden">불러오는 중</span>
+            </div>
+        </div>
+        <p id="holdOn" class="mb-0" style="font-weight: bolder;">잠시만 기다려주세요.</p>
+        <p id="holdOnLink" class="mt-2 mb-0" hidden>
+            <a href="{% url 'home:main' %}" style="font-weight: bolder; color: #0077C8;">메인 페이지로 이동</a>
+        </p>
+    </div>
+
+    <!--
+    ---- scripts
+    -->
+    <script type="text/javascript">
+        // open external links in a new window
+        // var links = document.querySelectorAll("a");
+        // for (var i = 0; i < links.length; i++) {
+        //     if (links[i].href == "javascript:location.reload();") {
+        //     } else if (links[i].hostname != window.location.hostname) {
+        //         links[i].target = "_blank";
+        //         links[i].rel = "noopener";
+        //     }
+        // }
+        // nav active
+        (function navActive() {
+            // navLarge
+            for (var i = 0; i < document.querySelectorAll(".a-nav-item").length; i++) {
+                var navItemStr = document.querySelectorAll(".a-nav-item")[i].id.replace("menu", "").replace("Large", "").toLowerCase();
+                console.log(window.location.href.indexOf(navItemStr) !== -1)
+                if (window.location.href.indexOf(navItemStr) !== -1) {
+                    document.querySelectorAll(".a-nav-item")[i].classList.add("active");
+                }
+            }
+            // navSmall
+            for (var i = 0; i < document.querySelectorAll(".accordion-button").length; i++) {
+                var accordionStr = document.querySelectorAll(".accordion-button")[i].getAttribute("aria-controls").replace("menu", "").replace("Small", "").toLowerCase();
+                console.log(window.location.href.indexOf(accordionStr) !== -1)
+                if (window.location.href.indexOf(accordionStr) !== -1) {
+                    document.querySelectorAll(".accordion-button")[i].classList.remove("collapsed");
+                    document.querySelectorAll(".accordion-button")[i].setAttribute("aria-expanded", "true")
+                }
+            }
+            for (var i = 0; i < document.querySelectorAll(".accordion-collapse").length; i++) {
+                var collapseStr = document.querySelectorAll(".accordion-collapse")[i].id.replace("menu", "").replace("Small", "").toLowerCase();
+                console.log(window.location.href.indexOf(collapseStr) !== -1)
+                if (window.location.href.indexOf(collapseStr) !== -1) {
+                    document.querySelectorAll(".accordion-collapse")[i].classList.add("show");
+                }
+            }
+            for (var i = 0; i < document.querySelectorAll(".list-group-item").length; i++) {
+                var listGroupItemHref = document.querySelectorAll(".list-group-item")[i].href
+                console.log(window.location.href.indexOf(listGroupItemHref) !== -1)
+                if (window.location.href.indexOf(listGroupItemHref) !== -1) {
+                    document.querySelectorAll(".list-group-item")[i].classList.add("active");
+                }
+            }
+        })();
+        // tooltip
+        var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+        var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+            return new bootstrap.Tooltip(tooltipTriggerEl)
+        })
+        // shadow
+        $(document).ready(function () {
+            $(".shadow-hover").hover(
+                function () {
+                    $(this).addClass("shadow");
+                }, function () {
+                    $(this).removeClass("shadow");
+                }
+            );
+            $(".shadow-hover-strong").hover(
+                function () {
+                    $(this).addClass("shadow-double");
+                }, function () {
+                    $(this).removeClass("shadow-double");
+                }
+            );
+        });
+        // avoid duplicate requests (btn disabled)
+        function inProgress() {
+            for (var i = 0; i < document.querySelectorAll(".btn").length; i++) {
+                document.querySelectorAll(".btn")[i].disabled = true;
+                var btnStyle = document.querySelectorAll(".btn")[i].getAttribute("style")
+                document.querySelectorAll(".btn")[i].setAttribute("style", btnStyle + "pointer-events: none;");
+            }
+        }
+        // spinner (transition)
+        function fadeOut() {
+            var innerBody = document.getElementById("innerBody");
+            var alertBody = document.getElementById("alertBody");
+            var holdOn = document.getElementById("holdOn");
+            var holdOnLink = document.getElementById("holdOnLink");
+            innerBody.setAttribute("class", "fade-out");
+            innerBody.setAttribute("style", "pointer-events: none; touch-action: none;")
+            alertBody.hidden = false;
+            alertBody.classList.add("fade-in");
+            alertBody.setAttribute("style", "position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);");
+            function holdOnX2() {
+                holdOn.innerText = "다 됐어요! 조금만 더 기다려주세요. 😉"
+            }
+            setTimeout(holdOnX2, 7000);
+            function holdOnX3() {
+                holdOn.innerText = "빨리 끝나라! 헛둘헛둘! 🏃‍♀️"
+            }
+            setTimeout(holdOnX3, 22000);
+            function holdOnX4() {
+                holdOn.innerText = "음... 1분이 지나도 안 된다면 사무국에 문의해주세요. 😭"
+                holdOnLink.hidden = false;
+            }
+            setTimeout(holdOnX4, 37000);
+        }
+        document.querySelectorAll(".fade-onclick").forEach(item => {
+            item.addEventListener("click", event => {
+                fadeOut();
+            })
+        })
+    </script>
+    <script type="text/javascript">
+        // Internet Explorer unsupported guide
+        (function msieAlert() {
+            let agent = navigator.userAgent.toLowerCase();
+            console.log((agent.indexOf("trident") || agent.indexOf("msie")) !== -1)
+            if ((agent.indexOf("trident") || agent.indexOf("msie")) !== -1) {
+                alert("블루무브 포털은 Internet Explorer를 지원하지 않습니다.\n번거로우시겠지만 블루무브 포털에 최적화된 Chrome으로 이용 부탁드립니다. 🙏")
+                document.body.setAttribute("style", "text-align: center; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);")
+                document.body.innerHTML = "<img src='{% static 'images/bluemovePortalSign.svg' %}' height='28' /><p style='margin-top: 1rem;'>블루무브 포털은 Internet Explorer를 지원하지 않습니다.<br>번거로우시겠지만 블루무브 포털에 최적화된 Chrome으로 이용 부탁드립니다. 🙏</p>";
+            }
+        })();
+    </script>
+</body>
+
+</html>

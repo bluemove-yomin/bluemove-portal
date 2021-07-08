@@ -1,0 +1,1946 @@
+{% extends 'base.html' %}
+
+{% load static %}
+
+{% block meta %}
+<meta name="robots" content="index,follow">
+<meta name="description" content="블루무브 포털 - 블루무브 가입 지원">
+<meta name="subject" content="블루무브 포털 - 블루무브 가입 지원">
+<meta property="og:url" content="{% url 'applynsubmit:applymembership' %}">
+<meta property="og:type" content="website">
+<meta property="og:title" content="블루무브 포털 - 블루무브 가입 지원">
+<meta property="og:image" content="https://docs.bluemove.or.kr/static/images/slide01.png">
+<meta property="og:image:alt" content="파란물결 블루무브 종합정보시스템 '블루무브 포털'">
+<meta property="og:image:width" content="900px">
+<meta property="og:image:height" content="450px">
+<meta property="og:description" content="블루무브 포털 - 블루무브 가입 지원">
+<meta property="og:site_name" content="블루무브 포털">
+<meta property="og:locale" content="ko_KR">
+{% endblock %}
+
+{% block title %} 블루무브 포털 - 블루무브 가입 지원 {% endblock %}
+
+{% block breadcrumb %}
+<div class="breadcrumb-screen breadcrumb-base breadcrumb-applymembership">
+    <div class="d-flex align-items-center breadcrumb-layer">
+        <div class="container-lg text-center">
+            <h1 class="screenLarge m-0" style="color: #FFFFFF; text-shadow: 1px 1px 5px #212529;">블루무브 가입 지원</h1>
+            <h2 class="screenSmall m-0" style="color: #FFFFFF; text-shadow: 1px 1px 5px #212529;">블루무브 가입 지원</h2>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block content %}
+<!--
+---- inner styles
+-->
+<style type="text/css">
+    .badge {
+        padding: .25em .65em !important;
+        margin-top: .08rem !important;
+        font-size: .9em !important;
+        vertical-align: top !important;
+    }
+
+    .notion-page-content div {
+        font-family: "Noto Sans KR", "-apple-system", "sans-serif" !important;
+        white-space: pre-wrap;
+        word-break: break-word;
+    }
+
+    .notion-header-block,
+    .notion-sub_header-block,
+    .notion-sub_sub_header-block {
+        margin-top: 1.5rem;
+    }
+
+    @media screen and (min-width: 768px) {
+        .sticky-top {
+            position: -webkit-sticky;
+            position: sticky;
+            top: 0;
+            background-color: #FFFFFF;
+        }
+    }
+
+    @media screen and (max-width: 767px) {
+        .sticky-top {
+            position: unset;
+            top: auto;
+            background-color: unset;
+        }
+    }
+
+    .sticky-right {
+        position: -webkit-sticky;
+        position: sticky;
+        top: 157.39px;
+    }
+
+    .svg-notion,
+    .svg-notion-hover {
+        position: relative;
+        transition: all .15s ease-in-out;
+    }
+</style>
+
+{% if not "wanted_id=" in request.get_full_path or wrong_url %}
+<!--
+--- inner template 01
+-->
+<!--
+---- inner content 01 (search)
+-->
+<div class="card shadow-hover mb-4">
+    <div class="card-body" style="background-color: rgba(0,0,0,.025);">
+        <h5 class="card-title pb-1">공고 검색</h5>
+        <!-- alert -->
+        {% if not "wanted_id=" in request.get_full_path %}
+        {% elif wrong_url %}
+        <!-- boolean WRONG_URL -->
+        <div class="alert alert-secondary alert-dismissible fade show d-flex align-items-center" role="alert">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor"
+                class="bi bi-emoji-neutral flex-shrink-0 me-2" viewBox="0 0 16 16">
+                <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z" />
+                <path
+                    d="M4 10.5a.5.5 0 0 0 .5.5h7a.5.5 0 0 0 0-1h-7a.5.5 0 0 0-.5.5zm3-4C7 5.672 6.552 5 6 5s-1 .672-1 1.5S5.448 8 6 8s1-.672 1-1.5zm4 0c0-.828-.448-1.5-1-1.5s-1 .672-1 1.5S9.448 8 10 8s1-.672 1-1.5z" />
+            </svg>
+            <div class="vertical">
+                URL이 유효하지 않습니다. 혹시 오탈자가 있나요?
+            </div>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="안내창 닫기"></button>
+        </div>
+        {% endif %}
+        <!-- form -->
+        <form action="{% url 'applynsubmit:applymembership' %}" method="GET" onsubmit="return validation();">
+            <div class="input-group">
+                <input type="text" class="form-control" id="q" name="q" placeholder="검색어를 입력하세요." aria-label="검색어 입력"
+                    value="{{ q|default_if_none:'' }}">
+                <button type="submit" class="btn btn-outline-secondary" aria-label="검색">
+                    <i class="bi bi-search me-2"></i>검색</button>
+                {% if '?q=' in request.get_full_path %}
+                <button type="button" class="btn btn-outline-secondary dropdown-toggle dropdown-toggle-split"
+                    data-bs-toggle="dropdown" aria-expanded="false" aria-label="검색 옵션"></button>
+                <ul class="dropdown-menu dropdown-menu-end">
+                    <li><a class="dropdown-item fade-onclick" href="{% url 'applynsubmit:applymembership' %}">검색 초기화</a>
+                    </li>
+                </ul>
+                {% endif %}
+            </div>
+        </form>
+    </div>
+</div>
+
+<!--
+---- inner script for content 01 (search)
+-->
+<script type="text/javascript">
+    // validation
+    function validation() {
+        if (document.querySelector("#q").value.length <= 1) {
+            alert("검색어는 두 글자 이상 입력해주세요.");
+            return false;
+        };
+        // call 'spinner (transition)' function
+        fadeOut();
+        // call 'avoiding duplicate requests (btn disabled)' function
+        setTimeout(inProgress, 0);
+    };
+</script>
+
+<!--
+---- inner content 02 (wanted list)
+-->
+<!-- content large -->
+<table class="table screenLarge m-0">
+    <thead>
+        <tr class="text-center" style="color: #545859;">
+            <th class="pt-0" scope="col">담당</th>
+            <th class="pt-0" scope="col">공고명</th>
+            <th class="pt-0" scope="col">기간</th>
+            <th class="pt-0" scope="col">상태</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for wanted_row in wanted_list %}
+        <tr class="text-center">
+            <!-- 담당 -->
+            <th scope="row" style="color: #545859;">
+                {{ wanted_row.team }}
+            </th>
+            <!-- 공고명 -->
+            <td>
+                <a href="javascript:void(0);"
+                    onclick="if ('URLSearchParams' in window) { var searchParams = new URLSearchParams(window.location.search); searchParams.set('wanted_id', '{{ wanted_row.id }}'); window.location.search = searchParams.toString(); fadeOut(); setTimeout(inProgress, 0); };"
+                    class="a-bluemove">{{ wanted_row.title }}</a>
+            </td>
+            <!-- 기간 -->
+            <td>
+                {{ wanted_row.datetime }}
+            </td>
+            <!-- 상태 -->
+            <td>
+                {% if "준비 중" in wanted_row.status %}
+                <span class="badge bg-secondary">준비 중</span>
+                {% elif "접수 중" in wanted_row.status %}
+                <span class="badge bg-bluemove">접수 중</span>
+                {% elif "마감" in wanted_row.status %}
+                <span class="badge bg-dark">마감</span>
+                {% else %}
+                <span class="badge bg-dark">작업 중</span>
+                {% endif %}
+            </td>
+        </tr>
+        {% empty %}
+        <tr>
+            <td colspan="6">
+                <div class="text-center my-4">
+                    <h2 class="mb-2" style="color: rgba(0,0,0,.25); font-weight: bolder;"><i
+                            class="bi bi-tornado me-2"></i>휑...</h2>
+                    <p class="text-muted m-0">
+                        {% if '?q=' in request.get_full_path %}
+                        불러올 정보가 없습니다. 혹시 오탈자가 있나요?
+                        {% else %}
+                        공개된 공고가 없습니다. 다음에 다시 찾아주세요! 🙏
+                        {% endif %}
+                    </p>
+                </div>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+<!-- content small -->
+<div class="screenSmall">
+    <ul class="list-group list-group-flush">
+        {% for wanted_row in wanted_list %}
+        <li class="list-group-item px-0">
+            <div class="d-flex justify-content-between align-items-center mb-2">
+                <!-- 담당 -->
+                <p class="m-0 vertical">
+                    {{ wanted_row.team }}
+                </p>
+                <!-- 상태 -->
+                <small>
+                    {% if "준비 중" in wanted_row.status %}
+                    <span class="badge bg-secondary">준비 중</span>
+                    {% elif "접수 중" in wanted_row.status %}
+                    <span class="badge bg-bluemove">접수 중</span>
+                    {% elif "마감" in wanted_row.status %}
+                    <span class="badge bg-dark">마감</span>
+                    {% else %}
+                    <span class="badge bg-dark">작업 중</span>
+                    {% endif %}
+                </small>
+            </div>
+            <!-- 공고명 -->
+            <h5>
+                <a href="javascript:void(0);"
+                    onclick="if ('URLSearchParams' in window) { var searchParams = new URLSearchParams(window.location.search); searchParams.set('wanted_id', '{{ wanted_row.id }}'); window.location.search = searchParams.toString(); fadeOut(); setTimeout(inProgress, 0); };"
+                    class="a-bluemove stretched-link">{{ wanted_row.title }}</a>
+            </h5>
+            <!-- 기간 -->
+            <small>
+                {{ wanted_row.datetime }}
+            </small>
+        </li>
+        {% empty %}
+        <li class="list-group-item text-center px-0">
+            <h2 class="mb-2" style="color: rgba(0,0,0,.25); font-weight: bolder;"><i class="bi bi-tornado me-2"></i>휑...
+            </h2>
+            <p class="text-muted m-0">
+                {% if '?q=' in request.get_full_path %}
+                불러올 정보가 없습니다.<br>혹시 오탈자가 있나요?
+                {% else %}
+                공개된 공고가 없습니다.<br>다음에 다시 찾아주세요! 🙏
+                {% endif %}
+            </p>
+        </li>
+        {% endfor %}
+    </ul>
+</div>
+
+<!--
+---- inner content 03 (paginator)
+-->
+{% if "?q=" in request.get_full_path %}
+{% if wanted_list.has_other_pages %}
+<!-- when searching -->
+<div class="mt-4 p-0">
+    <nav aria-label="페이지 내비게이터" style="background-color: transparent;">
+        <!-- content large -->
+        <div class="screenLarge">
+            <ul class="pagination justify-content-center m-0">
+                {% if wanted_list.has_previous %}
+                <li class="page-item">
+                    <a class="page-link fade-onclick" href="{{ request.path }}?q={{ q }}&page=1">맨 앞</a>
+                </li>
+                {% endif %}
+                {% for i in wanted_list.paginator.page_range %}
+                {% if wanted_list.number == i %}
+                <li class="page-item active" aria-current="page">
+                    <span class="page-link">{{ i }}</span>
+                </li>
+                {% elif i > wanted_list.number|add:"-7" and wanted_list.number|add:"7" > i %}
+                <li class="page-item">
+                    <a class="page-link fade-onclick" href="{{ request.path }}?q={{ q }}&page={{ i }}">{{ i }}</a>
+                </li>
+                {% endif %}
+                {% endfor %}
+                {% if wanted_list.has_next %}
+                <li class="page-item">
+                    <a class="page-link fade-onclick"
+                        href="{{ request.path }}?q={{ q }}&page={{ wanted_list.paginator.num_pages }}">맨 뒤</a>
+                </li>
+                {% endif %}
+            </ul>
+        </div>
+        <!-- content small -->
+        <div class="screenSmall">
+            <ul class="pagination justify-content-center m-0">
+                {% if wanted_list.has_previous %}
+                <li class="page-item">
+                    <a class="page-link fade-onclick" href="{{ request.path }}?q={{ q }}&page=1">맨 앞</a>
+                </li>
+                {% endif %}
+                {% for i in wanted_list.paginator.page_range %}
+                {% if wanted_list.number == i %}
+                <li class="page-item active" aria-current="page">
+                    <span class="page-link">{{ i }}</span>
+                </li>
+                {% elif i > wanted_list.number|add:"-3" and wanted_list.number|add:"3" > i %}
+                <li class="page-item">
+                    <a class="page-link fade-onclick" href="{{ request.path }}?q={{ q }}&page={{ i }}">{{ i }}</a>
+                </li>
+                {% endif %}
+                {% endfor %}
+                {% if wanted_list.has_next %}
+                <li class="page-item">
+                    <a class="page-link fade-onclick"
+                        href="{{ request.path }}?q={{ q }}&page={{ wanted_list.paginator.num_pages }}">맨 뒤</a>
+                </li>
+                {% endif %}
+            </ul>
+        </div>
+    </nav>
+</div>
+{% endif %}
+{% else %}
+{% if wanted_list.has_other_pages %}
+<!-- when not searching (default) -->
+<div class="mt-4 p-0">
+    <nav aria-label="페이지 내비게이터" style="background-color: transparent;">
+        <!-- content large -->
+        <div class="screenLarge">
+            <ul class="pagination justify-content-center m-0">
+                {% if wanted_list.has_previous %}
+                <li class="page-item">
+                    <a class="page-link fade-onclick" href="?page=1">맨 앞</a>
+                </li>
+                {% endif %}
+                {% for i in wanted_list.paginator.page_range %}
+                {% if wanted_list.number == i %}
+                <li class="page-item active" aria-current="page">
+                    <span class="page-link">{{ i }}</span>
+                </li>
+                {% elif i > wanted_list.number|add:"-7" and wanted_list.number|add:"7" > i %}
+                <li class="page-item">
+                    <a class="page-link fade-onclick" href="?page={{ i }}">{{ i }}</a>
+                </li>
+                {% endif %}
+                {% endfor %}
+                {% if wanted_list.has_next %}
+                <li class="page-item">
+                    <a class="page-link fade-onclick" href="?page={{ wanted_list.paginator.num_pages }}">맨 뒤</a>
+                </li>
+                {% endif %}
+            </ul>
+        </div>
+        <!-- content small -->
+        <div class="screenSmall">
+            <ul class="pagination justify-content-center m-0">
+                {% if wanted_list.has_previous %}
+                <li class="page-item">
+                    <a class="page-link fade-onclick" href="?page=1">맨 앞</a>
+                </li>
+                {% endif %}
+                {% for i in wanted_list.paginator.page_range %}
+                {% if wanted_list.number == i %}
+                <li class="page-item active" aria-current="page">
+                    <span class="page-link">{{ i }}</span>
+                </li>
+                {% elif i > wanted_list.number|add:"-3" and wanted_list.number|add:"3" > i %}
+                <li class="page-item">
+                    <a class="page-link fade-onclick" href="?page={{ i }}">{{ i }}</a>
+                </li>
+                {% endif %}
+                {% endfor %}
+                {% if wanted_list.has_next %}
+                <li class="page-item">
+                    <a class="page-link fade-onclick" href="?page={{ wanted_list.paginator.num_pages }}">맨 뒤</a>
+                </li>
+                {% endif %}
+            </ul>
+        </div>
+    </nav>
+</div>
+{% endif %}
+{% endif %}
+{% elif "wanted_id=" in request.get_full_path or error %}
+<!--
+---- inner template 02
+-->
+<!--
+---- inner content 04 (wanted details)
+-->
+<div class="row">
+    <!-- column top -->
+    <div class="col-md-12 sticky-top" style="padding-top: 32px;">
+        {% for wanted_row in wanted_list %}
+        <p class="mb-1">{{ wanted_row.team }}</p>
+        <h2 class="mb-2" id="wanted_title"
+            style="word-break: break-word; overflow: hidden; text-overflow: ellipsis; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical;">
+            {{ wanted_row.title }}
+        </h2>
+        <div class="screenLarge">
+            <div class="d-flex justify-content-between">
+                <p class="vertical m-0" id="wanted_datetime">
+                    {{ wanted_row.datetime }}
+                </p>
+                <p class="mb-0" style="margin-top: .1rem;">
+                    {% if "준비 중" in wanted_row.status %}
+                    <span class="badge bg-secondary">준비 중</span>
+                    {% elif "접수 중" in wanted_row.status %}
+                    <span class="badge bg-bluemove">접수 중</span>
+                    {% elif "마감" in wanted_row.status %}
+                    <span class="badge bg-dark">마감</span>
+                    {% else %}
+                    <span class="badge bg-dark">작업 중</span>
+                    {% endif %}
+                </p>
+            </div>
+        </div>
+        <div class="screenSmall">
+            <small>
+                {{ wanted_row.datetime }}
+            </small>
+            <small class="d-grid align-items-stretch mt-2">
+                {% if "준비 중" in wanted_row.status %}
+                <span class="badge bg-secondary">준비 중</span>
+                {% elif "접수 중" in wanted_row.status %}
+                <span class="badge bg-bluemove">접수 중</span>
+                {% elif "마감" in wanted_row.status %}
+                <span class="badge bg-dark">마감</span>
+                {% else %}
+                <span class="badge bg-dark">작업 중</span>
+                {% endif %}
+            </small>
+        </div>
+        <hr class="text-black-50" style="margin-top: 1.5rem; margin-bottom: 0;">
+        {% endfor %}
+    </div>
+    <!-- column left -->
+    <div class="col-md-8">
+        {% if error %}
+        <!-- boolean ERROR -->
+        <div class="screenLarge" style="margin-bottom: 1.9rem;"></div>
+        <div class="screenSmall" style="margin-bottom: 1.5rem;"></div>
+        {% else %}
+        <div style="margin-bottom: 1.5rem;"></div>
+        {% endif %}
+        <div class="screenSmall mb-4">
+            {% for wanted_row in wanted_list %}
+            {% if "접수 중" in wanted_row.status or app or apps_received %}
+            {% if not "@bluemove.or.kr" in user.email %}
+            <div class="d-grid" style="margin-bottom: 1rem;">
+                <a href="javascript:void(0);" class="btn btn-outline-primary" onclick="scrollToApp();"
+                    aria-label="지원서 작성 및 관리"><i class="bi bi-chevron-down me-2"></i>지원서 작성 및 관리</a>
+            </div>
+            {% elif "@bluemove.or.kr" in user.email %}
+            <div class="d-grid" style="margin-bottom: 1rem;">
+                <a href="javascript:void(0);" class="btn btn-outline-primary" onclick="scrollToApp();"
+                    aria-label="접수된 지원서 확인"><i class="bi bi-chevron-down me-2"></i>접수된 지원서 확인</a>
+            </div>
+            {% endif %}
+            {% endif %}
+            {% endfor %}
+        </div>
+        {% if error %}
+        <!-- boolean ERROR -->
+        <div class="alert alert-secondary d-flex align-items-center" role="alert">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor"
+                class="bi bi-lightning flex-shrink-0 me-2" viewBox="0 0 16 16">
+                <path
+                    d="M5.52.359A.5.5 0 0 1 6 0h4a.5.5 0 0 1 .474.658L8.694 6H12.5a.5.5 0 0 1 .395.807l-7 9a.5.5 0 0 1-.873-.454L6.823 9.5H3.5a.5.5 0 0 1-.48-.641l2.5-8.5zM6.374 1 4.168 8.5H7.5a.5.5 0 0 1 .478.647L6.78 13.04 11.478 7H8a.5.5 0 0 1-.474-.658L9.306 1H6.374z" />
+            </svg>
+            <div class="vertical">
+                공고 내용을 불러올 수 없습니다. 원본을 확인해주시기 바랍니다.
+            </div>
+        </div>
+        {% else %}
+        {% autoescape off %}
+        {{ wanted }}
+        {% endautoescape %}
+        {% endif %}
+        <div class="screenSmall mt-4">
+            <div class="d-grid" style="margin-bottom: 1rem;">
+                <a href="javascript:void(0);" class="btn btn-outline-secondary" onclick="openNotion();"
+                    onmouseover="onmouseoverNotion()" onmouseout="onmouseoutNotion()" aria-label="공고 원본 보기">
+                    <div class="d-flex justify-content-center align-items-center" style="height: 24.01px;">
+                        <img src="{% static 'images/notion.svg' %}" class="me-2 svg-notion" width="16"
+                            style="opacity: 1; z-index: 0; left: 12px;" />
+                        <img src="{% static 'images/notionHover.svg' %}" class="me-2 svg-notion-hover" width="16"
+                            style="opacity: 0; z-index: -1; left: -12px;" />
+                        <span class="vertical" style="position: relative; left: -12px;">공고 원본 보기</span>
+                    </div>
+                </a>
+            </div>
+            <div class="d-grid">
+                <a href="{% url 'applynsubmit:applymembership' %}" class="btn btn-outline-secondary fade-onclick"
+                    aria-label="다른 공고 보기"><i class="bi bi-list-ul me-2"></i>다른 공고 보기</a>
+            </div>
+        </div>
+    </div>
+    <!-- column right -->
+    <div class="col-md-4">
+        <div class="d-grid sticky-right">
+            <div class="screenLarge" style="margin-top: 1.9rem;">
+                {% for wanted_row in wanted_list %}
+                {% if "접수 중" in wanted_row.status or app or apps_received %}
+                {% if not "@bluemove.or.kr" in user.email %}
+                <div class="d-grid" style="margin-bottom: 1rem;">
+                    <a href="javascript:void(0);" class="btn btn-outline-primary" onclick="scrollToApp();"
+                        aria-label="지원서 작성 및 관리"><i class="bi bi-chevron-down me-2"></i>지원서 작성 및 관리</a>
+                </div>
+                {% elif "@bluemove.or.kr" in user.email %}
+                <div class="d-grid" style="margin-bottom: 1rem;">
+                    <a href="javascript:void(0);" class="btn btn-outline-primary" onclick="scrollToApp();"
+                        aria-label="접수된 지원서 확인"><i class="bi bi-chevron-down me-2"></i>접수된 지원서 확인</a>
+                </div>
+                {% endif %}
+                {% endif %}
+                {% endfor %}
+                <div class="d-grid" style="margin-bottom: 1rem;">
+                    <a href="javascript:void(0);" class="btn btn-outline-secondary" onclick="openNotion();"
+                        onmouseover="onmouseoverNotion()" onmouseout="onmouseoutNotion()" aria-label="공고 원본 보기">
+                        <div class="d-flex justify-content-center align-items-center" style="height: 24.01px;">
+                            <img src="{% static 'images/notion.svg' %}" class="me-2 svg-notion" width="16"
+                                style="opacity: 1; z-index: 0; left: 12px;" />
+                            <img src="{% static 'images/notionHover.svg' %}" class="me-2 svg-notion-hover" width="16"
+                                style="opacity: 0; z-index: -1; left: -12px;" />
+                            <span class="vertical" style="position: relative; left: -12px;">공고 원본 보기</span>
+                        </div>
+                    </a>
+                </div>
+                <div class="d-grid">
+                    <a href="{% url 'applynsubmit:applymembership' %}" class="btn btn-outline-secondary fade-onclick"
+                        aria-label="다른 공고 보러 목록으로 이동하기"><i class="bi bi-list-ul me-2"></i>다른 공고 보기</a>
+                </div>
+            </div>
+            <div class="card mt-4" style="border-style: dashed; border-color: rgba(0,0,0,.25)">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h5 class="card-title m-0 p-0">
+                            공유
+                        </h5>
+                        <div class="d-flex justify-content-center" style="height: 28px;">
+                            <a href="javascript:void(0);" data-bs-toggle="tooltip" data-bs-placement="left" title=""
+                                data-bs-original-title="페이스북으로 공유하기"
+                                style="color: #545859 !important; margin-right: 12px;" onclick="shareFacebook();"
+                                aria-label="도움말">
+                                <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+                                    version="1.1" x="0px" y="0px" viewBox="0 0 1024 1024" fill="currentColor"
+                                    style="enable-background:new 0 0 1024 1024;" xml:space="preserve" height="24">
+                                    <style type="text/css">
+                                        .st0 {
+                                            fill: #FFFFFF;
+                                        }
+                                    </style>
+                                    <g>
+                                        <path
+                                            d="M1024,512C1024,229.2,794.8,0,512,0S0,229.2,0,512c0,255.6,187.2,467.4,432,505.8V660H302V512h130V399.2   C432,270.9,508.4,200,625.4,200c56,0,114.6,10,114.6,10v126h-64.6c-63.6,0-83.4,39.5-83.4,80v96h142l-22.7,148H592v357.8   C836.8,979.4,1024,767.6,1024,512z" />
+                                        <path class="st0"
+                                            d="M711.3,660L734,512H592v-96c0-40.5,19.8-80,83.4-80H740V210c0,0-58.6-10-114.6-10   c-117,0-193.4,70.9-193.4,199.2V512H302v148h130v357.8c26.1,4.1,52.8,6.2,80,6.2s53.9-2.1,80-6.2V660H711.3z" />
+                                    </g>
+                                </svg>
+                            </a>
+                            <a href="javascript:void(0);" data-bs-toggle="tooltip" data-bs-placement="left" title=""
+                                data-bs-original-title="트위터로 공유하기"
+                                style="color: #545859 !important; margin-right: 12px;" onclick="shareTwitter();"
+                                aria-label="도움말">
+                                <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+                                    version="1.1" x="0px" y="0px" viewBox="0 0 246.2 200" fill="currentColor"
+                                    style="enable-background:new 0 0 246.2 200;" xml:space="preserve" height="24">
+                                    <g id="Logo_1_">
+                                        <path id="white_background"
+                                            d="M220.9,49.8c0.1,2.2,0.1,4.3,0.1,6.5c0,66.7-50.8,143.7-143.7,143.7v0C50,200,23.1,192.2,0,177.3   c4,0.5,8,0.7,12,0.7c22.7,0,44.8-7.6,62.7-21.7c-21.6-0.4-40.6-14.5-47.2-35.1c7.6,1.5,15.4,1.2,22.8-0.9C26.8,115.7,9.9,95,9.9,71   c0-0.2,0-0.4,0-0.6c7,3.9,14.9,6.1,22.9,6.3C10.6,61.8,3.7,32.3,17.1,9.2C42.8,40.8,80.6,59.9,121.2,62   c-4.1-17.5,1.5-35.9,14.6-48.2c20.3-19.1,52.3-18.1,71.4,2.2c11.3-2.2,22.1-6.4,32.1-12.3c-3.8,11.7-11.7,21.6-22.2,27.9   c10-1.2,19.8-3.9,29-8C239.4,33.8,230.8,42.6,220.9,49.8z" />
+                                    </g>
+                                </svg>
+                            </a>
+                            <a href="javascript:void(0);" data-bs-toggle="tooltip" data-bs-placement="left" title=""
+                                data-bs-original-title="카카오톡으로 공유하기"
+                                style="color: #545859 !important; margin-right: 12px;" onclick="shareKakaoTalk();"
+                                aria-label="도움말">
+                                <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+                                    version="1.1" x="0px" y="0px" viewBox="0 0 386.1 354.7" fill="currentColor"
+                                    style="enable-background:new 0 0 386.1 354.7;" xml:space="preserve" height="24">
+                                    <style type="text/css">
+                                        .st0 {
+                                            fill: #FFFFFF;
+                                        }
+                                    </style>
+                                    <g>
+                                        <path
+                                            d="M193,0C86.4,0,0,68.3,0,152.6c0,54.9,36.6,102.9,91.6,129.8c-4,15.1-14.6,54.6-16.7,63.1c-2.6,10.5,3.9,10.4,8.1,7.5   c3.3-2.2,52.9-35.9,74.3-50.5c11.6,1.7,23.6,2.6,35.8,2.6c106.6,0,193-68.3,193-152.6C386.1,68.3,299.6,0,193,0" />
+                                        <g>
+                                            <path class="st0"
+                                                d="M115.4,107.7H58.9c-5.3,0-9.6,4.3-9.6,9.6c0,5.3,4.3,9.6,9.6,9.6h18.4v67.6c0,2.5,1,4.9,2.8,6.6    c1.7,1.7,4.1,2.7,6.6,2.7h2.1c2.5,0,4.9-1,6.6-2.7c1.8-1.8,2.8-4.2,2.8-6.6v-67.6h17.3c5.3,0,9.6-4.3,9.6-9.6    C125,112,120.7,107.7,115.4,107.7z" />
+                                            <path class="st0"
+                                                d="M251,185.8h-26.2v-69.1c0-5.8-4.7-10.4-10.4-10.4c-5.8,0-10.4,4.7-10.4,10.4v74.4c0,0.6,0.1,1.1,0.2,1.7    c-0.1,0.5-0.2,1.1-0.2,1.7c0,4.8,3.9,8.7,8.7,8.7H251c4.8,0,8.7-3.9,8.7-8.7C259.7,189.7,255.8,185.8,251,185.8z" />
+                                            <path class="st0"
+                                                d="M334.9,189l-29.3-38.4l26.4-26.4c3.6-3.6,3.6-9.4,0-13c-3.6-3.6-9.4-3.6-13,0l-32.7,32.7v-27.1    c0-5.8-4.7-10.4-10.4-10.4c-5.8,0-10.4,4.7-10.4,10.4v76.7c0,5.8,4.7,10.4,10.4,10.4c5.8,0,10.4-4.7,10.4-10.4v-23.7l5.9-5.9    l27.7,36.3c3.1,4.1,8.9,5,13,1.9C337.2,198.9,338,193.1,334.9,189z" />
+                                            <path class="st0"
+                                                d="M196.1,191.5l-28.1-77c0,0-0.1-0.1-0.1-0.1c-1.8-4.7-7-8.1-13.2-8.1c-6.9,0-12.5,4.2-13.7,9.7    c-0.2,0.4-0.4,0.8-0.5,1.3l-27.7,74.2c-1.7,4.9,0.9,10.2,5.7,11.9c4.9,1.7,10.2-0.9,11.9-5.7l4.8-13.7h38.5l4.8,13.7    c1.7,4.9,7,7.4,11.9,5.7C195.3,201.6,197.8,196.3,196.1,191.5z M141.4,166.5l12.9-36.9c0.1,0,0.3,0,0.4,0l12.9,36.9H141.4z" />
+                                        </g>
+                                    </g>
+                                </svg>
+                            </a>
+                            <a href="javascript:void(0);" data-bs-toggle="tooltip" data-bs-placement="left" title=""
+                                data-bs-original-title="클립보드에 URL 복사하기" style="color: #545859 !important;"
+                                onclick="copyUrl(this);" aria-label="도움말">
+                                <svg xmlns="http://www.w3.org/2000/svg" height="24" fill="currentColor"
+                                    class="bi bi-clipboard" viewBox="0 0 16 16">
+                                    <path
+                                        d="M4 1.5H3a2 2 0 0 0-2 2V14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V3.5a2 2 0 0 0-2-2h-1v1h1a1 1 0 0 1 1 1V14a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V3.5a1 1 0 0 1 1-1h1v-1z" />
+                                    <path
+                                        d="M9.5 1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-3a.5.5 0 0 1-.5-.5v-1a.5.5 0 0 1 .5-.5h3zm-3-1A1.5 1.5 0 0 0 5 1.5v1A1.5 1.5 0 0 0 6.5 4h3A1.5 1.5 0 0 0 11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3z" />
+                                </svg>
+                                <svg xmlns="http://www.w3.org/2000/svg" height="24" fill="currentColor"
+                                    class="bi bi-clipboard-check" viewBox="0 0 16 16" style="display: none;">
+                                    <path fill-rule="evenodd"
+                                        d="M10.854 7.146a.5.5 0 0 1 0 .708l-3 3a.5.5 0 0 1-.708 0l-1.5-1.5a.5.5 0 1 1 .708-.708L7.5 9.793l2.646-2.647a.5.5 0 0 1 .708 0z" />
+                                    <path
+                                        d="M4 1.5H3a2 2 0 0 0-2 2V14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V3.5a2 2 0 0 0-2-2h-1v1h1a1 1 0 0 1 1 1V14a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V3.5a1 1 0 0 1 1-1h1v-1z" />
+                                    <path
+                                        d="M9.5 1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-3a.5.5 0 0 1-.5-.5v-1a.5.5 0 0 1 .5-.5h3zm-3-1A1.5 1.5 0 0 0 5 1.5v1A1.5 1.5 0 0 0 6.5 4h3A1.5 1.5 0 0 0 11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3z" />
+                                </svg>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!--
+---- inner script for content 04 (wanted details)
+-->
+<script type="text/javascript">
+    // sticky-top
+    window.onload = function () {
+        var contents = document.querySelector("#contents");
+        contents.setAttribute("class", "px-3 pb-3 mb-3");
+    }
+    // scroll down to 'app' div
+    function scrollToApp() {
+        document.getElementById("app").scrollIntoView({ behavior: "smooth", block: "start", inline: "start" });
+    }
+    // open original wanted ad with Notion
+    function openNotion() {
+        window.open("about:blank").location.href = "https://www.bluemove.or.kr/" + location.search.replace("?wanted_id=", "")
+    }
+    function onmouseoverNotion() {
+        for (var i = 0; i < document.querySelectorAll(".svg-notion").length; i++) {
+            document.querySelectorAll(".svg-notion")[i].setAttribute("style", "opacity: 0; z-index: -1; left: 12px;");
+        }
+        for (var i = 0; i < document.querySelectorAll(".svg-notion-hover").length; i++) {
+            document.querySelectorAll(".svg-notion-hover")[i].setAttribute("style", "opacity: 1; z-index: 0; left: -12px;");
+        }
+    }
+    function onmouseoutNotion() {
+        for (var i = 0; i < document.querySelectorAll(".svg-notion").length; i++) {
+            document.querySelectorAll(".svg-notion")[i].setAttribute("style", "opacity: 1; z-index: 0; left: 12px;");
+        }
+        for (var i = 0; i < document.querySelectorAll(".svg-notion-hover").length; i++) {
+            document.querySelectorAll(".svg-notion-hover")[i].setAttribute("style", "opacity: 0; z-index: -1; left: -12px;");
+        }
+    }
+    // share on Facebook
+    function shareFacebook() {
+        window.open("https://www.facebook.com/sharer.php?u=" + location.host + location.pathname + location.search);
+    }
+    // share on Twitter
+    function shareTwitter() {
+        window.open("https://twitter.com/intent/tweet?text=" + "문화예술공익단체 파란물결 블루무브 / " + document.querySelector("#wanted_title").innerText + " / " + document.querySelector("#wanted_datetime").innerText + "&url=" + location.protocol + "//" + location.host + location.pathname + location.search);
+    }
+    // share via KakaoTalk
+    Kakao.init("beed54d5f9d2bd09a49612b8b44a8ed5");
+    function shareKakaoTalk() {
+        Kakao.Link.sendDefault({
+            objectType: "feed",
+            content: {
+                title: document.querySelector("#wanted_title").innerText,
+                description: document.querySelector("#wanted_datetime").innerText,
+                imageUrl: "https://docs.bluemove.or.kr/static/images/slide01.png",
+                link: {
+                    mobileWebUrl: location.protocol + "//" + location.host + location.pathname + location.search,
+                    webUrl: location.protocol + "//" + location.host + location.pathname + location.search,
+                },
+            },
+            buttons: [
+                {
+                    title: "모집 공고 보기",
+                    link: {
+                        mobileWebUrl: location.protocol + "//" + location.host + location.pathname + location.search,
+                        webUrl: location.protocol + "//" + location.host + location.pathname + location.search,
+                    },
+                },
+            ],
+        })
+    }
+    // copy URL to clipboard
+    function copyToClipboard(val) {
+        const t = document.createElement("textarea");
+        document.body.appendChild(t);
+        t.value = val;
+        t.select();
+        document.execCommand("copy");
+        document.body.removeChild(t);
+    }
+    function copyUrl(obj) {
+        copyToClipboard(location.protocol + "//" + location.host + location.pathname + location.search);
+        obj.firstElementChild.setAttribute("style", "display: none;");
+        obj.lastElementChild.setAttribute("style", "");
+    }
+</script>
+
+{% for wanted_row in wanted_list %}
+{% if "접수 중" in wanted_row.status or app or apps_received %}
+<!-- when the wanted_status is "접수 중" or when the application exists or when applications received exist -->
+<div id="app" style="height: 24px;"></div>
+{% if user.is_authenticated and not "@bluemove.or.kr" in user.email %}
+<!--
+---- inner content 05-A (applicant)
+-->
+{% if app and not app.received == True %}
+<!-- when the application exists -->
+<div class="card shadow-hover">
+    <div class="card-body" style="background-color: rgba(0,0,0,.025);">
+        <div class="screenLarge">
+            <div class="d-flex justify-content-between">
+                <h5 class="card-title pb-1">
+                    지원서 작성 및 관리
+                </h5>
+                <small style="margin-top: .25rem;">
+                    <i class="bi bi-clock me-1"></i>{{ app.updated_at|date:"Y-m-d H:i:s" }} 저장</small>
+            </div>
+        </div>
+        <div class="screenSmall">
+            <h5 class="card-title pb-1">
+                지원서 작성 및 관리
+            </h5>
+            <small class="d-flex justify-content-center border border-secondary rounded-1 mb-3"
+                style="border-color: rgba(0,0,0,.3) !important;">
+                <i class="bi bi-clock me-1"></i>{{ app.updated_at|date:"Y-m-d H:i:s" }} 저장</small>
+        </div>
+        <!-- alert -->
+        {% if timeout %}
+        <!-- boolean TIMEOUT -->
+        <div class="alert alert-secondary d-flex align-items-center" role="alert">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor"
+                class="bi bi-file-earmark-x flex-shrink-0 me-2" viewBox="0 0 16 16">
+                <path
+                    d="M6.854 7.146a.5.5 0 1 0-.708.708L7.293 9l-1.147 1.146a.5.5 0 0 0 .708.708L8 9.707l1.146 1.147a.5.5 0 0 0 .708-.708L8.707 9l1.147-1.146a.5.5 0 0 0-.708-.708L8 8.293 6.854 7.146z" />
+                <path
+                    d="M14 14V4.5L9.5 0H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2zM9.5 3A1.5 1.5 0 0 0 11 4.5h2V14a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1h5.5v2z" />
+            </svg>
+            <div class="vertical" style="word-break: break-word;">
+                접수가 마감되었습니다.
+            </div>
+        </div>
+        {% elif app_saved %}
+        <!-- boolean APP_SAVED -->
+        <div class="alert alert-primary alert-dismissible fade show d-flex align-items-center" role="alert">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor"
+                class="bi bi-file-earmark-text flex-shrink-0 me-2" viewBox="0 0 16 16">
+                <path
+                    d="M5.5 7a.5.5 0 0 0 0 1h5a.5.5 0 0 0 0-1h-5zM5 9.5a.5.5 0 0 1 .5-.5h5a.5.5 0 0 1 0 1h-5a.5.5 0 0 1-.5-.5zm0 2a.5.5 0 0 1 .5-.5h2a.5.5 0 0 1 0 1h-2a.5.5 0 0 1-.5-.5z" />
+                <path
+                    d="M9.5 0H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V4.5L9.5 0zm0 1v2A1.5 1.5 0 0 0 11 4.5h2V14a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1h5.5z" />
+            </svg>
+            <div class="vertical" style="word-break: break-word;">
+                저장되었습니다! <span id="emoji"></span>
+            </div>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="안내창 닫기"></button>
+        </div>
+        {% elif wrong_portfolio %}
+        <!-- boolean WRONG_PORTFOLIO -->
+        <div class="alert alert-secondary alert-dismissible fade show d-flex align-items-center" role="alert">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor"
+                class="bi bi-emoji-neutral flex-shrink-0 me-2" viewBox="0 0 16 16">
+                <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z" />
+                <path
+                    d="M4 10.5a.5.5 0 0 0 .5.5h7a.5.5 0 0 0 0-1h-7a.5.5 0 0 0-.5.5zm3-4C7 5.672 6.552 5 6 5s-1 .672-1 1.5S5.448 8 6 8s1-.672 1-1.5zm4 0c0-.828-.448-1.5-1-1.5s-1 .672-1 1.5S9.448 8 10 8s1-.672 1-1.5z" />
+            </svg>
+            <div class="vertical" style="word-break: break-word;">
+                참고 자료 URL({{ portfolio }})이 유효하지 않습니다. 혹시 오탈자가 있나요?
+            </div>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="안내창 닫기"></button>
+        </div>
+        {% endif %}
+        <!-- form -->
+        <form action="{% url 'applynsubmit:applymembership' %}?wanted_id={{ wanted_id }}" method="POST"
+            enctype="multipart/form-data" id="formApp" onsubmit="return appSave();">
+            {% csrf_token %}
+            <input type="hidden" id="wantedIdPost" name="wantedIdPost" value="{{ wanted_id }}" readonly hidden>
+            <!-- <input type="hidden" id="wantedTitlePost" name="wantedTitlePost" value="{{ wanted_row.title }}" readonly
+                hidden> -->
+            <input type="hidden" id="cmdPost" name="cmdPost" value="save" readonly hidden>
+            <div class="row row-cols-1 g-3">
+                <div class="col">
+                    <div class="d-flex justify-content-between">
+                        <label for="appSelfIntro" class="form-label">자기소개</label>
+                        <span id="appSelfIntroLength" aria-label="자기소개 글자 수">
+                            ({{ app.self_intro_len|default:'0' }}/500)</span>
+                    </div>
+                    <textarea class="form-control" id="appSelfIntro" name="appSelfIntro" placeholder="자기소개를 입력하세요."
+                        aria-label="자기소개 입력" rows="5">{{ app.self_intro|default_if_none:'' }}</textarea>
+                </div>
+                <div class="col">
+                    <div class="d-flex justify-content-between">
+                        <label for="appReason" class="form-label">지원동기</label>
+                        <span id="appReasonLength" aria-label="지원동기 글자 수">
+                            ({{ app.reason_len|default:'0' }}/500)</span>
+                    </div>
+                    <textarea class="form-control" id="appReason" name="appReason" placeholder="지원동기를 입력하세요."
+                        aria-label="지원동기 입력" rows="5">{{ app.reason|default_if_none:'' }}</textarea>
+                </div>
+                <div class="col">
+                    <div class="d-flex justify-content-between">
+                        <label for="appPlan" class="form-label">활동계획</label>
+                        <span id="appPlanLength" aria-label="활동계획 글자 수">
+                            ({{ app.plan_len|default:'0' }}/500)</span>
+                    </div>
+                    <textarea class="form-control" id="appPlan" name="appPlan" placeholder="활동계획을 입력하세요."
+                        aria-label="활동계획 입력" rows="5">{{ app.plan|default_if_none:'' }}</textarea>
+                </div>
+                <div class="col">
+                    <div id="divAppTracking" class="row row-cols-1 g-3">
+                        <div class="col">
+                            <label for="appTracking" class="form-label">처음 알게 된 경로</label>
+                            <select class="form-select" id="appTracking" name="appTracking" aria-label="처음 알게 된 경로 선택"
+                                onchange="appTrackingOnchange();">
+                                <option value="{{ app.tracking|default_if_none:'' }}" selected hidden>
+                                    {% if app.tracking == "" or app.tracking == None %}
+                                    처음 알게 된 경로를 선택하세요.
+                                    {% else %}
+                                    {{ app.tracking }}
+                                    {% endif %}
+                                </option>
+                                <option disabled>처음 알게 된 경로를 선택하세요.</option>
+                                <option value="취업/대외활동 커뮤니티">취업/대외활동 커뮤니티</option>
+                                <option value="페이스북/인스타그램">페이스북/인스타그램</option>
+                                <option value="파란물결 블루무브 관련 검색">파란물결 블루무브 관련 검색</option>
+                                <option value="블루무버 추천">블루무버 추천</option>
+                                <option value="기타 경로">기타 경로</option>
+                            </select>
+                        </div>
+                        <div class="col" id="divAppTrackingReference" hidden>
+                            <label for="appTrackingReference" class="form-label">해당 블루무버 성명</label>
+                            <input type="text" class="form-control" id="appTrackingReference"
+                                name="appTrackingReference" placeholder="해당 블루무버 성명을 입력하세요." aria-label="해당 블루무버 성명 입력"
+                                value="{{ app.tracking_reference|default_if_none:'' }}" disabled>
+                        </div>
+                        <div class="col" id="divAppTrackingEtc" hidden>
+                            <label for="appTrackingEtc" class="form-label">기타 경로</label>
+                            <input type="text" class="form-control" id="appTrackingEtc" name="appTrackingEtc"
+                                placeholder="기타 경로를 입력하세요." aria-label="기타 경로 입력"
+                                value="{{ app.tracking_etc|default_if_none:'' }}" disabled>
+                        </div>
+                    </div>
+                </div>
+                <div class="col">
+                    <label for="appPortfolio" class="form-label">(선택) 참고 자료 URL
+                        <a href="#none" class="ms-1" data-bs-toggle="tooltip" data-bs-placement="right" title=""
+                            data-bs-original-title="인스타그램, 노션, 유튜브 등 무엇이든 좋아요! 🙌" style="color: #545859 !important;"
+                            aria-label="도움말">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                                class="bi bi-question-circle" viewBox="0 0 16 16" style="margin-bottom: .2rem;">
+                                <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z" />
+                                <path
+                                    d="M5.255 5.786a.237.237 0 0 0 .241.247h.825c.138 0 .248-.113.266-.25.09-.656.54-1.134 1.342-1.134.686 0 1.314.343 1.314 1.168 0 .635-.374.927-.965 1.371-.673.489-1.206 1.06-1.168 1.987l.003.217a.25.25 0 0 0 .25.246h.811a.25.25 0 0 0 .25-.25v-.105c0-.718.273-.927 1.01-1.486.609-.463 1.244-.977 1.244-2.056 0-1.511-1.276-2.241-2.673-2.241-1.267 0-2.655.59-2.75 2.286zm1.557 5.763c0 .533.425.927 1.01.927.609 0 1.028-.394 1.028-.927 0-.552-.42-.94-1.029-.94-.584 0-1.009.388-1.009.94z" />
+                            </svg>
+                        </a>
+                    </label>
+                    <div class="input-group">
+                        <input type="text" class="form-control" id="appPortfolio" name="appPortfolio"
+                            placeholder="참고 자료 URL을 입력하세요." aria-label="참고 자료 URL 입력"
+                            value="{{ app.portfolio|default_if_none:'' }}">
+                        <a href="javascript:void(0);" class="btn btn-outline-secondary"
+                            onclick="appPortfolioValidation();" aria-label="참고 자료 URL 열기">
+                            <i class="bi bi-window me-2"></i>열기</a>
+                    </div>
+
+                </div>
+            </div>
+            {% if timeout %}
+            <!-- boolean TIMEOUT -->
+            <div class="d-grid" style="padding-top: 1.25rem !important;">
+                <button type="button" class="btn btn-outline-danger" aria-label="지원서 삭제" onclick="appDelete();">
+                    <i class="bi bi-trash me-2"></i>지원서 삭제</button>
+            </div>
+            {% else %}
+            <div class="row g-3" style="padding-top: 1.25rem !important;">
+                <div class="col-md-6 col-lg-8">
+                    <div class="d-grid">
+                        <button type="submit" class="btn btn-outline-secondary" id="btnAppSave" aria-label="지원서 저장">
+                            <i class="bi bi-archive me-2"></i>지원서 저장</button>
+                    </div>
+                </div>
+                <div class="col-md-3 col-lg-2">
+                    <div class="d-grid">
+                        <button type="button" class="btn btn-outline-secondary" id="btnAppSubmit" aria-label="지원서 제출"
+                            onclick="appSubmit();">
+                            <i class="bi bi-upload me-2"></i>지원서 제출</button>
+                    </div>
+                </div>
+                <div class="col-md-3 col-lg-2">
+                    <div class="d-grid">
+                        <button type="button" class="btn btn-outline-danger" aria-label="지원서 삭제" onclick="appDelete();">
+                            <i class="bi bi-trash me-2"></i>지원서 삭제</button>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+        </form>
+    </div>
+</div>
+{% elif app.received == True %}
+<!-- when the application is submitted -->
+<div class="card shadow-hover">
+    <div class="card-body" style="background-color: rgba(0,0,0,.025);">
+        <div class="screenLarge">
+            <div class="d-flex justify-content-between">
+                <h5 class="card-title pb-1">
+                    지원서 작성 및 관리
+                </h5>
+                <small style="margin-top: .25rem;">
+                    <i class="bi bi-clock me-1"></i>{{ app.received_at|date:"Y-m-d H:i:s" }} 제출</small>
+            </div>
+        </div>
+        <div class="screenSmall">
+            <h5 class="card-title pb-1">
+                지원서 작성 및 관리
+            </h5>
+            <small class="d-flex justify-content-center border border-secondary rounded-1 mb-3"
+                style="border-color: rgba(0,0,0,.3) !important;">
+                <i class="bi bi-clock me-1"></i>{{ app.received_at|date:"Y-m-d H:i:s" }} 제출</small>
+        </div>
+        <!-- alert -->
+        {% if app_submitted %}
+        <!-- boolean APP_SUBMITTED -->
+        <div class="alert alert-primary alert-dismissible fade show d-flex align-items-center" role="alert">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor"
+                class="bi bi-file-earmark-check flex-shrink-0 me-2" viewBox="0 0 16 16">
+                <path
+                    d="M10.854 7.854a.5.5 0 0 0-.708-.708L7.5 9.793 6.354 8.646a.5.5 0 1 0-.708.708l1.5 1.5a.5.5 0 0 0 .708 0l3-3z" />
+                <path
+                    d="M14 14V4.5L9.5 0H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2zM9.5 3A1.5 1.5 0 0 0 11 4.5h2V14a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1h5.5v2z" />
+            </svg>
+            <div class="vertical" style="word-break: break-word;">
+                제출되었습니다! <span id="emoji"></span>
+            </div>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="안내창 닫기"></button>
+        </div>
+        {% endif %}
+        <!-- form -->
+        <div class="row row-cols-1 g-3">
+            <div class="col">
+                <div class="d-flex justify-content-between">
+                    <label for="appSelfIntro" class="form-label">자기소개</label>
+                    <span aria-label="자기소개 글자 수">({{ app.self_intro_len }}/500)</span>
+                </div>
+                <textarea class="form-control" id="appSelfIntro" aria-label="자기소개" rows="5"
+                    readonly>{{ app.self_intro }}</textarea>
+            </div>
+            <div class="col">
+                <div class="d-flex justify-content-between">
+                    <label for="appReason" class="form-label">지원동기</label>
+                    <span aria-label="지원동기 글자 수">({{ app.reason_len }}/500)</span>
+                </div>
+                <textarea class="form-control" id="appReason" aria-label="지원동기" rows="5"
+                    readonly>{{ app.reason }}</textarea>
+            </div>
+            <div class="col">
+                <div class="d-flex justify-content-between">
+                    <label for="appPlan" class="form-label">활동계획</label>
+                    <span aria-label="활동계획 글자 수">({{ app.plan_len|default:'0' }}/500)</span>
+                </div>
+                <textarea class="form-control" id="appPlan" aria-label="활동계획" rows="5"
+                    readonly>{{ app.plan }}</textarea>
+            </div>
+            <div class="col">
+                {% if app.tracking == "블루무버 추천" %}
+                <div class="row row-cols-1 row-cols-md-2 g-3">
+                    <div class="col">
+                        <label for="appTracking" class="form-label">처음 알게 된
+                            경로</label>
+                        <input type="text" class="form-control" id="appTracking" aria-label="처음 알게 된 경로"
+                            value="{{ app.tracking }}" readonly>
+                    </div>
+                    <div class="col">
+                        <label for="appTrackingReference" class="form-label">해당 블루무버
+                            성명</label>
+                        <input type="text" class="form-control" id="appTrackingReference" aria-label="해당 블루무버 성명"
+                            value="{{ app.tracking_reference }}" readonly>
+                    </div>
+                </div>
+                {% elif app.tracking == "기타 경로" %}
+                <div class="row row-cols-1 row-cols-md-2 g-3">
+                    <div class="col">
+                        <label for="appTracking" class="form-label">처음 알게 된
+                            경로</label>
+                        <input type="text" class="form-control" id="appTracking" aria-label="처음 알게 된 경로"
+                            value="{{ app.tracking }}" readonly>
+                    </div>
+                    <div class="col">
+                        <label for="appTrackingEtc" class="form-label">기타 경로</label>
+                        <input type="text" class="form-control" id="appTrackingEtc" aria-label="기타 경로"
+                            value="{{ app.tracking_etc }}" readonly>
+                    </div>
+                </div>
+                {% else %}
+                <label for="appTracking" class="form-label">처음 알게 된 경로</label>
+                <input type="text" class="form-control" id="appTracking" aria-label="처음 알게 된 경로"
+                    value="{{ app.tracking }}" readonly>
+                {% endif %}
+            </div>
+            <div class="col">
+                <label for="appPortfolio" class="form-label">(선택) 참고 자료 URL
+                    <a href="#none" class="ms-1" data-bs-toggle="tooltip" data-bs-placement="right" title=""
+                        data-bs-original-title="인스타그램, 노션, 유튜브 등 무엇이든 좋아요! 🙌" style="color: #545859 !important;"
+                        aria-label="도움말">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                            class="bi bi-question-circle" viewBox="0 0 16 16" style="margin-bottom: .2rem;">
+                            <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z" />
+                            <path
+                                d="M5.255 5.786a.237.237 0 0 0 .241.247h.825c.138 0 .248-.113.266-.25.09-.656.54-1.134 1.342-1.134.686 0 1.314.343 1.314 1.168 0 .635-.374.927-.965 1.371-.673.489-1.206 1.06-1.168 1.987l.003.217a.25.25 0 0 0 .25.246h.811a.25.25 0 0 0 .25-.25v-.105c0-.718.273-.927 1.01-1.486.609-.463 1.244-.977 1.244-2.056 0-1.511-1.276-2.241-2.673-2.241-1.267 0-2.655.59-2.75 2.286zm1.557 5.763c0 .533.425.927 1.01.927.609 0 1.028-.394 1.028-.927 0-.552-.42-.94-1.029-.94-.584 0-1.009.388-1.009.94z" />
+                        </svg>
+                    </a>
+                </label>
+                {% if not app.portfolio == "" %}
+                <div class="input-group">
+                    <input type="text" class="form-control" id="appPortfolio" aria-label="참고 자료 URL"
+                        value="{{ app.portfolio }}" readonly>
+                    <a href="{{ app.portfolio }}" target="_blank" class="btn btn-outline-secondary"
+                        aria-label="참고 자료 열기">
+                        <i class="bi bi-window me-2"></i>열기</a>
+                </div>
+                {% else %}
+                <input type="text" class="form-control" id="appPortfolio" aria-label="참고 자료 URL"
+                    value="참고 자료 URL이 제공되지 않았습니다." readonly>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% else %}
+<!-- when the application does not exist (default) -->
+<div class="card" style="border-style: dashed; border-color: rgba(0,0,0,.25)">
+    <div class="card-body">
+        <h5 class="card-title pb-1">
+            지원서 작성 및 관리
+        </h5>
+        <form action="{% url 'applynsubmit:applymembership' %}?wanted_id={{ wanted_id }}" method="POST"
+            enctype="multipart/form-data" id="formAppCreate">
+            {% csrf_token %}
+            <input type="hidden" id="wantedIdPost" name="wantedIdPost" value="{{ wanted_id }}" readonly hidden>
+            <input type="hidden" id="cmdPost" name="cmdPost" value="create" readonly hidden>
+            <div class="text-center my-4">
+                <h2 style="color: rgba(0,0,0,.25); font-weight: bolder;"><i class="bi bi-file-earmark-plus me-2"></i>지원서
+                    작성
+                </h2>
+                <p class="text-muted m-0"><a href="javascript:void(0);" class="a-dark-bluemove stretched-link"
+                        onclick="appCreate();">여기를 눌러 작성하세요.</a></p>
+            </div>
+        </form>
+    </div>
+</div>
+{% endif %}
+{% if app.pf == "선발" and app.notified and not app.joined %}
+<div id="join" style="height: 24px;"></div>
+<div class="card shadow-hover">
+    <div class="card-body" style="background-color: rgba(0,0,0,.025);">
+        <h5 class="card-title pb-1">가입 확정</h5>
+        <!-- alert -->
+        <div class="alert alert-primary d-flex align-items-center mb-0" role="alert">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor"
+                class="bi bi-emoji-smile flex-shrink-0 me-2" viewBox="0 0 16 16">
+                <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z" />
+                <path
+                    d="M4.285 9.567a.5.5 0 0 1 .683.183A3.498 3.498 0 0 0 8 11.5a3.498 3.498 0 0 0 3.032-1.75.5.5 0 1 1 .866.5A4.498 4.498 0 0 1 8 12.5a4.498 4.498 0 0 1-3.898-2.25.5.5 0 0 1 .183-.683zM7 6.5C7 7.328 6.552 8 6 8s-1-.672-1-1.5S5.448 5 6 5s1 .672 1 1.5zm4 0c0 .828-.448 1.5-1 1.5s-1-.672-1-1.5S9.448 5 10 5s1 .672 1 1.5z" />
+            </svg>
+            <div class="vertical" style="word-break: break-word;">
+                축하합니다! 🎉 이제 {{ app.applicant.first_name }}님의 블루무브 가입 여부를 확정해주세요.
+            </div>
+        </div>
+        <!-- form -->
+        <form action="{% url 'applynsubmit:applymembership' %}?wanted_id={{ wanted_id }}" method="POST"
+            enctype="multipart/form-data" onsubmit="fadeOut(); setTimeout(inProgress, 0);">
+            {% csrf_token %}
+            <input type="hidden" id="wantedIdPost" name="wantedIdPost" value="{{ wanted_id }}" readonly hidden>
+            <input type="hidden" id="cmdPost" name="cmdPost" value="join" readonly hidden>
+            <div class="d-grid" style="padding-top: 1.25rem !important;">
+                <button type="submit" class="btn btn-outline-primary" aria-label="가입 확정">
+                    <i class="bi bi-check2 me-2"></i>가입 확정</button>
+            </div>
+        </form>
+    </div>
+</div>
+{% elif app.pf == "선발" and app.notified and app.joined %}
+<div id="join" style="height: 24px;"></div>
+<div class="card shadow-hover">
+    <div class="card-body" style="background-color: rgba(0,0,0,.025);">
+        <h5 class="card-title pb-1">가입 확정</h5>
+        <!-- alert -->
+        <div class="alert alert-primary d-flex align-items-center mb-0" role="alert">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor"
+                class="bi bi-emoji-smile flex-shrink-0 me-2" viewBox="0 0 16 16">
+                <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z" />
+                <path
+                    d="M4.285 9.567a.5.5 0 0 1 .683.183A3.498 3.498 0 0 0 8 11.5a3.498 3.498 0 0 0 3.032-1.75.5.5 0 1 1 .866.5A4.498 4.498 0 0 1 8 12.5a4.498 4.498 0 0 1-3.898-2.25.5.5 0 0 1 .183-.683zM7 6.5C7 7.328 6.552 8 6 8s-1-.672-1-1.5S5.448 5 6 5s1 .672 1 1.5zm4 0c0 .828-.448 1.5-1 1.5s-1-.672-1-1.5S9.448 5 10 5s1 .672 1 1.5z" />
+            </svg>
+            <div class="vertical" style="word-break: break-word;">
+                고맙습니다, {{ app.applicant.first_name }} 블루무버님! 곧 뵈어요! 🥰
+            </div>
+        </div>
+        <!-- form -->
+        <div class="d-grid" style="padding-top: 1.25rem !important;">
+            <button type="button" class="btn btn-outline-primary" aria-label="가입 확정 완료" disabled>
+                <i class="bi bi-check2 me-2"></i>가입 확정 완료</button>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+<!--
+---- inner script for content 05-A (applicant)
+-->
+<script type="text/javascript">
+    var formAppCreate = document.querySelector("#formAppCreate");
+    var formApp = document.querySelector("#formApp");
+    var appSelfIntro = document.querySelector("#appSelfIntro");
+    var appReason = document.querySelector("#appReason");
+    var appPlan = document.querySelector("#appPlan");
+    var divAppTracking = document.querySelector("#divAppTracking");
+    var appTracking = document.querySelector("#appTracking");
+    var divAppTrackingReference = document.querySelector("#divAppTrackingReference");
+    var appTrackingReference = document.querySelector("#appTrackingReference");
+    var divAppTrackingEtc = document.querySelector("#divAppTrackingEtc");
+    var appTrackingEtc = document.querySelector("#appTrackingEtc");
+    var appPortfolio = document.querySelector("#appPortfolio");
+    var cmdPost = document.querySelector("#cmdPost");
+    // check the number of letters in the application
+    $("#appSelfIntro").keyup(function (e) {
+        var text = $(this).val();
+        $("#appSelfIntroLength").text("(" + text.length + "/500)");
+        if (text.length > 500) {
+            alert("자기소개는 최대 500자까지 입력 가능합니다.");
+            $(this).val(text.substring(0, 500));
+            $("#appSelfIntroLength").text("(500/500)");
+        }
+    });
+    $("#appReason").keyup(function (e) {
+        var text = $(this).val();
+        $("#appReasonLength").text("(" + text.length + "/500)");
+        if (text.length > 500) {
+            alert("지원동기는 최대 500자까지 입력 가능합니다.");
+            $(this).val(text.substring(0, 500));
+            $("#appReasonLength").text("(500/500)");
+        }
+    });
+    $("#appPlan").keyup(function (e) {
+        var text = $(this).val();
+        $("#appPlanLength").text("(" + text.length + "/500)");
+        if (text.length > 500) {
+            alert("활동계획은 최대 500자까지 입력 가능합니다.");
+            $(this).val(text.substring(0, 500));
+            $("#appPlanLength").text("(500/500)");
+        }
+    });
+    // appTracking
+    function appTrackingOnchange() {
+        if (appTracking.value == "블루무버 추천") {
+            divAppTracking.setAttribute("class", "row row-cols-1 row-cols-md-2 g-3");
+            divAppTrackingReference.hidden = false;
+            appTrackingReference.disabled = false;
+            appTrackingReference.required = true;
+            divAppTrackingEtc.hidden = true;
+            appTrackingEtc.disabled = true;
+            appTrackingEtc.required = false;
+        } else if (appTracking.value == "기타 경로") {
+            divAppTracking.setAttribute("class", "row row-cols-1 row-cols-md-2 g-3");
+            divAppTrackingEtc.hidden = false;
+            appTrackingEtc.disabled = false;
+            appTrackingEtc.required = true;
+            divAppTrackingReference.hidden = true;
+            appTrackingReference.disabled = true;
+            appTrackingReference.required = false;
+        } else {
+            divAppTracking.setAttribute("class", "row row-cols-1 g-3");
+            divAppTrackingReference.hidden = true;
+            appTrackingReference.disabled = true;
+            appTrackingReference.required = false;
+            divAppTrackingEtc.hidden = true;
+            appTrackingEtc.disabled = true;
+            appTrackingEtc.required = false;
+        }
+    }
+    // appPortfolio
+    function appPortfolioValidation() {
+        if (appPortfolio.value) {
+            if (appPortfolio.value.indexOf("http") == -1) {
+                appPortfolio.value = appPortfolio.value.replace(/^/, "http://");
+            }
+            window.open(appPortfolio.value, "_blank");
+        } else {
+            alert("참고 자료 URL을 입력해주세요.")
+        }
+    }
+    // create an application
+    function appCreate() {
+        formAppCreate.submit();
+        // call 'spinner (transition)' function
+        fadeOut();
+        // call 'avoiding duplicate requests (btn disabled)' function
+        setTimeout(inProgress, 0);
+    }
+    // save an application
+    function appSave() {
+        if (appPortfolio.value !== "") {
+            if (appPortfolio.value.indexOf("http") == -1) {
+                appPortfolio.value = appPortfolio.value.replace(/^/, "http://");
+            }
+        }
+        // call 'spinner (transition)' function
+        fadeOut();
+        // call 'avoiding duplicate requests (btn disabled)' function
+        setTimeout(inProgress, 0);
+    }
+    // submit an application
+    function appSubmit() {
+        if (appSelfIntro.value == "") {
+            alert("자기소개를 입력해주세요.");
+            return false;
+        }
+        if (appReason.value == "") {
+            alert("지원동기를 입력해주세요.");
+            return false;
+        }
+        if (appPlan.value == "") {
+            alert("활동계획을 입력해주세요.");
+            return false;
+        }
+        if (appTracking.value == "") {
+            alert("처음 알게 된 경로를 선택해주세요.");
+            return false;
+        }
+        if (appTracking.value == "블루무버 추천" &&
+            appTrackingReference.value == "") {
+            alert("해당 블루무버 성명을 입력해주세요.");
+            return false;
+        }
+        if (appTracking.value == "기타 경로" &&
+            appTrackingEtc.value == "") {
+            alert("기타 경로를 입력해주세요.");
+            return false;
+        }
+        if (appPortfolio.value) {
+            if (appPortfolio.value.indexOf("http") == -1) {
+                appPortfolio.value = appPortfolio.value.replace(/^/, "http://");
+            }
+        }
+        if (confirm("올바른 정보인지 최종 확인해주세요.\n🙋 성명: {{ app.applicant.last_name }}{{ app.applicant.first_name }}\n📱 휴대전화 번호: {{ app.applicant.profile.phone }}\n\n정말 지원서를 제출하시겠어요?")) {
+            cmdPost.value = "submit";
+            formApp.submit();
+            // call 'spinner (transition)' function
+            fadeOut();
+            // call 'avoiding duplicate requests (btn disabled)' function
+            setTimeout(inProgress, 0);
+        } else {
+            return false;
+        }
+    }
+    // delete an application
+    function appDelete() {
+        if (confirm("정말 지원서를 삭제하시겠어요?")) {
+            cmdPost.value = "delete";
+            formApp.submit();
+            // call 'spinner (transition)' function
+            fadeOut();
+            // call 'avoiding duplicate requests (btn disabled)' function
+            setTimeout(inProgress, 0);
+        } else {
+            return false;
+        }
+    }
+</script>
+{% if app and not app.received == True %}
+<!-- when the application exists -->
+<script type="text/javascript">
+    appTrackingOnchange();
+</script>
+{% endif %}
+{% if app and not app.received == True and timeout %}
+<!-- when the application exists -->
+<!-- boolean TIMEOUT -->
+<script type="text/javascript">
+    var btnAppSave = document.querySelector("#btnAppSave");
+    var btnAppSubmit = document.querySelector("#btnAppSubmit");
+    cmdPost.value = "";
+    appSelfIntro.readOnly = true;
+    appReason.readOnly = true;
+    appPlan.readOnly = true;
+    for (var i = 0; i < appTracking.childElementCount; i++) {
+        appTracking.children[i].disabled = true;
+    }
+    if (appTrackingReference.value !== "") {
+        appTrackingReference.readOnly = true;
+    }
+    if (appTrackingEtc.value !== "") {
+        appTrackingEtc.readOnly = true;
+    }
+    appPortfolio.readOnly = true;
+    alert(document.querySelector("#wanted_datetime").innerText.split(" ~ ")[1] + "부로 접수 마감되었습니다.");
+</script>
+{% endif %}
+
+{% elif user.is_authenticated and "@bluemove.or.kr" in user.email %}
+<!--
+---- inner content 05-B (Bluemover)
+-->
+{% if apps_received.count > 0 %}
+<!-- when applications received exist -->
+<div class="card shadow-hover">
+    <div class="card-body px-0" style="background-color: rgba(0,0,0,.025);">
+        <div class="screenLarge" style="padding-left: 1.25rem; padding-right: 1.25rem;">
+            <div class="d-flex justify-content-between">
+                <h5 class="card-title pb-1">
+                    접수된 지원서 확인
+                </h5>
+                <small style="margin-top: .25rem;">
+                    {% if not noti.sent %}
+                    <i class="bi bi-person me-1"></i>{{ apps_passed.count }}명 선발 예정 / {{ apps_received.count }}명
+                    지원
+                    {% elif noti.sent %}
+                    <i class="bi bi-person me-1"></i>{{ apps_passed.count }}명 선발 / {{ apps_received.count }}명
+                    지원
+                    {% endif %}
+                </small>
+            </div>
+        </div>
+        <div class="screenSmall" style="padding-left: 1.25rem; padding-right: 1.25rem;">
+            <h5 class="card-title pb-1">
+                접수된 지원서 확인
+            </h5>
+            <small class="d-flex justify-content-center border border-secondary rounded-1 mb-3"
+                style="border-color: rgba(0,0,0,.3) !important;">
+                {% if not noti.sent %}
+                <i class="bi bi-person me-1"></i>{{ apps_passed.count }}명 선발 예정 / {{ apps_received.count }}명
+                지원
+                {% elif noti.sent %}
+                <i class="bi bi-person me-1"></i>{{ apps_passed.count }}명 선발 / {{ apps_received.count }}명
+                지원
+                {% endif %}
+            </small>
+        </div>
+        <!-- alert -->
+        {% if "접수 중" in wanted_row.status and noti.sent %}
+        <div class="alert alert-danger d-flex align-items-center"
+            style="margin-left: 1.25rem; margin-right: 1.25rem;" role="alert">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor"
+                class="bi bi-slash-circle flex-shrink-0 me-2" viewBox="0 0 16 16">
+                <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z" />
+                <path d="M11.354 4.646a.5.5 0 0 0-.708 0l-6 6a.5.5 0 0 0 .708.708l6-6a.5.5 0 0 0 0-.708z" />
+            </svg>
+            <div class="vertical" style="word-break: break-word;">
+                선발 절차가 완료되어 추가 접수가 불가합니다.
+            </div>
+        </div>
+        {% endif %}
+        <div class="alert alert-secondary d-flex align-items-center"
+            style="margin-left: 1.25rem; margin-right: 1.25rem;" role="alert">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor"
+                class="bi bi-shield-lock flex-shrink-0 me-2" viewBox="0 0 16 16">
+                <path
+                    d="M5.338 1.59a61.44 61.44 0 0 0-2.837.856.481.481 0 0 0-.328.39c-.554 4.157.726 7.19 2.253 9.188a10.725 10.725 0 0 0 2.287 2.233c.346.244.652.42.893.533.12.057.218.095.293.118a.55.55 0 0 0 .101.025.615.615 0 0 0 .1-.025c.076-.023.174-.061.294-.118.24-.113.547-.29.893-.533a10.726 10.726 0 0 0 2.287-2.233c1.527-1.997 2.807-5.031 2.253-9.188a.48.48 0 0 0-.328-.39c-.651-.213-1.75-.56-2.837-.855C9.552 1.29 8.531 1.067 8 1.067c-.53 0-1.552.223-2.662.524zM5.072.56C6.157.265 7.31 0 8 0s1.843.265 2.928.56c1.11.3 2.229.655 2.887.87a1.54 1.54 0 0 1 1.044 1.262c.596 4.477-.787 7.795-2.465 9.99a11.775 11.775 0 0 1-2.517 2.453 7.159 7.159 0 0 1-1.048.625c-.28.132-.581.24-.829.24s-.548-.108-.829-.24a7.158 7.158 0 0 1-1.048-.625 11.777 11.777 0 0 1-2.517-2.453C1.928 10.487.545 7.169 1.141 2.692A1.54 1.54 0 0 1 2.185 1.43 62.456 62.456 0 0 1 5.072.56z" />
+                <path
+                    d="M9.5 6.5a1.5 1.5 0 0 1-1 1.415l.385 1.99a.5.5 0 0 1-.491.595h-.788a.5.5 0 0 1-.49-.595l.384-1.99a1.5 1.5 0 1 1 2-1.415z" />
+            </svg>
+            <div class="vertical" style="word-break: break-word;">
+                지원자 개인정보가 유출되지 않도록 각별한 유의 부탁드립니다.
+            </div>
+        </div>
+        <!-- form -->
+        <div class="accordion accordion-flush" id="appAccordion">
+            {% for app in apps_received %}
+            <div class="accordion-item">
+                <h2 class="accordion-header" id="heading_{{ app.applicant }}">
+                    <button class="accordion-button accordion-button-20px bg-black025 collapsed" type="button"
+                        data-bs-toggle="collapse" data-bs-target="#collapse_{{ app.applicant }}" aria-expanded="false"
+                        aria-controls="collapse_{{ app.applicant }}">
+                        <img alt="{{ app.applicant.last_name }}{{ app.applicant.first_name }}님의 Google 계정 프로필 사진"
+                            height="28" class="rounded-circle me-2"
+                            src="{{ app.applicant.socialaccount_set.all.0.get_avatar_url }}" />
+                        <p class="m-0">{{ app.applicant.last_name }}{{ app.applicant.first_name }}
+                            <small>
+                                {% if app.pf == "미결정" %}
+                                ( 🟨 미결정 )
+                                {% elif app.pf == "선발" %}
+                                ( 🔵 선발 )
+                                {% elif app.pf == "미선발" %}
+                                ( 🔺 미선발 )
+                                {% endif %}
+                            </small>
+                        </p>
+                    </button>
+                </h2>
+                <div id="collapse_{{ app.applicant }}" class="accordion-collapse bg-black025 collapse"
+                    aria-labelledby="heading_{{ app.applicant }}" data-bs-parent="#appAccordion">
+                    <div class="accordion-body" style="padding-bottom: 1.25rem;">
+                        <div class="row row-cols-1 g-3">
+                            <div class="col">
+                                <div class="row row-cols-1 row-cols-md-2 g-3">
+                                    <div class="col">
+                                        {% if not noti.sent %}
+                                        <form
+                                            action="{% url 'applynsubmit:applymembership' %}?wanted_id={{ wanted_id }}"
+                                            method="POST" enctype="multipart/form-data">
+                                            {% csrf_token %}
+                                            <input type="hidden" name="wantedIdPost" value="{{ wanted_id }}" readonly
+                                                hidden>
+                                            <label for="pf_{{ app.applicant }}" class="form-label">선발 여부</label>
+                                            <select class="form-select" id="pf_{{ app.applicant }}"
+                                                aria-label="{{ app.applicant.last_name }}{{ app.applicant.first_name }}님의 선발 여부 선택"
+                                                onchange="pfOnchange(this);">
+                                                <option value="{{ app.pf }}" selected hidden>
+                                                    {% if app.pf == "미결정" %}
+                                                    🟨 미결정
+                                                    {% elif app.pf == "선발" %}
+                                                    🔵 선발
+                                                    {% elif app.pf == "미선발" %}
+                                                    🔺 미선발
+                                                    {% endif %}
+                                                </option>
+                                                <option disabled>선발 여부를 선택하세요.</option>
+                                                <option value="{{ app.applicant.id }}#미결정">🟨 미결정</option>
+                                                <option value="{{ app.applicant.id }}#선발">🔵 선발</option>
+                                                <option value="{{ app.applicant.id }}#미선발">🔺 미선발</option>
+                                            </select>
+                                        </form>
+                                        {% elif noti.sent %}
+                                        <label for="pf_{{ app.applicant }}" class="form-label">선발 여부</label>
+                                        <input type="text" class="form-control" id="pf_{{ app.applicant }}"
+                                            aria-label="{{ app.applicant.last_name }}{{ app.applicant.first_name }}님의 선발 여부"
+                                            value="{% if app.pf == '미결정' %}🟨 미결정{% elif app.pf == '선발' %}🔵 선발{% elif app.pf == '미선발' %}🔺 미선발{% endif %}"
+                                            readonly>
+                                        {% endif %}
+                                    </div>
+                                    <div class="col">
+                                        <label for="updated_at_{{ app.applicant }}" class="form-label">접수일시</label>
+                                        <input type="text" class="form-control" id="updated_at_{{ app.applicant }}"
+                                            aria-label="{{ app.applicant.last_name }}{{ app.applicant.first_name }}님의 접수일시"
+                                            value="{{ app.received_at|date:'Y-m-d H:i:s' }}" readonly>
+                                    </div>
+                                    <div class="col">
+                                        <label for="phone_{{ app.applicant }}" class="form-label">휴대전화 번호</label>
+                                        <div class="input-group">
+                                            <input type="text" class="form-control" id="phone_{{ app.applicant }}"
+                                                aria-label="{{ app.applicant.last_name }}{{ app.applicant.first_name }}님의 휴대전화 번호"
+                                                value="{{ app.applicant.profile.phone }}" readonly>
+                                            <button class="btn btn-outline-secondary"
+                                                onclick="this.previousElementSibling.select(); this.previousElementSibling.setSelectionRange(0, 99999); document.execCommand('copy'); firstElementChild.setAttribute('class', 'bi bi-clipboard-check me-2'); setTimeout(function() {firstElementChild.setAttribute('class', 'bi bi-clipboard me-2')}, 10000);"
+                                                aria-label="{{ app.applicant.last_name }}{{ app.applicant.first_name }}님의 휴대전화 번호 복사">
+                                                <i class="bi bi-clipboard me-2"></i>복사</button>
+                                        </div>
+                                    </div>
+                                    <div class="col">
+                                        <label for="email_{{ app.applicant }}" class="form-label">이메일 주소</label>
+                                        <div class="input-group">
+                                            <input type="text" class="form-control" id="email_{{ app.applicant }}"
+                                                aria-label="{{ app.applicant.last_name }}{{ app.applicant.first_name }}님의 이메일 주소"
+                                                value="{{ app.applicant.email }}" readonly>
+                                            <button class="btn btn-outline-secondary"
+                                                onclick="this.previousElementSibling.select(); this.previousElementSibling.setSelectionRange(0, 99999); document.execCommand('copy'); firstElementChild.setAttribute('class', 'bi bi-clipboard-check me-2'); setTimeout(function() {firstElementChild.setAttribute('class', 'bi bi-clipboard me-2')}, 10000);"
+                                                aria-label="{{ app.applicant.last_name }}{{ app.applicant.first_name }}님의 이메일 주소 복사">
+                                                <i class="bi bi-clipboard me-2"></i>복사</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col">
+                                <div class="d-flex justify-content-between">
+                                    <label for="appSelfIntro_{{ app.applicant }}" class="form-label">자기소개</label>
+                                    <span
+                                        aria-label="{{ app.applicant.last_name }}{{ app.applicant.first_name }}님의 자기소개 글자 수">
+                                        ({{ app.self_intro_len }}/500)</span>
+                                </div>
+                                <textarea class="form-control" id="appSelfIntro_{{ app.applicant }}"
+                                    aria-label="{{ app.applicant.last_name }}{{ app.applicant.first_name }}님의 자기소개"
+                                    rows="5" readonly>{{ app.self_intro }}</textarea>
+                            </div>
+                            <div class="col">
+                                <div class="d-flex justify-content-between">
+                                    <label for="appReason_{{ app.applicant }}" class="form-label">지원동기</label>
+                                    <span
+                                        aria-label="{{ app.applicant.last_name }}{{ app.applicant.first_name }}님의 지원동기 글자 수">
+                                        ({{ app.reason_len }}/500)</span>
+                                </div>
+                                <textarea class="form-control" id="appReason_{{ app.applicant }}"
+                                    aria-label="{{ app.applicant.last_name }}{{ app.applicant.first_name }}님의 지원동기"
+                                    rows="5" readonly>{{ app.reason }}</textarea>
+                            </div>
+                            <div class="col">
+                                <div class="d-flex justify-content-between">
+                                    <label for="appPlan_{{ app.applicant }}" class="form-label">활동계획</label>
+                                    <span
+                                        aria-label="{{ app.applicant.last_name }}{{ app.applicant.first_name }}님의 활동계획 글자 수">
+                                        ({{ app.plan_len }}/500)</span>
+                                </div>
+                                <textarea class="form-control" id="appPlan_{{ app.applicant }}"
+                                    aria-label="{{ app.applicant.last_name }}{{ app.applicant.first_name }}님의 활동계획"
+                                    rows="5" readonly>{{ app.plan }}</textarea>
+                            </div>
+                            <div class="col">
+                                {% if app.tracking == "블루무버 추천" %}
+                                <div class="row row-cols-1 row-cols-md-2 g-3">
+                                    <div class="col">
+                                        <label for="appTracking_{{ app.applicant }}" class="form-label">처음 알게 된
+                                            경로</label>
+                                        <input type="text" class="form-control" id="appTracking_{{ app.applicant }}"
+                                            aria-label="{{ app.applicant.last_name }}{{ app.applicant.first_name }}님이 이번 리크루팅을 처음 알게 된 경로"
+                                            value="{{ app.tracking }}" readonly>
+                                    </div>
+                                    <div class="col">
+                                        <label for="appTrackingReference_{{ app.applicant }}" class="form-label">해당 블루무버
+                                            성명</label>
+                                        <input type="text" class="form-control"
+                                            id="appTrackingReference_{{ app.applicant }}"
+                                            aria-label="{{ app.applicant.last_name }}{{ app.applicant.first_name }}님에게 가입 지원을 추천한 블루무버 성명"
+                                            value="{{ app.tracking_reference }}" readonly>
+                                    </div>
+                                </div>
+                                {% elif app.tracking == "기타 경로" %}
+                                <div class="row row-cols-1 row-cols-md-2 g-3">
+                                    <div class="col">
+                                        <label for="appTracking_{{ app.applicant }}" class="form-label">처음 알게 된
+                                            경로</label>
+                                        <input type="text" class="form-control" id="appTracking_{{ app.applicant }}"
+                                            aria-label="{{ app.applicant.last_name }}{{ app.applicant.first_name }}님이 이번 리크루팅을 처음 알게 된 경로"
+                                            value="{{ app.tracking }}" readonly>
+                                    </div>
+                                    <div class="col">
+                                        <label for="appTrackingEtc_{{ app.applicant }}" class="form-label">기타 경로</label>
+                                        <input type="text" class="form-control" id="appTrackingEtc_{{ app.applicant }}"
+                                            aria-label="{{ app.applicant.last_name }}{{ app.applicant.first_name }}님이 이번 리크루팅을 처음 알게 된 기타 경로"
+                                            value="{{ app.tracking_etc }}" readonly>
+                                    </div>
+                                </div>
+                                {% else %}
+                                <label for="appTracking_{{ app.applicant }}" class="form-label">처음 알게 된 경로</label>
+                                <input type="text" class="form-control" id="appTracking_{{ app.applicant }}"
+                                    aria-label="{{ app.applicant.last_name }}{{ app.applicant.first_name }}님이 이번 리크루팅을 처음 알게 된 경로"
+                                    value="{{ app.tracking }}" readonly>
+                                {% endif %}
+                            </div>
+                            <div class="col">
+                                <label for="appPortfolio_{{ app.applicant }}" class="form-label">(선택) 참고 자료 URL</label>
+                                {% if app.portfolio == "" or app.portfolio == None %}
+                                <input type="text" class="form-control" id="appPortfolio_{{ app.applicant }}"
+                                    aria-label="{{ app.applicant.last_name }}{{ app.applicant.first_name }}님의 참고 자료 URL"
+                                    value="참고 자료 URL이 제공되지 않았습니다." readonly>
+                                {% else %}
+                                <div class="input-group">
+                                    <input type="text" class="form-control" id="appPortfolio_{{ app.applicant }}"
+                                        aria-label="{{ app.applicant.last_name }}{{ app.applicant.first_name }}님의 참고 자료 URL"
+                                        value="{{ app.portfolio }}" readonly>
+                                    <a href="{{ app.portfolio }}" target="_blank" class="btn btn-outline-secondary"
+                                        aria-label="{{ app.applicant.last_name }}{{ app.applicant.first_name }}님의 참고 자료 열기">
+                                        <i class="bi bi-window me-2"></i>열기</a>
+                                </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% elif apps_received.count == 0 %}
+<!-- when applications received do not exist (default) -->
+<div class="card" style="border-style: dashed; border-color: rgba(0,0,0,.25)">
+    <div class="card-body">
+        <h5 class="card-title pb-1">
+            접수된 지원서 확인
+        </h5>
+        <div class="text-center my-4">
+            <h2 style="color: rgba(0,0,0,.25); font-weight: bolder;"><i class="bi bi-tornado me-2"></i>휑...
+            </h2>
+            <p class="text-muted m-0">접수된 지원서가 없어요.</p>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+<!--
+---- inner script for content 05-B (Bluemover)
+-->
+<script type="text/javascript">
+    // appPf
+    function pfOnchange(obj) {
+        const tt = document.createElement("textarea");
+        obj.parentElement.appendChild(tt);
+        tt.hidden = true;
+        tt.name = "appPf";
+        tt.value = obj.value;
+        obj.parentElement.submit();
+        // call 'spinner (transition)' function
+        fadeOut();
+        // call 'avoiding duplicate requests (btn disabled)' function
+        setTimeout(inProgress, 0);
+    }
+</script>
+
+{% else %}
+<!--
+---- inner content 05-C (unknown)
+-->
+<div class="card" style="border-style: dashed; border-color: rgba(0,0,0,.25)">
+    <div class="card-body">
+        <h5 class="card-title pb-1">
+            지원서 작성 및 관리
+        </h5>
+        <div class="text-center my-4">
+            <h2 style="color: rgba(0,0,0,.25); font-weight: bolder;"><i class="bi bi-shield-lock me-2"></i>로그인 필요
+            </h2>
+            <p class="text-muted m-0"><a href="{% url 'account_login' %}?next={{ request.get_full_path }}"
+                    class="a-dark-bluemove stretched-link">여기를 눌러 로그인하세요.</a></p>
+        </div>
+    </div>
+</div>
+{% endif %}
+{% endif %}
+{% endfor %}
+
+{% for wanted_row in wanted_list %}
+{% if "마감" in wanted_row.status and apps_received.count > 0 and apps_received.count == apps_decided.count %}
+<!--
+---- inner content 06 (notification)
+-->
+<div id="noti" style="height: 24px;"></div>
+{% if not noti.sent %}
+<!-- when the notification has not been sent -->
+<div class="card shadow-hover">
+    <div class="card-body" style="background-color: rgba(0,0,0,.025);">
+        {% if noti %}
+        <div class="screenLarge">
+            <div class="d-flex justify-content-between">
+                <h5 class="card-title pb-1">
+                    선발 여부 통보
+                </h5>
+                <small style="margin-top: .25rem;">
+                    <i class="bi bi-clock me-1"></i>
+                    {{ noti.saved_by.last_name }}{{ noti.saved_by.first_name }}님
+                    {{ noti.updated_at|date:"Y-m-d H:i" }} 저장
+                </small>
+            </div>
+        </div>
+        <div class="screenSmall">
+            <h5 class="card-title pb-1">
+                선발 여부 통보
+            </h5>
+            <small class="d-flex justify-content-center border border-secondary rounded-1 mb-3"
+                style="border-color: rgba(0,0,0,.3) !important;">
+                <i class="bi bi-clock me-1"></i>
+                {{ noti.saved_by.last_name }}{{ noti.saved_by.first_name }}님
+                {{ noti.updated_at|date:"Y-m-d H:i" }} 저장
+            </small>
+        </div>
+        {% elif not noti %}
+        <h5 class="card-title pb-1">선발 여부 통보</h5>
+        {% endif %}
+        <!-- alert -->
+        {% if noti_saved %}
+        <div class="alert alert-primary alert-dismissible fade show d-flex align-items-center" role="alert">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor"
+                class="bi bi-file-earmark-text flex-shrink-0 me-2" viewBox="0 0 16 16">
+                <path
+                    d="M5.5 7a.5.5 0 0 0 0 1h5a.5.5 0 0 0 0-1h-5zM5 9.5a.5.5 0 0 1 .5-.5h5a.5.5 0 0 1 0 1h-5a.5.5 0 0 1-.5-.5zm0 2a.5.5 0 0 1 .5-.5h2a.5.5 0 0 1 0 1h-2a.5.5 0 0 1-.5-.5z" />
+                <path
+                    d="M9.5 0H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V4.5L9.5 0zm0 1v2A1.5 1.5 0 0 0 11 4.5h2V14a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1h5.5z" />
+            </svg>
+            <div class="vertical" style="word-break: break-word;">
+                저장되었습니다! <span id="emoji"></span>
+            </div>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="안내창 닫기"></button>
+        </div>
+        {% endif %}
+        {% if apps_passed.count > 0 %}
+        <div class="alert alert-primary d-flex align-items-center" role="alert">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor"
+                class="bi bi-menu-button flex-shrink-0 me-2" viewBox="0 0 16 16">
+                <path
+                    d="M0 1.5A1.5 1.5 0 0 1 1.5 0h8A1.5 1.5 0 0 1 11 1.5v2A1.5 1.5 0 0 1 9.5 5h-8A1.5 1.5 0 0 1 0 3.5v-2zM1.5 1a.5.5 0 0 0-.5.5v2a.5.5 0 0 0 .5.5h8a.5.5 0 0 0 .5-.5v-2a.5.5 0 0 0-.5-.5h-8z" />
+                <path
+                    d="m7.823 2.823-.396-.396A.25.25 0 0 1 7.604 2h.792a.25.25 0 0 1 .177.427l-.396.396a.25.25 0 0 1-.354 0zM0 8a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V8zm1 3v2a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2H1zm14-1V8a1 1 0 0 0-1-1H2a1 1 0 0 0-1 1v2h14zM2 8.5a.5.5 0 0 1 .5-.5h9a.5.5 0 0 1 0 1h-9a.5.5 0 0 1-.5-.5zm0 4a.5.5 0 0 1 .5-.5h6a.5.5 0 0 1 0 1h-6a.5.5 0 0 1-.5-.5z" />
+            </svg>
+            <div class="vertical" style="word-break: break-word;">
+                <strong>🔵 선발</strong> 통보 메일 하단에는 가입 확정 버튼이 표시됩니다.
+            </div>
+        </div>
+        {% endif %}
+        <div class="alert alert-secondary d-flex align-items-center" role="alert">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor"
+                class="bi bi-shield-exclamation flex-shrink-0 me-2" viewBox="0 0 16 16">
+                <path
+                    d="M5.338 1.59a61.44 61.44 0 0 0-2.837.856.481.481 0 0 0-.328.39c-.554 4.157.726 7.19 2.253 9.188a10.725 10.725 0 0 0 2.287 2.233c.346.244.652.42.893.533.12.057.218.095.293.118a.55.55 0 0 0 .101.025.615.615 0 0 0 .1-.025c.076-.023.174-.061.294-.118.24-.113.547-.29.893-.533a10.726 10.726 0 0 0 2.287-2.233c1.527-1.997 2.807-5.031 2.253-9.188a.48.48 0 0 0-.328-.39c-.651-.213-1.75-.56-2.837-.855C9.552 1.29 8.531 1.067 8 1.067c-.53 0-1.552.223-2.662.524zM5.072.56C6.157.265 7.31 0 8 0s1.843.265 2.928.56c1.11.3 2.229.655 2.887.87a1.54 1.54 0 0 1 1.044 1.262c.596 4.477-.787 7.795-2.465 9.99a11.775 11.775 0 0 1-2.517 2.453 7.159 7.159 0 0 1-1.048.625c-.28.132-.581.24-.829.24s-.548-.108-.829-.24a7.158 7.158 0 0 1-1.048-.625 11.777 11.777 0 0 1-2.517-2.453C1.928 10.487.545 7.169 1.141 2.692A1.54 1.54 0 0 1 2.185 1.43 62.456 62.456 0 0 1 5.072.56z" />
+                <path
+                    d="M7.001 11a1 1 0 1 1 2 0 1 1 0 0 1-2 0zM7.1 4.995a.905.905 0 1 1 1.8 0l-.35 3.507a.553.553 0 0 1-1.1 0L7.1 4.995z" />
+            </svg>
+            <div class="vertical" style="word-break: break-word;">
+                성명, 이메일 주소 등 지원자를 식별할 수 있는 정보는 입력하지 마세요.
+            </div>
+        </div>
+        <!-- form -->
+        <form action="{% url 'applynsubmit:applymembership' %}?wanted_id={{ wanted_id }}" method="POST"
+            enctype="multipart/form-data" onsubmit="fadeOut(); setTimeout(inProgress, 0);" id="formNoti">
+            {% csrf_token %}
+            <input type="hidden" name="wantedIdPost" value="{{ wanted_id }}" readonly hidden>
+            <input type="hidden" id="cmdPost" name="cmdPost" value="noti_save" readonly hidden>
+            <div class="row row-cols-1 g-3">
+                <div class="col">
+                    <label for="notiTitle" class="form-label">통보 메일 제목</label>
+                    <input type="text" class="form-control" id="notiTitle" name="notiTitle"
+                        placeholder="통보 메일 제목을 입력하세요." aria-label="통보 메일 제목 입력" value="{{ noti.title }}">
+                </div>
+                {% if apps_failed.count > 0 %}
+                <div class="col">
+                    <label for="notiFailedContent" class="form-label"><strong>🔺 미선발</strong> 통보 메일 내용</label>
+                    <textarea class="form-control" id="notiFailedContent" name="notiFailedContent"
+                        placeholder="미선발 통보 메일 내용을 입력하세요." aria-label="미선발 통보 메일 내용 입력"
+                        rows="5">{{ noti.failed_content }}</textarea>
+                </div>
+                {% endif %}
+                {% if apps_passed.count > 0 %}
+                <div class="col">
+                    <label for="notiPassedContent" class="form-label"><strong>🔵 선발</strong> 통보 메일 내용</label>
+                    <textarea class="form-control" id="notiPassedContent" name="notiPassedContent"
+                        placeholder="선발 통보 메일 내용을 입력하세요." aria-label="선발 통보 메일 내용 입력"
+                        rows="5">{{ noti.passed_content }}</textarea>
+                </div>
+                {% endif %}
+            </div>
+            <div class="row g-3" style="padding-top: 1.25rem !important;">
+                <div class="col-md-6 col-lg-8">
+                    <div class="d-grid">
+                        <button type="submit" class="btn btn-outline-secondary" aria-label="메일 저장">
+                            <i class="bi bi-archive me-2"></i>메일 저장</button>
+                    </div>
+                </div>
+                <div class="col-md-3 col-lg-2">
+                    <div class="d-grid">
+                        <button type="button" class="btn btn-outline-secondary" aria-label="메일 발송"
+                            onclick="notiSubmit();">
+                            <i class="bi bi-envelope me-2"></i>메일 발송</button>
+                    </div>
+                </div>
+                <div class="col-md-3 col-lg-2">
+                    <div class="d-grid">
+                        <button type="button" class="btn btn-outline-danger" aria-label="메일 삭제" onclick="notiDelete();">
+                            <i class="bi bi-trash me-2"></i>메일 삭제</button>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+{% elif noti.sent %}
+<!-- when the notification has been sent -->
+<div class="card shadow-hover">
+    <div class="card-body" style="background-color: rgba(0,0,0,.025);">
+        <div class="screenLarge">
+            <div class="d-flex justify-content-between">
+                <h5 class="card-title pb-1">
+                    선발 여부 통보
+                </h5>
+                <small style="margin-top: .25rem;">
+                    <i class="bi bi-clock me-1"></i>
+                    {{ noti.saved_by.last_name }}{{ noti.saved_by.first_name }}님
+                    {{ noti.updated_at|date:"Y-m-d H:i" }} 발송
+                </small>
+            </div>
+        </div>
+        <div class="screenSmall">
+            <h5 class="card-title pb-1">
+                선발 여부 통보
+            </h5>
+            <small class="d-flex justify-content-center border border-secondary rounded-1 mb-3"
+                style="border-color: rgba(0,0,0,.3) !important;">
+                <i class="bi bi-clock me-1"></i>
+                {{ noti.saved_by.last_name }}{{ noti.saved_by.first_name }}님
+                {{ noti.updated_at|date:"Y-m-d H:i" }} 발송
+            </small>
+        </div>
+        <!-- alert -->
+        <div class="alert alert-primary d-flex align-items-center" role="alert">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor"
+                class="bi bi-shield-shaded flex-shrink-0 me-2" viewBox="0 0 16 16">
+                <path fill-rule="evenodd"
+                    d="M8 14.933a.615.615 0 0 0 .1-.025c.076-.023.174-.061.294-.118.24-.113.547-.29.893-.533a10.726 10.726 0 0 0 2.287-2.233c1.527-1.997 2.807-5.031 2.253-9.188a.48.48 0 0 0-.328-.39c-.651-.213-1.75-.56-2.837-.855C9.552 1.29 8.531 1.067 8 1.067v13.866zM5.072.56C6.157.265 7.31 0 8 0s1.843.265 2.928.56c1.11.3 2.229.655 2.887.87a1.54 1.54 0 0 1 1.044 1.262c.596 4.477-.787 7.795-2.465 9.99a11.775 11.775 0 0 1-2.517 2.453 7.159 7.159 0 0 1-1.048.625c-.28.132-.581.24-.829.24s-.548-.108-.829-.24a7.158 7.158 0 0 1-1.048-.625 11.777 11.777 0 0 1-2.517-2.453C1.928 10.487.545 7.169 1.141 2.692A1.54 1.54 0 0 1 2.185 1.43 62.456 62.456 0 0 1 5.072.56z" />
+            </svg>
+            <div class="vertical" style="word-break: break-word;">
+                선발 절차가 완료되었습니다. 약 72시간 후 지원자 개인정보를 포함한 모든 리크루팅 데이터가 파기됩니다.
+            </div>
+        </div>
+        <!-- form -->
+        <div class="row row-cols-1 g-3">
+            <div class="col">
+                <label for="notiTitle" class="form-label">통보 메일 제목</label>
+                <input type="text" class="form-control" aria-label="통보 메일 제목" value="{{ noti.title }}" readonly>
+            </div>
+            {% if apps_failed.count > 0 %}
+            <div class="col">
+                <label for="notiFailedContent" class="form-label"><strong>🔺 미선발</strong> 통보 메일 내용</label>
+                <textarea class="form-control" aria-label="미선발 통보 메일 내용" rows="5"
+                    readonly>{{ noti.failed_content }}</textarea>
+            </div>
+            {% endif %}
+            {% if apps_passed.count > 0 %}
+            <div class="col">
+                <label for="notiPassedContent" class="form-label"><strong>🔵 선발</strong> 통보 메일 내용</label>
+                <textarea class="form-control" aria-label="선발 통보 메일 내용" rows="5"
+                    readonly>{{ noti.passed_content }}</textarea>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endif %}
+{% elif "마감" in wanted_row.status and apps_received.count > 0 and apps_received.count > apps_decided.count %}
+<div class="card mt-4" style="border-style: dashed; border-color: rgba(0,0,0,.25)">
+    <div class="card-body">
+        <h5 class="card-title pb-1">
+            선발 여부 통보
+        </h5>
+        <div class="text-center my-4">
+            <h2 style="color: rgba(0,0,0,.25); font-weight: bolder;"><i class="bi bi-hand-index-thumb me-2"></i>위쪽 먼저!
+            </h2>
+            <p class="text-muted m-0">먼저 모든 지원자의 선발 여부를 결정해주세요.</p>
+        </div>
+    </div>
+</div>
+{% elif "접수 중" in wanted_row.status and apps_received.count > 0 %}
+<div class="card mt-4" style="border-style: dashed; border-color: rgba(0,0,0,.25)">
+    <div class="card-body">
+        <h5 class="card-title pb-1">
+            선발 여부 통보
+        </h5>
+        <div class="text-center my-4">
+            <h2 style="color: rgba(0,0,0,.25); font-weight: bolder;"><i class="bi bi-hourglass-split me-2"></i>접수 중
+            </h2>
+            <p class="text-muted m-0">먼저 접수가 마감될 때까지 기다려주세요.</p>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+<!--
+---- inner script for content 06 (notification)
+-->
+<script type="text/javascript">
+    var formNoti = document.querySelector("#formNoti");
+    var notiTitle = document.querySelector("#notiTitle");
+    var notiFailedContent = document.querySelector("#notiFailedContent");
+    var notiPassedContent = document.querySelector("#notiPassedContent");
+    // submit a notification
+    function notiSubmit() {
+        if (notiTitle.value == "") {
+            alert("통보 메일 제목을 입력해주세요.");
+            return false;
+        }
+        if (notiFailedContent) {
+            if (notiFailedContent.value == "") {
+                alert("🔺 미선발 통보 메일 내용을 입력해주세요.");
+                return false;
+            }
+        }
+        if (notiPassedContent) {
+            if (notiPassedContent.value == "") {
+                alert("🔵 선발 통보 메일 내용을 입력해주세요.");
+                return false;
+            }
+        }
+        if (confirm("아래 내용을 최종 확인해주세요.\n✔️ 미선발과 선발을 혼동하지 않고 잘 작성하셨나요?\n✔️ 혹시 지원자 개인정보를 입력하진 않으셨나요?\n\n정말 통보 메일을 발송하시겠어요?")) {
+            cmdPost.value = "noti_send";
+            formNoti.submit();
+            // call 'spinner (transition)' function
+            fadeOut();
+            // call 'avoiding duplicate requests (btn disabled)' function
+            setTimeout(inProgress, 0);
+        } else {
+            return false;
+        }
+    }
+    // delete a notification
+    function notiDelete() {
+        if (confirm("정말 통보 메일을 삭제하시겠어요?")) {
+            cmdPost.value = "noti_delete";
+            formNoti.submit();
+            // call 'spinner (transition)' function
+            fadeOut();
+            // call 'avoiding duplicate requests (btn disabled)' function
+            setTimeout(inProgress, 0);
+        } else {
+            return false;
+        }
+    }
+</script>
+{% endfor %}
+
+<!--
+---- inner script for template 02
+-->
+{% if app_saved or app_submitted or noti_saved %}
+<!-- boolean APP_SAVED or APP_SUBMITTED -->
+<script type="text/javascript">
+    var emoji = new Array("😀", "😁", "😃", "😄", "😉", "😊", "😎", "🙂", "🤗", "🤩", "👍", "👏", "🙌", "🙆‍♀️", "🙆‍♂️", "🙆");
+    function randomItem(e) {
+        return e[Math.floor(Math.random() * e.length)];
+    }
+    document.querySelector("#emoji").innerText = randomItem(emoji);
+</script>
+{% endif %}
+{% if scroll_to_app %}
+<!-- boolean SCROLL_TO_APP -->
+<script type="text/javascript">
+    scrollToApp();
+</script>
+{% endif %}
+{% if scroll_to_join %}
+<!-- boolean SCROLL_TO_NOTI -->
+<script type="text/javascript">
+    document.getElementById("join").scrollIntoView({ behavior: "smooth", block: "start", inline: "start" });
+</script>
+{% endif %}
+{% if scroll_to_noti %}
+<!-- boolean SCROLL_TO_NOTI -->
+<script type="text/javascript">
+    document.getElementById("noti").scrollIntoView({ behavior: "smooth", block: "start", inline: "start" });
+</script>
+{% endif %}
+{% endif %}
+{% endblock %}
