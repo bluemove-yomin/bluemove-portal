@@ -26,35 +26,35 @@
             <ul class="dropdown-menu text-small shadow" aria-labelledby="menuApplynsubmitLarge">
                 <li><a class="dropdown-item fade-onclick" href="{% url 'applynsubmit:applymembership' %}">블루무브 가입 지원</a>
                 </li>
-                <li><a class="dropdown-item fade-onclick" href="#">블루무브 탈퇴 신청</a></li>
-                <li><a class="dropdown-item fade-onclick" href="#">총회의결권위임장 제출</a></li>
-                <li><a class="dropdown-item fade-onclick" href="#">임시총회소집요구서 제출</a></li>
-                <li><a class="dropdown-item fade-onclick" href="#">임시이사회소집요구서 제출</a></li>
-                <li><a class="dropdown-item fade-onclick" href="#">임원입후보신청서 제출</a></li>
+                <li><a class="dropdown-item" href="#">블루무브 탈퇴 신청</a></li>
+                <li><a class="dropdown-item" href="#">총회의결권위임장 제출</a></li>
+                <li><a class="dropdown-item" href="#">임시총회소집요구서 제출</a></li>
+                <li><a class="dropdown-item" href="#">임시이사회소집요구서 제출</a></li>
+                <li><a class="dropdown-item" href="#">임원입후보신청서 제출</a></li>
             </ul>
             <a href="#" id="menu03Large" class="a-nav-item p-nav-item" data-bs-toggle="dropdown"
                 aria-expanded="false"><i class="bi bi-briefcase me-2"></i>기안/결재</a>
             <ul class="dropdown-menu text-small shadow" aria-labelledby="menu03Large">
-                <li><a class="dropdown-item fade-onclick" href="#">일일활동보고서</a></li>
-                <li><a class="dropdown-item fade-onclick" href="#">공문</a></li>
-                <li><a class="dropdown-item fade-onclick" href="#">지출품의서</a></li>
-                <li><a class="dropdown-item fade-onclick" href="#">지출결의서</a></li>
-                <li><a class="dropdown-item fade-onclick" href="#">사업계획서</a></li>
-                <li><a class="dropdown-item fade-onclick" href="#">사업보고서</a></li>
-                <li><a class="dropdown-item fade-onclick" href="#">수지예산서</a></li>
-                <li><a class="dropdown-item fade-onclick" href="#">수지결산서</a></li>
+                <li><a class="dropdown-item" href="#">일일활동보고서</a></li>
+                <li><a class="dropdown-item" href="#">공문</a></li>
+                <li><a class="dropdown-item" href="#">지출품의서</a></li>
+                <li><a class="dropdown-item" href="#">지출결의서</a></li>
+                <li><a class="dropdown-item" href="#">사업계획서</a></li>
+                <li><a class="dropdown-item" href="#">사업보고서</a></li>
+                <li><a class="dropdown-item" href="#">수지예산서</a></li>
+                <li><a class="dropdown-item" href="#">수지결산서</a></li>
             </ul>
             <a href="#" id="menu04Large" class="a-nav-item p-nav-item" data-bs-toggle="dropdown"
                 aria-expanded="false"><i class="bi bi-calendar4-event me-2"></i>의결/공유</a>
             <ul class="dropdown-menu text-small shadow" aria-labelledby="menu04Large">
-                <li><a class="dropdown-item fade-onclick" href="#">회의 소집</a></li>
-                <li><a class="dropdown-item fade-onclick" href="#">회의 출석</a></li>
-                <li><a class="dropdown-item fade-onclick" href="#">정기이사회의사록</a></li>
-                <li><a class="dropdown-item fade-onclick" href="#">임시이사회의사록</a></li>
-                <li><a class="dropdown-item fade-onclick" href="#">정기총회의사록</a></li>
-                <li><a class="dropdown-item fade-onclick" href="#">임시총회의사록</a></li>
-                <li><a class="dropdown-item fade-onclick" href="#">데이터 외부 공유</a></li>
-                <li><a class="dropdown-item fade-onclick" href="#">블뭅 링크 관리</a></li>
+                <li><a class="dropdown-item" href="#">회의 소집</a></li>
+                <li><a class="dropdown-item" href="#">회의 출석</a></li>
+                <li><a class="dropdown-item" href="#">정기이사회의사록</a></li>
+                <li><a class="dropdown-item" href="#">임시이사회의사록</a></li>
+                <li><a class="dropdown-item" href="#">정기총회의사록</a></li>
+                <li><a class="dropdown-item" href="#">임시총회의사록</a></li>
+                <li><a class="dropdown-item" href="#">데이터 외부 공유</a></li>
+                <li><a class="dropdown-item" href="#">블뭅 링크 관리</a></li>
             </ul>
         </div>
         <!-- account -->
@@ -75,7 +75,7 @@
                 {% endfor %}
             </a>
             <ul class="dropdown-menu dropdown-menu-end text-small shadow" aria-labelledby="dropdownUserLarge">
-                <li><a class="dropdown-item fade-onclick" href="#">내 계정</a></li>
+                <li><a class="dropdown-item fade-onclick" href="{% url 'member:myaccount' %}">내 계정</a></li>
                 <li>
                     <form method="POST" action="{% url 'account_logout' %}?next={{ request.get_full_path }}">
                         {% csrf_token %}
@@ -157,18 +157,18 @@
                                     <ul class="list-group list-group-flush">
                                         <li><a class="list-group-item nav-small-item no-border fade-onclick"
                                                 href="{% url 'applynsubmit:applymembership' %}">블루무브 가입 지원</a></li>
-                                        <li><a class="list-group-item nav-small-item no-border fade-onclick" href="#">
+                                        <li><a class="list-group-item nav-small-item no-border" href="#">
                                                 블루무브 탈퇴 신청</a></li>
-                                        <li><a class="list-group-item nav-small-item no-border fade-onclick"
+                                        <li><a class="list-group-item nav-small-item no-border"
                                                 href="#">총회의결권위임장 제출</a>
                                         </li>
-                                        <li><a class="list-group-item nav-small-item no-border fade-onclick"
+                                        <li><a class="list-group-item nav-small-item no-border"
                                                 href="#">임시총회소집요구서 제출</a>
                                         </li>
-                                        <li><a class="list-group-item nav-small-item no-border fade-onclick"
+                                        <li><a class="list-group-item nav-small-item no-border"
                                                 href="#">임시이사회소집요구서 제출</a>
                                         </li>
-                                        <li><a class="list-group-item nav-small-item no-border fade-onclick"
+                                        <li><a class="list-group-item nav-small-item no-border"
                                                 href="#">임원입후보신청서 제출</a>
                                         </li>
                                     </ul>
@@ -187,21 +187,21 @@
                                 aria-labelledby="flush-heading03" data-bs-parent="#menuSmallAccordion">
                                 <div class="accordion-body accordion-body-0">
                                     <ul class="list-group list-group-flush">
-                                        <li><a class="list-group-item nav-small-item no-border fade-onclick"
+                                        <li><a class="list-group-item nav-small-item no-border"
                                                 href="#">일일활동보고서</a></li>
-                                        <li><a class="list-group-item nav-small-item no-border fade-onclick"
+                                        <li><a class="list-group-item nav-small-item no-border"
                                                 href="#">공문</a></li>
-                                        <li><a class="list-group-item nav-small-item no-border fade-onclick"
+                                        <li><a class="list-group-item nav-small-item no-border"
                                                 href="#">지출품의서</a></li>
-                                        <li><a class="list-group-item nav-small-item no-border fade-onclick"
+                                        <li><a class="list-group-item nav-small-item no-border"
                                                 href="#">지출결의서</a></li>
-                                        <li><a class="list-group-item nav-small-item no-border fade-onclick"
+                                        <li><a class="list-group-item nav-small-item no-border"
                                                 href="#">사업계획서</a></li>
-                                        <li><a class="list-group-item nav-small-item no-border fade-onclick"
+                                        <li><a class="list-group-item nav-small-item no-border"
                                                 href="#">사업보고서</a></li>
-                                        <li><a class="list-group-item nav-small-item no-border fade-onclick"
+                                        <li><a class="list-group-item nav-small-item no-border"
                                                 href="#">수지예산서</a></li>
-                                        <li><a class="list-group-item nav-small-item no-border fade-onclick"
+                                        <li><a class="list-group-item nav-small-item no-border"
                                                 href="#">수지결산서</a></li>
                                     </ul>
                                 </div>
@@ -219,21 +219,21 @@
                                 aria-labelledby="flush-heading04" data-bs-parent="#menuSmallAccordion">
                                 <div class="accordion-body accordion-body-0">
                                     <ul class="list-group list-group-flush">
-                                        <li><a class="list-group-item nav-small-item no-border fade-onclick" href="#">회의
+                                        <li><a class="list-group-item nav-small-item no-border" href="#">회의
                                                 소집</a></li>
-                                        <li><a class="list-group-item nav-small-item no-border fade-onclick" href="#">회의
+                                        <li><a class="list-group-item nav-small-item no-border" href="#">회의
                                                 출석</a></li>
-                                        <li><a class="list-group-item nav-small-item no-border fade-onclick"
+                                        <li><a class="list-group-item nav-small-item no-border"
                                                 href="#">정기이사회의사록</a></li>
-                                        <li><a class="list-group-item nav-small-item no-border fade-onclick"
+                                        <li><a class="list-group-item nav-small-item no-border"
                                                 href="#">임시이사회의사록</a></li>
-                                        <li><a class="list-group-item nav-small-item no-border fade-onclick"
+                                        <li><a class="list-group-item nav-small-item no-border"
                                                 href="#">정기총회의사록</a></li>
-                                        <li><a class="list-group-item nav-small-item no-border fade-onclick"
+                                        <li><a class="list-group-item nav-small-item no-border"
                                                 href="#">임시총회의사록</a></li>
-                                        <li><a class="list-group-item nav-small-item no-border fade-onclick"
+                                        <li><a class="list-group-item nav-small-item no-border"
                                                 href="#">데이터 외부 공유</a></li>
-                                        <li><a class="list-group-item nav-small-item no-border fade-onclick" href="#">블뭅
+                                        <li><a class="list-group-item nav-small-item no-border" href="#">블뭅
                                                 링크 관리</a></li>
                                     </ul>
                                 </div>
@@ -267,7 +267,7 @@
                     {% endfor %}
                 </a>
                 <ul class="dropdown-menu text-small shadow" aria-labelledby="dropdownUserSmall">
-                    <li><a class="dropdown-item fade-onclick" href="#">내 계정</a></li>
+                    <li><a class="dropdown-item fade-onclick" href="{% url 'member:myaccount' %}">내 계정</a></li>
                     <li>
                         <form method="POST" action="{% url 'account_logout' %}?next={{ request.get_full_path }}">
                             {% csrf_token %}

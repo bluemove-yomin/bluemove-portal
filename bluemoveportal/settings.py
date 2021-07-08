@@ -50,7 +50,7 @@ NOTION_TOKEN = get_secret("NOTION_TOKEN")
 SLACK_BOT_TOKEN = get_secret("SLACK_BOT_TOKEN")
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = ["*"]
 
@@ -71,6 +71,8 @@ INSTALLED_APPS = [
     "allauth.account",
     "allauth.socialaccount",
     "allauth.socialaccount.providers.google",
+    # django-crontab
+    "django_crontab",
     # Bluemove
     "home.apps.HomeConfig",
     "checknissue.apps.ChecknissueConfig",
@@ -162,7 +164,7 @@ STATICFILES_DIRS = [
     os.path.join(BASE_DIR, "bluemoveportal", "static"),
 ]
 
-STATIC_ROOT = os.path.join(BASE_DIR, "static")
+STATIC_ROOT = os.path.join(BASE_DIR, ".static")
 
 # Media files
 
@@ -171,6 +173,7 @@ MEDIA_URL = "/media/"
 MEDIA_ROOT = os.path.join(BASE_DIR, "bluemoveportal", "media")
 
 # django-allauth
+# https://django-allauth.readthedocs.io/
 
 AUTHENTICATION_BACKENDS = [
     "django.contrib.auth.backends.ModelBackend",
@@ -190,7 +193,7 @@ SESSION_EXPIRE_AT_BROWSER_CLOSE = True
 SESSION_SAVE_EVERY_REQUEST = True
 
 SOCIALACCOUNT_FORMS = {
-    'signup': 'member.forms.BluemoveSocialSignupForm',
+    "signup": "member.forms.BluemoveSocialSignupForm",
 }
 
 SOCIALACCOUNT_PROVIDERS = {
@@ -216,3 +219,19 @@ ACCOUNT_USERNAME_REQUIRED = False
 ACCOUNT_EMAIL_REQUIRED = True
 
 ACCOUNT_AUTHENTICATION_METHOD = "email"
+
+# django-crontab
+# https://github.com/kraiz/django-crontab
+
+CRONJOBS = [
+    (
+        "*/5 * * * *",
+        "applynsubmit.views.cron_delete_all_data",
+        ">> /applynsubmit/crontap.log",
+    ),
+]
+
+# django-crontab commands for Linux
+# python manage.py crontab add
+# python manage.py crontab show
+# python manage.py crontab remove

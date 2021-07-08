@@ -24,4 +24,5 @@ urlpatterns = [
     path('', include('home.urls')),
     path('checknissue/', include('checknissue.urls')),
     path('applynsubmit/', include('applynsubmit.urls')),
+    path('member/', include('member.urls')),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

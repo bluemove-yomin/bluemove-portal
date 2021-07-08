@@ -3,19 +3,12 @@
 {% load static socialaccount i18n %}
 
 {% block meta %}
-<meta name="robots" content="noindex,nofollow">
+<meta property="og:url" content="{% url 'account_login' %}">
+<meta property="og:title" content="블루무브 포털 - 개인정보 등록">
+<meta property="og:description" content="블루무브 포털 - 개인정보 등록">
 <meta name="description" content="블루무브 포털 - 개인정보 등록">
 <meta name="subject" content="블루무브 포털 - 개인정보 등록">
-<meta property="og:url" content="{% url 'account_login' %}">
-<meta property="og:type" content="website">
-<meta property="og:title" content="블루무브 포털 - 개인정보 등록">
-<meta property="og:image" content="https://docs.bluemove.or.kr/static/images/slide01.png">
-<meta property="og:image:alt" content="파란물결 블루무브 종합정보시스템 '블루무브 포털'">
-<meta property="og:image:width" content="900px">
-<meta property="og:image:height" content="450px">
-<meta property="og:description" content="블루무브 포털 - 개인정보 등록">
-<meta property="og:site_name" content="블루무브 포털">
-<meta property="og:locale" content="ko_KR">
+<meta name="robots" content="noindex,nofollow">
 {% endblock %}
 
 {% block title %} 블루무브 포털 - 개인정보 등록 {% endblock %}
@@ -168,7 +161,6 @@
         var lastName = document.querySelector("#id_last_name");
         var firstName = document.querySelector("#id_first_name");
         var phone = document.querySelector("#id_phone");
-        var email = document.querySelector("#id_email");
         if (agreementCheckbox.value !== "checked") {
             alert("개인정보 수집·이용에 동의해주세요.");
             return false;
@@ -210,20 +202,6 @@
             alert("올바른 휴대전화 번호를 입력해주세요.");
             return false;
         };
-        if (email.value == "") {
-            alert("이메일 주소를 입력해주세요.");
-            return false;
-        };
-        if (!patternEml.test(email.value)) {
-            alert("올바른 이메일 주소를 입력해주세요.");
-            return false;
-        };
-        if (document.querySelector("#vCode")) {
-            if (document.querySelector("#vCode").value.length !== 10) {
-                alert("올바른 인증 코드를 입력해주세요.");
-                return false;
-            };
-        };
         if (!patternNum.test(lastName.value) &&
             !patternSpc.test(lastName.value) &&
             !patternEng.test(lastName.value) &&
@@ -238,8 +216,7 @@
             !patternKor.test(phone.value) &&
             phone.value.indexOf("010") == 0 &&
             phone.value.indexOf("-") == 3 &&
-            phone.value.match(/-/g).length == 2 &&
-            patternEml.test(email.value)) {
+            phone.value.match(/-/g).length == 2) {
             // call 'spinner (transition)' function
             fadeOut();
             // call 'avoiding duplicate requests (btn disabled)' function

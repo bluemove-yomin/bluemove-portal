@@ -22,6 +22,7 @@ class ApplymembershipAdmin(admin.ModelAdmin):
         "received_at",
         "created_at",
         "updated_at",
+        "will_be_deleted_at",
     )
     search_fields = (
         "wanted_id",
@@ -41,6 +42,7 @@ class ApplymembershipAdmin(admin.ModelAdmin):
         "received_at",
         "created_at",
         "updated_at",
+        "will_be_deleted_at",
     )
 
 
@@ -55,6 +57,7 @@ class ApplymembershipnotiAdmin(admin.ModelAdmin):
         "failed_content",
         "sent",
         "updated_at",
+        "will_be_deleted_at",
     )
     search_fields = (
         "wanted_id",
@@ -65,4 +68,5 @@ class ApplymembershipnotiAdmin(admin.ModelAdmin):
         "failed_content",
         "sent",
         "updated_at",
+        "will_be_deleted_at",
     )

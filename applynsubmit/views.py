@@ -1113,6 +1113,13 @@ def slack_blocks_and_text(
     return blocks, text
 
 
+def cron_delete_all_data():
+    apps_notified = Applymembership.objects.filter(notified=True)
+    for app in apps_notified:
+        if app.will_be_deleted_at < datetime.datetime.now():
+            app.delete()
+
+
 ####
 #### views
 ####
@@ -1343,15 +1350,13 @@ def applymembership(request):
                 elif (
                     apps_received.count() > 0
                     and apps_received.count() == apps_decided.count()
-                    and (cmd_post == "noti_save" or (noti and cmd_post == "noti_send"))
+                    and (cmd_post == "noti_save" or cmd_post == "noti_send")
                 ):
                     scroll_to_noti = True
-                    if cmd_post == "noti_save":
-                        noti_saved = True
-                        if not noti:
-                            noti = ApplymembershipNoti.objects.create(
-                                wanted_id=wanted_id, saved_by=request.user
-                            )
+                    if not noti:
+                        noti = ApplymembershipNoti.objects.create(
+                            wanted_id=wanted_id, saved_by=request.user
+                        )
                     save_the_noti(
                         request,
                         noti,
@@ -1360,6 +1365,8 @@ def applymembership(request):
                         passed_content,
                         failed_content,
                     )
+                    if cmd_post == "noti_save":
+                        noti_saved = True
                     if cmd_post == "noti_send":
                         if not passed_content == None:
                             mail_service.users().messages().send(
@@ -1384,9 +1391,15 @@ def applymembership(request):
                                 ),
                             ).execute()
                         noti.sent = True
+                        noti.will_be_deleted_at = (
+                            datetime.datetime.now() + datetime.timedelta(days=3)
+                        )
                         noti.save()
                         for app in apps_decided:
                             app.notified = True
+                            app.will_be_deleted_at = (
+                                datetime.datetime.now() + datetime.timedelta(days=3)
+                            )
                             app.save()
                 # delete the notification
                 elif (

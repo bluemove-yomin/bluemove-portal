@@ -12,6 +12,13 @@
     <meta name="theme-color" content="#0077C8">
     <meta name="format-detection" content="telephone=no">
     <meta name="keywords" content="블루무브 포털, 파란물결 블루무브, 블루무브, 블루무버">
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="블루무브 포털">
+    <meta property="og:locale" content="ko_KR">
+    <meta property="og:image" content="{% static 'images/ogImage.png' %}">
+    <meta property="og:image:alt" content="파란물결 블루무브 종합정보시스템 '블루무브 포털'">
+    <meta property="og:image:width" content="1200px">
+    <meta property="og:image:height" content="630px">
     {% block meta %}
     {% endblock %}
 
@@ -79,25 +86,28 @@
     <!--
     ---- inner body
     -->
-    <div id="innerBody" class="fade-in">
+    <div id="innerBody" class="fade-in"
+        style="min-height: 100vh; margin: 0; display: grid; grid-template-rows: auto 1fr auto;">
         <!-- nav -->
         <nav>
             {% include 'shared/_nav.html' %}
         </nav>
-        <!-- banner -->
-        {% block banner %}
-        {% endblock %}
-        <!-- breadcrumb -->
-        {% block breadcrumb %}
-        {% endblock %}
-        <!-- contents -->
-        <div id="contents" class="p-3 my-3">
-            <div class="container-lg">
-                {% block content %}
-                override body
-                {% endblock %}
+        <main>
+            <!-- banner -->
+            {% block banner %}
+            {% endblock %}
+            <!-- breadcrumb -->
+            {% block breadcrumb %}
+            {% endblock %}
+            <!-- contents -->
+            <div id="contents" class="p-3 my-3">
+                <div class="container-lg">
+                    {% block content %}
+                    override body
+                    {% endblock %}
+                </div>
             </div>
-        </div>
+        </main>
         <!-- footer -->
         <footer>
             {% include 'shared/_footer.html' %}
@@ -228,16 +238,16 @@
         })
     </script>
     <script type="text/javascript">
-        // Internet Explorer unsupported guide
-        (function msieAlert() {
-            let agent = navigator.userAgent.toLowerCase();
-            console.log((agent.indexOf("trident") || agent.indexOf("msie")) !== -1)
-            if ((agent.indexOf("trident") || agent.indexOf("msie")) !== -1) {
-                alert("블루무브 포털은 Internet Explorer를 지원하지 않습니다.\n번거로우시겠지만 블루무브 포털에 최적화된 Chrome으로 이용 부탁드립니다. 🙏")
-                document.body.setAttribute("style", "text-align: center; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);")
-                document.body.innerHTML = "<img src='{% static 'images/bluemovePortalSign.svg' %}' height='28' /><p style='margin-top: 1rem;'>블루무브 포털은 Internet Explorer를 지원하지 않습니다.<br>번거로우시겠지만 블루무브 포털에 최적화된 Chrome으로 이용 부탁드립니다. 🙏</p>";
-            }
-        })();
+            // Internet Explorer unsupported guide
+            (function msieAlert() {
+                let agent = navigator.userAgent.toLowerCase();
+                console.log((agent.indexOf("trident") || agent.indexOf("msie")) !== -1)
+                if ((agent.indexOf("trident") || agent.indexOf("msie")) !== -1) {
+                    alert("블루무브 포털은 Internet Explorer를 지원하지 않습니다.\n번거로우시겠지만 블루무브 포털에 최적화된 Chrome으로 이용 부탁드립니다. 🙏")
+                    document.body.setAttribute("style", "text-align: center; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);")
+                    document.body.innerHTML = "<img src='{% static 'images/bluemovePortalSign.svg' %}' height='28' /><p style='margin-top: 1rem;'>블루무브 포털은 Internet Explorer를 지원하지 않습니다.<br>번거로우시겠지만 블루무브 포털에 최적화된 Chrome으로 이용 부탁드립니다. 🙏</p>";
+                }
+            })();
     </script>
 </body>
 

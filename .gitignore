@@ -245,4 +245,5 @@ $RECYCLE.BIN/
 secrets.json
 googleSACreds.json
 tests.py
-.vscode
+.vscode/
+.static/

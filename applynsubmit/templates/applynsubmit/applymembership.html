@@ -3,19 +3,12 @@
 {% load static %}
 
 {% block meta %}
-<meta name="robots" content="index,follow">
+<meta property="og:url" content="{% url 'applynsubmit:applymembership' %}">
+<meta property="og:title" content="블루무브 포털 - 블루무브 가입 지원">
+<meta property="og:description" content="블루무브 포털 - 블루무브 가입 지원">
 <meta name="description" content="블루무브 포털 - 블루무브 가입 지원">
 <meta name="subject" content="블루무브 포털 - 블루무브 가입 지원">
-<meta property="og:url" content="{% url 'applynsubmit:applymembership' %}">
-<meta property="og:type" content="website">
-<meta property="og:title" content="블루무브 포털 - 블루무브 가입 지원">
-<meta property="og:image" content="https://docs.bluemove.or.kr/static/images/slide01.png">
-<meta property="og:image:alt" content="파란물결 블루무브 종합정보시스템 '블루무브 포털'">
-<meta property="og:image:width" content="900px">
-<meta property="og:image:height" content="450px">
-<meta property="og:description" content="블루무브 포털 - 블루무브 가입 지원">
-<meta property="og:site_name" content="블루무브 포털">
-<meta property="og:locale" content="ko_KR">
+<meta name="robots" content="index,follow">
 {% endblock %}
 
 {% block title %} 블루무브 포털 - 블루무브 가입 지원 {% endblock %}
@@ -803,7 +796,7 @@
                     <div class="d-flex justify-content-between">
                         <label for="appSelfIntro" class="form-label">자기소개</label>
                         <span id="appSelfIntroLength" aria-label="자기소개 글자 수">
-                            ({{ app.self_intro_len|default:'0' }}/500)</span>
+                            ({{ app.self_intro_len|default:'0' }}/250)</span>
                     </div>
                     <textarea class="form-control" id="appSelfIntro" name="appSelfIntro" placeholder="자기소개를 입력하세요."
                         aria-label="자기소개 입력" rows="5">{{ app.self_intro|default_if_none:'' }}</textarea>
@@ -812,7 +805,7 @@
                     <div class="d-flex justify-content-between">
                         <label for="appReason" class="form-label">지원동기</label>
                         <span id="appReasonLength" aria-label="지원동기 글자 수">
-                            ({{ app.reason_len|default:'0' }}/500)</span>
+                            ({{ app.reason_len|default:'0' }}/250)</span>
                     </div>
                     <textarea class="form-control" id="appReason" name="appReason" placeholder="지원동기를 입력하세요."
                         aria-label="지원동기 입력" rows="5">{{ app.reason|default_if_none:'' }}</textarea>
@@ -821,7 +814,7 @@
                     <div class="d-flex justify-content-between">
                         <label for="appPlan" class="form-label">활동계획</label>
                         <span id="appPlanLength" aria-label="활동계획 글자 수">
-                            ({{ app.plan_len|default:'0' }}/500)</span>
+                            ({{ app.plan_len|default:'0' }}/250)</span>
                     </div>
                     <textarea class="form-control" id="appPlan" name="appPlan" placeholder="활동계획을 입력하세요."
                         aria-label="활동계획 입력" rows="5">{{ app.plan|default_if_none:'' }}</textarea>
@@ -955,12 +948,24 @@
             <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="안내창 닫기"></button>
         </div>
         {% endif %}
+        {% if app.notified %}
+        <div class="alert alert-primary d-flex align-items-center" role="alert">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor"
+                class="bi bi-shield-shaded flex-shrink-0 me-2" viewBox="0 0 16 16">
+                <path fill-rule="evenodd"
+                    d="M8 14.933a.615.615 0 0 0 .1-.025c.076-.023.174-.061.294-.118.24-.113.547-.29.893-.533a10.726 10.726 0 0 0 2.287-2.233c1.527-1.997 2.807-5.031 2.253-9.188a.48.48 0 0 0-.328-.39c-.651-.213-1.75-.56-2.837-.855C9.552 1.29 8.531 1.067 8 1.067v13.866zM5.072.56C6.157.265 7.31 0 8 0s1.843.265 2.928.56c1.11.3 2.229.655 2.887.87a1.54 1.54 0 0 1 1.044 1.262c.596 4.477-.787 7.795-2.465 9.99a11.775 11.775 0 0 1-2.517 2.453 7.159 7.159 0 0 1-1.048.625c-.28.132-.581.24-.829.24s-.548-.108-.829-.24a7.158 7.158 0 0 1-1.048-.625 11.777 11.777 0 0 1-2.517-2.453C1.928 10.487.545 7.169 1.141 2.692A1.54 1.54 0 0 1 2.185 1.43 62.456 62.456 0 0 1 5.072.56z" />
+            </svg>
+            <div class="vertical" style="word-break: break-word;">
+                선발 절차가 종료되어 {{ app.will_be_deleted_at|date:"Y년 m월 d일 H시 i분" }}경 {{ app.applicant.first_name }}님의 모든 데이터가 파기됩니다.
+            </div>
+        </div>
+        {% endif %}
         <!-- form -->
         <div class="row row-cols-1 g-3">
             <div class="col">
                 <div class="d-flex justify-content-between">
                     <label for="appSelfIntro" class="form-label">자기소개</label>
-                    <span aria-label="자기소개 글자 수">({{ app.self_intro_len }}/500)</span>
+                    <span aria-label="자기소개 글자 수">({{ app.self_intro_len }}/250)</span>
                 </div>
                 <textarea class="form-control" id="appSelfIntro" aria-label="자기소개" rows="5"
                     readonly>{{ app.self_intro }}</textarea>
@@ -968,7 +973,7 @@
             <div class="col">
                 <div class="d-flex justify-content-between">
                     <label for="appReason" class="form-label">지원동기</label>
-                    <span aria-label="지원동기 글자 수">({{ app.reason_len }}/500)</span>
+                    <span aria-label="지원동기 글자 수">({{ app.reason_len }}/250)</span>
                 </div>
                 <textarea class="form-control" id="appReason" aria-label="지원동기" rows="5"
                     readonly>{{ app.reason }}</textarea>
@@ -976,7 +981,7 @@
             <div class="col">
                 <div class="d-flex justify-content-between">
                     <label for="appPlan" class="form-label">활동계획</label>
-                    <span aria-label="활동계획 글자 수">({{ app.plan_len|default:'0' }}/500)</span>
+                    <span aria-label="활동계획 글자 수">({{ app.plan_len|default:'0' }}/250)</span>
                 </div>
                 <textarea class="form-control" id="appPlan" aria-label="활동계획" rows="5"
                     readonly>{{ app.plan }}</textarea>
@@ -1145,29 +1150,29 @@
     // check the number of letters in the application
     $("#appSelfIntro").keyup(function (e) {
         var text = $(this).val();
-        $("#appSelfIntroLength").text("(" + text.length + "/500)");
+        $("#appSelfIntroLength").text("(" + text.length + "/250)");
         if (text.length > 500) {
             alert("자기소개는 최대 500자까지 입력 가능합니다.");
             $(this).val(text.substring(0, 500));
-            $("#appSelfIntroLength").text("(500/500)");
+            $("#appSelfIntroLength").text("(250/250)");
         }
     });
     $("#appReason").keyup(function (e) {
         var text = $(this).val();
-        $("#appReasonLength").text("(" + text.length + "/500)");
+        $("#appReasonLength").text("(" + text.length + "/250)");
         if (text.length > 500) {
             alert("지원동기는 최대 500자까지 입력 가능합니다.");
             $(this).val(text.substring(0, 500));
-            $("#appReasonLength").text("(500/500)");
+            $("#appReasonLength").text("(250/250)");
         }
     });
     $("#appPlan").keyup(function (e) {
         var text = $(this).val();
-        $("#appPlanLength").text("(" + text.length + "/500)");
+        $("#appPlanLength").text("(" + text.length + "/250)");
         if (text.length > 500) {
             alert("활동계획은 최대 500자까지 입력 가능합니다.");
             $(this).val(text.substring(0, 500));
-            $("#appPlanLength").text("(500/500)");
+            $("#appPlanLength").text("(250/250)");
         }
     });
     // appTracking
@@ -1358,15 +1363,15 @@
         </div>
         <!-- alert -->
         {% if "접수 중" in wanted_row.status and noti.sent %}
-        <div class="alert alert-danger d-flex align-items-center"
-            style="margin-left: 1.25rem; margin-right: 1.25rem;" role="alert">
+        <div class="alert alert-danger d-flex align-items-center" style="margin-left: 1.25rem; margin-right: 1.25rem;"
+            role="alert">
             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor"
                 class="bi bi-slash-circle flex-shrink-0 me-2" viewBox="0 0 16 16">
                 <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z" />
                 <path d="M11.354 4.646a.5.5 0 0 0-.708 0l-6 6a.5.5 0 0 0 .708.708l6-6a.5.5 0 0 0 0-.708z" />
             </svg>
             <div class="vertical" style="word-break: break-word;">
-                선발 절차가 완료되어 추가 접수가 불가합니다.
+                선발 절차가 종료되어 추가 접수가 불가합니다.
             </div>
         </div>
         {% endif %}
@@ -1485,7 +1490,7 @@
                                     <label for="appSelfIntro_{{ app.applicant }}" class="form-label">자기소개</label>
                                     <span
                                         aria-label="{{ app.applicant.last_name }}{{ app.applicant.first_name }}님의 자기소개 글자 수">
-                                        ({{ app.self_intro_len }}/500)</span>
+                                        ({{ app.self_intro_len }}/250)</span>
                                 </div>
                                 <textarea class="form-control" id="appSelfIntro_{{ app.applicant }}"
                                     aria-label="{{ app.applicant.last_name }}{{ app.applicant.first_name }}님의 자기소개"
@@ -1496,7 +1501,7 @@
                                     <label for="appReason_{{ app.applicant }}" class="form-label">지원동기</label>
                                     <span
                                         aria-label="{{ app.applicant.last_name }}{{ app.applicant.first_name }}님의 지원동기 글자 수">
-                                        ({{ app.reason_len }}/500)</span>
+                                        ({{ app.reason_len }}/250)</span>
                                 </div>
                                 <textarea class="form-control" id="appReason_{{ app.applicant }}"
                                     aria-label="{{ app.applicant.last_name }}{{ app.applicant.first_name }}님의 지원동기"
@@ -1507,7 +1512,7 @@
                                     <label for="appPlan_{{ app.applicant }}" class="form-label">활동계획</label>
                                     <span
                                         aria-label="{{ app.applicant.last_name }}{{ app.applicant.first_name }}님의 활동계획 글자 수">
-                                        ({{ app.plan_len }}/500)</span>
+                                        ({{ app.plan_len }}/250)</span>
                                 </div>
                                 <textarea class="form-control" id="appPlan_{{ app.applicant }}"
                                     aria-label="{{ app.applicant.last_name }}{{ app.applicant.first_name }}님의 활동계획"
@@ -1699,7 +1704,7 @@
                     d="m7.823 2.823-.396-.396A.25.25 0 0 1 7.604 2h.792a.25.25 0 0 1 .177.427l-.396.396a.25.25 0 0 1-.354 0zM0 8a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V8zm1 3v2a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2H1zm14-1V8a1 1 0 0 0-1-1H2a1 1 0 0 0-1 1v2h14zM2 8.5a.5.5 0 0 1 .5-.5h9a.5.5 0 0 1 0 1h-9a.5.5 0 0 1-.5-.5zm0 4a.5.5 0 0 1 .5-.5h6a.5.5 0 0 1 0 1h-6a.5.5 0 0 1-.5-.5z" />
             </svg>
             <div class="vertical" style="word-break: break-word;">
-                <strong>🔵 선발</strong> 통보 메일 하단에는 가입 확정 버튼이 표시됩니다.
+                <strong>🔵 선발</strong> 통보 메일에는 최종 가입 여부를 묻는 버튼이 표시됩니다.
             </div>
         </div>
         {% endif %}
@@ -1803,7 +1808,7 @@
                     d="M8 14.933a.615.615 0 0 0 .1-.025c.076-.023.174-.061.294-.118.24-.113.547-.29.893-.533a10.726 10.726 0 0 0 2.287-2.233c1.527-1.997 2.807-5.031 2.253-9.188a.48.48 0 0 0-.328-.39c-.651-.213-1.75-.56-2.837-.855C9.552 1.29 8.531 1.067 8 1.067v13.866zM5.072.56C6.157.265 7.31 0 8 0s1.843.265 2.928.56c1.11.3 2.229.655 2.887.87a1.54 1.54 0 0 1 1.044 1.262c.596 4.477-.787 7.795-2.465 9.99a11.775 11.775 0 0 1-2.517 2.453 7.159 7.159 0 0 1-1.048.625c-.28.132-.581.24-.829.24s-.548-.108-.829-.24a7.158 7.158 0 0 1-1.048-.625 11.777 11.777 0 0 1-2.517-2.453C1.928 10.487.545 7.169 1.141 2.692A1.54 1.54 0 0 1 2.185 1.43 62.456 62.456 0 0 1 5.072.56z" />
             </svg>
             <div class="vertical" style="word-break: break-word;">
-                선발 절차가 완료되었습니다. 약 72시간 후 지원자 개인정보를 포함한 모든 리크루팅 데이터가 파기됩니다.
+                선발 절차가 종료되어 {{ noti.will_be_deleted_at|date:"Y년 m월 d일 H시 i분" }}경 모든 데이터가 파기됩니다.
             </div>
         </div>
         <!-- form -->

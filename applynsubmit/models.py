@@ -8,11 +8,11 @@ class Applymembership(models.Model):
     applicant = models.ForeignKey(User, on_delete=models.CASCADE)
     wanted_id = models.CharField(max_length=36, null=True, blank=True)
     wanted_title = models.CharField(max_length=50, null=True, blank=True)
-    self_intro = models.TextField(max_length=510, null=True, blank=True)
+    self_intro = models.TextField(max_length=260, null=True, blank=True)
     self_intro_len = models.IntegerField(default=0, null=True, blank=True)
-    reason = models.TextField(max_length=510, null=True, blank=True)
+    reason = models.TextField(max_length=260, null=True, blank=True)
     reason_len = models.IntegerField(default=0, null=True, blank=True)
-    plan = models.TextField(max_length=510, null=True, blank=True)
+    plan = models.TextField(max_length=260, null=True, blank=True)
     plan_len = models.IntegerField(default=0, null=True, blank=True)
     tracking = models.CharField(max_length=20, null=True, blank=True)
     tracking_reference = models.CharField(max_length=10, null=True, blank=True)
@@ -36,6 +36,7 @@ class Applymembership(models.Model):
     received_at = models.DateTimeField(null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+    will_be_deleted_at = models.DateTimeField(null=True, blank=True)
 
     class Meta:
         verbose_name = "지원서"
@@ -51,6 +52,7 @@ class ApplymembershipNoti(models.Model):
     failed_content = models.TextField(max_length=510, null=True, blank=True)
     sent = models.BooleanField(default=False)
     updated_at = models.DateTimeField(auto_now=True)
+    will_be_deleted_at = models.DateTimeField(null=True, blank=True)
 
     class Meta:
         verbose_name = "통보 메일"
