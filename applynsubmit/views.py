@@ -924,7 +924,6 @@ def slack_blocks_and_text(
     str_wanted_id=None,
     str_wanted_title=None,
     obj_app=None,
-    obj_noti=None,
 ):
     # message blocks and a text for the application receipt notification
     if obj_app and not obj_app.notified:
@@ -1041,7 +1040,7 @@ def slack_blocks_and_text(
             f"🎉 {obj_app.applicant.last_name + obj_app.applicant.first_name}님이 가입을 확정함"
         )
     # message blocks and a text for the error notification
-    elif not obj_app and not obj_noti:
+    elif not obj_app:
         blocks = [
             {
                 "type": "header",
@@ -1112,72 +1111,7 @@ def slack_blocks_and_text(
             },
         ]
         text = f"⚠ '블루무브 가입 지원' 페이지 오류 발생"
-    # message blocks and a text for the privacy removal notification
-    elif obj_noti:
-        blocks = [
-            {
-                "type": "header",
-                "text": {
-                    "type": "plain_text",
-                    "text": f"✂️ '{obj_noti.wanted_title}' 데이터 자동 삭제됨",
-                },
-            },
-            {
-                "type": "section",
-                "text": {
-                    "type": "mrkdwn",
-                    "text": f"'{obj_noti.wanted_title}' 관련 모든 데이터가 자동 삭제되었습니다.",
-                },
-            },
-            {
-                "type": "section",
-                "fields": [
-                    {
-                        "type": "mrkdwn",
-                        "text": "*공고 ID:*\n" + obj_noti.wanted_id,
-                    },
-                    {
-                        "type": "mrkdwn",
-                        "text": "*삭제일시:*\n"
-                        + datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
-                    },
-                ],
-            },
-        ]
-        text = f"✂️ '{obj_noti.wanted_title}' 데이터 자동 삭제됨"
     return blocks, text
-
-
-####
-#### cron jobs
-####
-def cron_delete_all_recruiting_data():
-    apps_notified = Applymembership.objects.filter(notified=True)
-    notis_sent = ApplymembershipNoti.objects.filter(sent=True)
-    for app in apps_notified:
-        if app.will_be_deleted_at < datetime.datetime.now():
-            app.delete()
-            app.applicant.delete()
-    for noti in notis_sent:
-        if noti.will_be_deleted_at < datetime.datetime.now():
-            client = WebClient(token=slack_bot_token)
-            try:
-                client.conversations_join(
-                    channel=management_all_channel_id
-                    # channel=management_dev_channel_id
-                )
-            except:
-                pass
-            blocks, text = slack_blocks_and_text(obj_noti=noti)
-            client.chat_postMessage(
-                channel=management_all_channel_id,
-                # channel=management_dev_channel_id,
-                link_names=True,
-                as_user=True,
-                blocks=blocks,
-                text=text,
-            )
-            noti.delete()
 
 
 ####
