@@ -71,13 +71,24 @@ INSTALLED_APPS = [
     "allauth.account",
     "allauth.socialaccount",
     "allauth.socialaccount.providers.google",
-    # django-cron
-    "django_cron",
+    # django-crontab
+    "django_crontab",
     # Bluemove
     "home.apps.HomeConfig",
     "checknissue.apps.ChecknissueConfig",
     "applynsubmit.apps.ApplynsubmitConfig",
     "member.apps.MemberConfig",
+]
+
+# django-crontab
+# https://github.com/kraiz/django-crontab
+
+CRONJOBS = [
+    (
+        "* * * * *",
+        "applynsubmit.views.cron_delete_all_recruiting_data",
+        ">> /home/ubuntu/bluemove-portal/cronjobs.log",
+    ),
 ]
 
 MIDDLEWARE = [
@@ -219,10 +230,3 @@ ACCOUNT_USERNAME_REQUIRED = False
 ACCOUNT_EMAIL_REQUIRED = True
 
 ACCOUNT_AUTHENTICATION_METHOD = "email"
-
-# django-cron
-# https://django-cron.readthedocs.io/en/latest/
-
-CRON_CLASSES = [
-    "bluemoveportal.cron.CronDeleteAllRecruitingData",
-]
