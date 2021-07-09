@@ -1,22 +1,22 @@
-from django.conf import settings
-
-# models
-from .models import *
-
-# Slack
-from slack_sdk import WebClient
-
-# multiple functions
-import datetime
-
-# secrets
-slack_bot_token = getattr(settings, "SLACK_BOT_TOKEN", "SLACK_BOT_TOKEN")
-
-# Bluemove data
-management_all_channel_id = "CV3THBHJB"
-
-
 def delete_all_recruiting_data():
+    from django.conf import settings
+
+    # models
+    from .models import Applymembership
+    from .models import ApplymembershipNoti
+
+    # Slack
+    from slack_sdk import WebClient
+
+    # multiple functions
+    import datetime
+
+    # secrets
+    slack_bot_token = getattr(settings, "SLACK_BOT_TOKEN", "SLACK_BOT_TOKEN")
+
+    # Bluemove data
+    management_all_channel_id = "CV3THBHJB"
+
     apps_notified = Applymembership.objects.filter(notified=True)
     notis_sent = ApplymembershipNoti.objects.filter(sent=True)
     for app in apps_notified:
