@@ -1148,7 +1148,10 @@ def slack_blocks_and_text(
     return blocks, text
 
 
-def cron_delete_all_data():
+####
+#### cron jobs
+####
+def cron_delete_all_recruiting_data():
     apps_notified = Applymembership.objects.filter(notified=True)
     notis_sent = ApplymembershipNoti.objects.filter(sent=True)
     for app in apps_notified:
