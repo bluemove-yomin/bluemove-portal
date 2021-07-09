@@ -71,24 +71,11 @@ INSTALLED_APPS = [
     "allauth.account",
     "allauth.socialaccount",
     "allauth.socialaccount.providers.google",
-    # django-crontab
-    "django_crontab",
     # Bluemove
     "home.apps.HomeConfig",
     "checknissue.apps.ChecknissueConfig",
     "applynsubmit.apps.ApplynsubmitConfig",
     "member.apps.MemberConfig",
-]
-
-# django-crontab
-# https://github.com/kraiz/django-crontab
-
-CRONJOBS = [
-    (
-        "*/1 * * * *",
-        "applynsubmit.cronjobs.delete_all_recruiting_data",
-        ">> /home/ubuntu/bluemove-portal/cronjobs.log",
-    ),
 ]
 
 MIDDLEWARE = [
