@@ -85,7 +85,7 @@ INSTALLED_APPS = [
 
 CRONJOBS = [
     (
-        "* * * * *",
+        "*/1 * * * *",
         "applynsubmit.cronjobs.delete_all_recruiting_data",
         ">> /home/ubuntu/bluemove-portal/cronjobs.log",
     ),
