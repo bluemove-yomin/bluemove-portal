@@ -1,8 +1,23 @@
+import os
 from django.conf import settings
+from django.apps import apps
+
+conf = {
+    "INSTALLED_APPS": ["applynsubmit"],
+    "DATABASES": {
+        "default": {
+            "ENGINE": "django.db.backends.sqlite3",
+            "NAME": os.path.join(".", "db.sqlite3"),
+        }
+    },
+}
+
+settings.configure(**conf)
+apps.populate(settings.INSTALLED_APPS)
 
 # models
-from .models import Applymembership
-from .models import ApplymembershipNoti
+from applynsubmit.models import Applymembership
+from applynsubmit.models import ApplymembershipNoti
 
 # Slack
 from slack_sdk import WebClient
