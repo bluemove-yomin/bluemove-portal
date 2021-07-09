@@ -40,6 +40,9 @@ from dateutil import parser
 # multiple functions
 import datetime
 
+# cron jobs
+from django.http import HttpResponse
+
 # secrets
 google_client_id = getattr(settings, "GOOGLE_CLIENT_ID", "GOOGLE_CLIENT_ID")
 google_client_secret = getattr(settings, "GOOGLE_CLIENT_SECRET", "GOOGLE_CLIENT_SECRET")
@@ -1150,9 +1153,9 @@ def slack_blocks_and_text(
 ####
 #### cron jobs
 ####
-def cron_delete_all_recruiting_data(request, wanted_id):
-    apps_notified = Applymembership.objects.filter(wanted_id=wanted_id, notified=True)
-    notis_sent = ApplymembershipNoti.objects.filter(wanted_id=wanted_id, sent=True)
+def cron_delete_all_expired_recruiting_data(request):
+    apps_notified = Applymembership.objects.filter(notified=True)
+    notis_sent = ApplymembershipNoti.objects.filter(sent=True)
     for app in apps_notified:
         if app.will_be_deleted_at < datetime.datetime.now():
             app.delete()
@@ -1173,7 +1176,7 @@ def cron_delete_all_recruiting_data(request, wanted_id):
                 text=text,
             )
             noti.delete()
-    return redirect("applynsubmit:applymembership")
+    return HttpResponse(status=200)
 
 
 ####
