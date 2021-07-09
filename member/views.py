@@ -1,4 +1,5 @@
 from django.shortcuts import render, redirect
+from django.contrib.auth.decorators import login_required
 
 # models
 from django.contrib.auth.models import User
@@ -8,6 +9,7 @@ from .models import Profile
 ####
 #### views
 ####
+@login_required
 def myaccount(request):
     # str, lst
     last_name = request.POST.get("last_name")

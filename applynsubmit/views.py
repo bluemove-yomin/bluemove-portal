@@ -1164,12 +1164,12 @@ def cron_delete_all_expired_recruiting_data(request):
         if noti.will_be_deleted_at < datetime.datetime.now():
             client = WebClient(token=slack_bot_token)
             try:
-                client.conversations_join(channel=management_dev_channel_id)
+                client.conversations_join(channel=management_all_channel_id)
             except:
                 pass
             blocks, text = slack_blocks_and_text(obj_noti=noti)
             client.chat_postMessage(
-                channel=management_dev_channel_id,
+                channel=management_all_channel_id,
                 link_names=True,
                 as_user=True,
                 blocks=blocks,
