@@ -213,7 +213,7 @@
             var holdOn = document.getElementById("holdOn");
             var holdOnLink = document.getElementById("holdOnLink");
             innerBody.setAttribute("class", "fade-out");
-            innerBody.setAttribute("style", "pointer-events: none; touch-action: none;")
+            innerBody.setAttribute("style", "min-height: 100vh; margin: 0; display: grid; grid-template-rows: auto 1fr auto; pointer-events: none; touch-action: none;")
             alertBody.hidden = false;
             alertBody.classList.add("fade-in");
             alertBody.setAttribute("style", "position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);");
