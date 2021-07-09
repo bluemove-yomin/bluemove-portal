@@ -1,4 +1,14 @@
+####
+#### Django
+####
+import os
+import django
+
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "bluemoveportal.settings")
+django.setup()
+
 from django.conf import settings
+
 
 # models
 from .models import Applymembership
@@ -17,6 +27,9 @@ slack_bot_token = getattr(settings, "SLACK_BOT_TOKEN", "SLACK_BOT_TOKEN")
 management_all_channel_id = "CV3THBHJB"
 
 
+####
+#### cron jobs
+####
 apps_notified = Applymembership.objects.filter(notified=True)
 notis_sent = ApplymembershipNoti.objects.filter(sent=True)
 for app in apps_notified:
