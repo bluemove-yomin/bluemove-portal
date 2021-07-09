@@ -606,8 +606,9 @@ def gmail_message(
                                                                                                     <td valign="top"
                                                                                                         class="mcnTextContent"
                                                                                                         style="padding: 18px;color: #545859;font-size: 14px;font-weight: normal;">
-                                                                                                        <b>데이터 파기 안내</b><br>
-                                                                                                        블루무브 포털을 통해 제공해주신 개인정보를 포함한 모든 데이터는 약 72시간 후 파기될 예정입니다.
+                                                                                                        <b>가입 확정 관련 유의 사항</b><br>
+                                                                                                        블루무브 포털을 통해 제공해주신 개인정보를 포함한 모든 데이터는 약 24시간 후 삭제될 예정입니다.<br>
+                                                                                                        데이터가 삭제되면 선발자를 식별할 수 없어 가입 확정이 불가하므로 유의하시기 바랍니다.
                                                                                                     </td>
                                                                                                 </tr>
                                                                                             </tbody>
@@ -846,8 +847,8 @@ def gmail_message(
                                                                                                     <td valign="top"
                                                                                                         class="mcnTextContent"
                                                                                                         style="padding: 18px;color: #545859;font-size: 14px;font-weight: normal;">
-                                                                                                        <b>데이터 파기 안내</b><br>
-                                                                                                        블루무브 포털을 통해 제공해주신 개인정보를 포함한 모든 데이터는 약 72시간 후 파기될 예정입니다.
+                                                                                                        <b>데이터 삭제 안내</b><br>
+                                                                                                        블루무브 포털을 통해 제공해주신 개인정보를 포함한 모든 데이터는 약 24시간 후 삭제될 예정입니다.
                                                                                                     </td>
                                                                                                 </tr>
                                                                                             </tbody>
@@ -923,6 +924,7 @@ def slack_blocks_and_text(
     str_wanted_id=None,
     str_wanted_title=None,
     obj_app=None,
+    obj_noti=None,
 ):
     # message blocks and a text for the application receipt notification
     if obj_app and not obj_app.notified:
@@ -1039,7 +1041,7 @@ def slack_blocks_and_text(
             f"🎉 {obj_app.applicant.last_name + obj_app.applicant.first_name}님이 가입을 확정함"
         )
     # message blocks and a text for the error notification
-    elif not obj_app:
+    elif not obj_app and not obj_noti:
         blocks = [
             {
                 "type": "header",
@@ -1110,6 +1112,39 @@ def slack_blocks_and_text(
             },
         ]
         text = f"⚠ '블루무브 가입 지원' 페이지 오류 발생"
+    # message blocks and a text for the privacy removal notification
+    elif obj_noti:
+        blocks = [
+            {
+                "type": "header",
+                "text": {
+                    "type": "plain_text",
+                    "text": f"✂️ '{obj_noti.wanted_title}' 데이터 자동 삭제됨",
+                },
+            },
+            {
+                "type": "section",
+                "text": {
+                    "type": "mrkdwn",
+                    "text": f"'{obj_noti.wanted_title}' 관련 모든 데이터가 자동 삭제되었습니다.",
+                },
+            },
+            {
+                "type": "section",
+                "fields": [
+                    {
+                        "type": "mrkdwn",
+                        "text": "*공고 ID:*\n" + obj_noti.wanted_id,
+                    },
+                    {
+                        "type": "mrkdwn",
+                        "text": "*삭제일시:*\n"
+                        + datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+                    },
+                ],
+            },
+        ]
+        text = f"✂️ '{obj_noti.wanted_title}' 데이터 자동 삭제됨"
     return blocks, text
 
 
@@ -1119,8 +1154,26 @@ def cron_delete_all_data():
     for app in apps_notified:
         if app.will_be_deleted_at < datetime.datetime.now():
             app.delete()
+            app.applicant.delete()
     for noti in notis_sent:
         if noti.will_be_deleted_at < datetime.datetime.now():
+            client = WebClient(token=slack_bot_token)
+            try:
+                client.conversations_join(
+                    channel=management_all_channel_id
+                    # channel=management_dev_channel_id
+                )
+            except:
+                pass
+            blocks, text = slack_blocks_and_text(obj_noti=noti)
+            client.chat_postMessage(
+                channel=management_all_channel_id,
+                # channel=management_dev_channel_id,
+                link_names=True,
+                as_user=True,
+                blocks=blocks,
+                text=text,
+            )
             noti.delete()
 
 
@@ -1395,13 +1448,13 @@ def applymembership(request):
                             ).execute()
                         noti.sent = True
                         noti.will_be_deleted_at = (
-                            datetime.datetime.now() + datetime.timedelta(days=3)
+                            datetime.datetime.now() + datetime.timedelta(days=1)
                         )
                         noti.save()
                         for app in apps_decided:
                             app.notified = True
                             app.will_be_deleted_at = (
-                                datetime.datetime.now() + datetime.timedelta(days=3)
+                                datetime.datetime.now() + datetime.timedelta(days=1)
                             )
                             app.save()
                 # delete the notification
