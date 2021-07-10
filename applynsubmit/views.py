@@ -39,8 +39,6 @@ from dateutil import parser
 
 # multiple functions
 import datetime
-
-# cron jobs
 from django.http import HttpResponse
 
 # secrets
@@ -1115,6 +1113,7 @@ def slack_blocks_and_text(
             },
         ]
         text = f"⚠ '블루무브 가입 지원' 페이지 오류 발생"
+    # message blocks and a text for notification of recruiting data deletion
     elif obj_noti:
         blocks = [
             {
@@ -1158,7 +1157,6 @@ def cron_delete_all_expired_recruiting_data(request):
     notis_sent = ApplymembershipNoti.objects.filter(sent=True)
     for app in apps_notified:
         if app.will_be_deleted_at < datetime.datetime.now():
-            app.delete()
             app.applicant.delete()
     for noti in notis_sent:
         if noti.will_be_deleted_at < datetime.datetime.now():
@@ -1327,7 +1325,6 @@ def applymembership(request):
                                 try:
                                     client.conversations_join(
                                         channel=management_all_channel_id
-                                        # channel=management_dev_channel_id
                                     )
                                 except:
                                     pass
@@ -1338,7 +1335,6 @@ def applymembership(request):
                                 )
                                 client.chat_postMessage(
                                     channel=management_all_channel_id,
-                                    # channel=management_dev_channel_id,
                                     link_names=True,
                                     as_user=True,
                                     blocks=blocks,
@@ -1366,7 +1362,6 @@ def applymembership(request):
                     client = WebClient(token=slack_bot_token)
                     try:
                         client.conversations_join(channel=management_all_channel_id)
-                        # client.conversations_join(channel=management_dev_channel_id)
                     except:
                         pass
                     blocks, text = slack_blocks_and_text(
@@ -1376,7 +1371,6 @@ def applymembership(request):
                     )
                     client.chat_postMessage(
                         channel=management_all_channel_id,
-                        # channel=management_dev_channel_id,
                         link_names=True,
                         as_user=True,
                         blocks=blocks,

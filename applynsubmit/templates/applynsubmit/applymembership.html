@@ -806,8 +806,6 @@
             enctype="multipart/form-data" id="formApp" onsubmit="return appSave();">
             {% csrf_token %}
             <input type="hidden" id="wantedIdPost" name="wantedIdPost" value="{{ wanted_id }}" readonly hidden>
-            <!-- <input type="hidden" id="wantedTitlePost" name="wantedTitlePost" value="{{ wanted_row.title }}" readonly
-                hidden> -->
             <input type="hidden" id="cmdPost" name="cmdPost" value="save" readonly hidden>
             <div class="row row-cols-1 g-3">
                 <div class="col">
