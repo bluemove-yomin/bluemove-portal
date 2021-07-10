@@ -1426,7 +1426,7 @@ def applymembership(request):
                     if cmd_post == "noti_save":
                         noti_saved = True
                     if cmd_post == "noti_send":
-                        if not passed_content == None:
+                        if not noti.sent == True and not passed_content == None:
                             mail_service.users().messages().send(
                                 userId=google_delegated_email,
                                 body=gmail_message(
@@ -1438,7 +1438,7 @@ def applymembership(request):
                                 ),
                             ).execute()
                         time.sleep(1)
-                        if not failed_content == None:
+                        if not noti.sent == True and not failed_content == None:
                             mail_service.users().messages().send(
                                 userId=google_delegated_email,
                                 body=gmail_message(
