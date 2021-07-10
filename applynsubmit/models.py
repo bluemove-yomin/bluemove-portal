@@ -5,9 +5,9 @@ from django.contrib.auth.models import User
 
 
 class Applymembership(models.Model):
-    applicant = models.ForeignKey(User, on_delete=models.CASCADE)
     wanted_id = models.CharField(max_length=36, null=True, blank=True)
     wanted_title = models.CharField(max_length=50, null=True, blank=True)
+    applicant = models.ForeignKey(User, on_delete=models.CASCADE)
     self_intro = models.TextField(max_length=260, null=True, blank=True)
     self_intro_len = models.IntegerField(default=0, null=True, blank=True)
     reason = models.TextField(max_length=260, null=True, blank=True)
@@ -44,9 +44,9 @@ class Applymembership(models.Model):
 
 
 class ApplymembershipNoti(models.Model):
-    saved_by = models.ForeignKey(User, on_delete=models.CASCADE)
     wanted_id = models.CharField(max_length=36, null=True, blank=True)
     wanted_title = models.CharField(max_length=50, null=True, blank=True)
+    saved_by = models.ForeignKey(User, on_delete=models.CASCADE)
     title = models.CharField(max_length=50, null=True, blank=True)
     passed_content = models.TextField(max_length=510, null=True, blank=True)
     failed_content = models.TextField(max_length=510, null=True, blank=True)

@@ -609,7 +609,7 @@ def gmail_message(
                                                                                                     <td valign="top"
                                                                                                         class="mcnTextContent"
                                                                                                         style="padding: 18px;color: #545859;font-size: 14px;font-weight: normal;">
-                                                                                                        <b>가입 확정 관련 유의 사항</b><br>
+                                                                                                        <b>선발자 유의 사항</b><br>
                                                                                                         블루무브 포털을 통해 제공해주신 개인정보를 포함한 모든 데이터는 약 24시간 후 삭제될 예정입니다.<br>
                                                                                                         데이터가 삭제되면 선발자를 식별할 수 없어 가입 확정이 불가하므로 유의하시기 바랍니다.
                                                                                                     </td>
@@ -1151,7 +1151,7 @@ def slack_blocks_and_text(
 
 
 ####
-#### cron jobs
+#### functions for incoming requests from outside
 ####
 def cron_delete_all_expired_recruiting_data(request):
     apps_notified = Applymembership.objects.filter(notified=True)

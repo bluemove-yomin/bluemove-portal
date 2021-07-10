@@ -24,7 +24,7 @@ from email.mime.multipart import MIMEMultipart
 from email.mime.application import MIMEApplication
 import base64
 
-# verification code
+# verification
 import random, string, datetime
 
 # cert
