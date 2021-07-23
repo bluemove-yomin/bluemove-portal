@@ -148,9 +148,19 @@
 .offcanvas-body, .accordion-body-0 {
     padding: 0 !important;
 }
+.list-group-item.top-border {
+    padding: 1rem 1rem !important;
+    border-width: 1px 0 0 !important;
+}
 .list-group-item.no-border, .offcanvas-nav, .accordion-button-1rem {
     padding: 1rem 1rem !important;
     border-width: 0 0 0 !important;
+}
+.nav-small-header {
+    font-weight: bolder !important;
+    color: #545859 !important;
+    background-color: transparent !important;
+    text-decoration: none !important;
 }
 .nav-small-item:hover,
 .nav-small-item:focus,
@@ -217,6 +227,10 @@
     background-image: url('/static/images/breadcrumbApplymembership.jpg');
     background-position: center 40%;
 }
+.breadcrumb-officialdoc {
+    background-image: url('/static/images/breadcrumbOfficialdoc.jpg');
+    background-position: center 40%;
+}
 .breadcrumb-account {
     background-image: url('/static/images/breadcrumbAccount.jpg');
     background-position: center 47.5%;
@@ -244,6 +258,16 @@
 */
 .card-body {
     padding: 1.25rem !important;
+}
+
+/*
+** badge
+*/
+.badge-bluemove {
+    padding: .25em .65em !important;
+    margin-top: .08rem !important;
+    font-size: .9em !important;
+    vertical-align: top !important;
 }
 
 /*

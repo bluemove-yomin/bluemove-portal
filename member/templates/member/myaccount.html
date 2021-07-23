@@ -6,8 +6,8 @@
 <meta property="og:url" content="{% url 'member:myaccount' %}">
 <meta property="og:title" content="블루무브 포털 - 내 계정">
 <meta property="og:description" content="블루무브 포털 - 내 계정">
-<meta name="description" content="블루무브 포털 - 내 계정">
 <meta name="subject" content="블루무브 포털 - 내 계정">
+<meta name="description" content="블루무브 포털 - 내 계정">
 <meta name="robots" content="noindex,nofollow">
 {% endblock %}
 
@@ -25,7 +25,10 @@
 {% endblock %}
 
 {% block content %}
-<div class="card shadow-hover">
+<!--
+---- inner content 01 (modify)
+-->
+<div class="card shadow-hover" id="modify">
     <div class="card-body" style="background-color: rgba(0,0,0,.025);">
         <h5 class="card-title pb-1">개인정보 수정</h5>
         <!-- alert -->
@@ -70,28 +73,31 @@
                             class="form-label">명</label>
                     </div>
                     <div class="input-group">
-                        <input type="text" class="form-control" id="last_name" name="last_name"
+                        <input type="text" class="form-control" id="last_name" name="last_name" placeholder="성을 입력하세요."
                             aria-label="{{ user.last_name }}{{ user.first_name }}님의 성 입력" value="{{ user.last_name }}">
-                        <input type="text" class="form-control" id="first_name" name="first_name"
+                        <input type="text" class="form-control" id="first_name" name="first_name" placeholder="이름을 입력하세요."
                             aria-label="{{ user.last_name }}{{ user.first_name }}님의 이름 입력"
                             value="{{ user.first_name }}">
                     </div>
                 </div>
                 <div class="col">
                     <label for="phone" class="form-label">휴대전화 번호</label>
-                    <input type="text" class="form-control" id="phone" name="phone"
+                    <input type="text" class="form-control" id="phone" name="phone" placeholder="휴대전화 번호를 입력하세요."
                         aria-label="{{ user.last_name }}{{ user.first_name }}님의 휴대전화 번호 입력" maxlength="13"
                         minlength="13" value="{{ user.profile.phone }}">
                 </div>
             </div>
             <div class="d-grid" style="padding-top: 1.25rem !important;">
-                <button type="submit" class="btn btn-outline-secondary" aria-label="수정">
+                <button type="submit" class="btn btn-outline-secondary" aria-label="개인정보 수정">
                     <i class="bi bi-check2 me-2"></i>수정</button>
             </div>
         </form>
     </div>
 </div>
 
+<!--
+---- inner script for content 01 (modify)
+-->
 <script type="text/javascript">
     // validation
     $("#last_name").keyup(function () {
@@ -184,14 +190,123 @@
             return false;
         };
     };
+    // scroll down to 'modify' div
+    function scrollToModify() {
+        document.getElementById("modify").scrollIntoView({ behavior: "smooth", block: "start", inline: "start" });
+    }
 </script>
 {% if modified %}
+<!-- boolean MODIFIED -->
 <script type="text/javascript">
     var emoji = new Array("😀", "😁", "😃", "😄", "😉", "😊", "😎", "🙂", "🤗", "🤩", "👍", "👏", "🙌", "🙆‍♀️", "🙆‍♂️", "🙆");
     function randomItem(e) {
         return e[Math.floor(Math.random() * e.length)];
     }
     document.querySelector("#emoji").innerText = randomItem(emoji);
+</script>
+{% endif %}
+{% if scroll_to_modify %}
+<!-- boolean SCROLL_TO_MODIFY -->
+<script type="text/javascript">
+    scrollToModify();
+</script>
+{% endif %}
+
+<!--
+---- inner content 02 (delete)
+-->
+<div id="delete" style="height: 24px;"></div>
+<div class="card shadow-hover">
+    <div class="card-body" style="background-color: rgba(0,0,0,.025);">
+        <h5 class="card-title pb-1">계정 삭제</h5>
+        <!-- alert -->
+        {% if unable_to_delete %}
+        <!-- boolean UNABLE_TO_DELETE -->
+        <div class="alert alert-secondary alert-dismissible fade show d-flex align-items-center" role="alert">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor"
+                class="bi bi-emoji-neutral flex-shrink-0 me-2" viewBox="0 0 16 16">
+                <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z" />
+                <path
+                    d="M4 10.5a.5.5 0 0 0 .5.5h7a.5.5 0 0 0 0-1h-7a.5.5 0 0 0-.5.5zm3-4C7 5.672 6.552 5 6 5s-1 .672-1 1.5S5.448 8 6 8s1-.672 1-1.5zm4 0c0-.828-.448-1.5-1-1.5s-1 .672-1 1.5S9.448 8 10 8s1-.672 1-1.5z" />
+            </svg>
+            <div class="vertical" style="word-break: break-word;">
+                접수된 지원서가 있어 계정을 삭제할 수 없습니다.
+            </div>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="안내창 닫기"></button>
+        </div>
+        {% endif %}
+        {% if wrong_delete_msg %}
+        <!-- boolean WRONG_DELETE_MSG -->
+        <div class="alert alert-secondary alert-dismissible fade show d-flex align-items-center" role="alert">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor"
+                class="bi bi-emoji-neutral flex-shrink-0 me-2" viewBox="0 0 16 16">
+                <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z" />
+                <path
+                    d="M4 10.5a.5.5 0 0 0 .5.5h7a.5.5 0 0 0 0-1h-7a.5.5 0 0 0-.5.5zm3-4C7 5.672 6.552 5 6 5s-1 .672-1 1.5S5.448 8 6 8s1-.672 1-1.5zm4 0c0-.828-.448-1.5-1-1.5s-1 .672-1 1.5S9.448 8 10 8s1-.672 1-1.5z" />
+            </svg>
+            <div class="vertical" style="word-break: break-word;">
+                이메일 주소가 올바르지 않습니다. 혹시 오탈자가 있나요?
+            </div>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="안내창 닫기"></button>
+        </div>
+        {% endif %}
+        <div class="alert alert-secondary d-flex align-items-center" role="alert">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor"
+                class="bi bi-info-circle flex-shrink-0 me-2" viewBox="0 0 16 16">
+                <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z" />
+                <path
+                    d="m8.93 6.588-2.29.287-.082.38.45.083c.294.07.352.176.288.469l-.738 3.468c-.194.897.105 1.319.808 1.319.545 0 1.178-.252 1.465-.598l.088-.416c-.2.176-.492.246-.686.246-.275 0-.375-.193-.304-.533L8.93 6.588zM9 4.5a1 1 0 1 1-2 0 1 1 0 0 1 2 0z" />
+            </svg>
+            <div class="vertical">
+                계정 삭제 시 개인정보, 지원서 등 모든 데이터가 삭제됩니다.
+            </div>
+        </div>
+        <!-- form -->
+        <form action="{% url 'member:myaccount' %}" method="POST" enctype="multipart/form-data"
+            onsubmit="return deleteMsgValidation()">
+            {% csrf_token %}
+            <div class="d-grid">
+                <label for="deleteMsg" class="form-label">이메일 주소</label>
+                <input type="text" class="form-control" id="deleteMsg" name="deleteMsg" placeholder="이메일 주소를 입력하세요."
+                    aria-label="계정 삭제를 위해 이메일 주소 입력" value="{{ delete_msg|default_if_none:'' }}">
+            </div>
+            <div class="d-grid" style="padding-top: 1.25rem !important;">
+                <button type="submit" class="btn btn-outline-danger" aria-label="계정 삭제">
+                    <i class="bi bi-trash me-2"></i>삭제</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!--
+---- inner script for content 02 (delete)
+-->
+<script type="text/javascript">
+    // validation for delete message
+    function deleteMsgValidation() {
+        var deleteMsg = document.querySelector("#deleteMsg");
+        if (deleteMsg.value !== "{{ user.email }}") {
+            alert("올바른 이메일 주소를 입력해주세요.")
+            return false;
+        }
+        if (confirm("정말 계정을 삭제하시겠어요?")) {
+            // call 'spinner (transition)' function
+            fadeOut();
+            // call 'avoiding duplicate requests (btn disabled)' function
+            setTimeout(inProgress, 0);
+        } else {
+            return false;
+        }
+    }
+    // scroll down to 'delete' div
+    function scrollToDelete() {
+        document.getElementById("delete").scrollIntoView({ behavior: "smooth", block: "start", inline: "start" });
+    }
+</script>
+{% if scroll_to_delete %}
+<!-- boolean SCROLL_TO_DELETE -->
+<script type="text/javascript">
+    scrollToDelete();
 </script>
 {% endif %}
 {% endblock %}

@@ -32,29 +32,38 @@
                 <li><a class="dropdown-item" href="#">임시이사회소집요구서 제출</a></li>
                 <li><a class="dropdown-item" href="#">임원입후보신청서 제출</a></li>
             </ul>
+            <a href="#" id="menuDecidenshareLarge" class="a-nav-item p-nav-item" data-bs-toggle="dropdown"
+                aria-expanded="false"><i class="bi bi-calendar4-event me-2"></i>의결/공유</a>
+            <ul class="dropdown-menu text-small shadow" aria-labelledby="menuDecidenshareLarge">
+                <li><a class="dropdown-item" href="#">회의 소집</a></li>
+                <li><a class="dropdown-item" href="#">회의 출석</a></li>
+                <li><a class="dropdown-item" href="#">총회의사록</a></li>
+                <li><a class="dropdown-item" href="#">이사회의사록</a></li>
+                <li><a class="dropdown-item" href="#">데이터 외부 공유</a></li>
+                <li><a class="dropdown-item" href="#">블뭅 링크 관리</a></li>
+            </ul>
             <a href="#" id="menuDraftnapproveLarge" class="a-nav-item p-nav-item" data-bs-toggle="dropdown"
                 aria-expanded="false"><i class="bi bi-briefcase me-2"></i>기안/결재</a>
             <ul class="dropdown-menu text-small shadow" aria-labelledby="menuDraftnapproveLarge">
+                <li>
+                    <h6 class="dropdown-header" style="color: #545859;"><i
+                            class="bi bi-arrow-return-right me-1"></i>유통대상문서</h6>
+                </li>
                 <li><a class="dropdown-item" href="#">일일활동보고서</a></li>
                 <li><a class="dropdown-item" href="#">공문</a></li>
+                <li>
+                    <hr class="dropdown-divider">
+                </li>
+                <li>
+                    <h6 class="dropdown-header" style="color: #545859;"><i
+                            class="bi bi-arrow-return-right me-1"></i>내부결재문서</h6>
+                </li>
                 <li><a class="dropdown-item" href="#">지출품의서</a></li>
                 <li><a class="dropdown-item" href="#">지출결의서</a></li>
                 <li><a class="dropdown-item" href="#">사업계획서</a></li>
                 <li><a class="dropdown-item" href="#">사업보고서</a></li>
                 <li><a class="dropdown-item" href="#">수지예산서</a></li>
                 <li><a class="dropdown-item" href="#">수지결산서</a></li>
-            </ul>
-            <a href="#" id="menuDecidenshareLarge" class="a-nav-item p-nav-item" data-bs-toggle="dropdown"
-                aria-expanded="false"><i class="bi bi-calendar4-event me-2"></i>의결/공유</a>
-            <ul class="dropdown-menu text-small shadow" aria-labelledby="menuDecidenshareLarge">
-                <li><a class="dropdown-item" href="#">회의 소집</a></li>
-                <li><a class="dropdown-item" href="#">회의 출석</a></li>
-                <li><a class="dropdown-item" href="#">정기이사회의사록</a></li>
-                <li><a class="dropdown-item" href="#">임시이사회의사록</a></li>
-                <li><a class="dropdown-item" href="#">정기총회의사록</a></li>
-                <li><a class="dropdown-item" href="#">임시총회의사록</a></li>
-                <li><a class="dropdown-item" href="#">데이터 외부 공유</a></li>
-                <li><a class="dropdown-item" href="#">블뭅 링크 관리</a></li>
             </ul>
         </div>
         <!-- account -->
@@ -123,9 +132,9 @@
                     <div class="accordion accordion-flush" id="menuSmallAccordion">
                         <div class="accordion-item">
                             <h2 class="accordion-header" id="menuChecknissueSmallHeading">
-                                <button class="accordion-button accordion-button-1rem collapsed" type="button" data-bs-toggle="collapse"
-                                    data-bs-target="#menuChecknissueSmall" aria-expanded="false"
-                                    aria-controls="menuChecknissueSmall">
+                                <button class="accordion-button accordion-button-1rem collapsed" type="button"
+                                    data-bs-toggle="collapse" data-bs-target="#menuChecknissueSmall"
+                                    aria-expanded="false" aria-controls="menuChecknissueSmall">
                                     <i class="bi bi-files me-2"></i>조회/발급
                                 </button>
                             </h2>
@@ -145,9 +154,9 @@
                         </div>
                         <div class="accordion-item">
                             <h2 class="accordion-header" id="menuApplynsubmitSmallHeading">
-                                <button class="accordion-button accordion-button-1rem collapsed" type="button" data-bs-toggle="collapse"
-                                    data-bs-target="#menuApplynsubmitSmall" aria-expanded="false"
-                                    aria-controls="menuApplynsubmitSmall">
+                                <button class="accordion-button accordion-button-1rem collapsed" type="button"
+                                    data-bs-toggle="collapse" data-bs-target="#menuApplynsubmitSmall"
+                                    aria-expanded="false" aria-controls="menuApplynsubmitSmall">
                                     <i class="bi bi-box-arrow-in-up-right me-2"></i>신청/제출
                                 </button>
                             </h2>
@@ -159,59 +168,25 @@
                                                 href="{% url 'applynsubmit:applymembership' %}">블루무브 가입 지원</a></li>
                                         <li><a class="list-group-item nav-small-item no-border" href="#">
                                                 블루무브 탈퇴 신청</a></li>
-                                        <li><a class="list-group-item nav-small-item no-border"
-                                                href="#">총회의결권위임장 제출</a>
+                                        <li><a class="list-group-item nav-small-item no-border" href="#">총회의결권위임장 제출</a>
                                         </li>
-                                        <li><a class="list-group-item nav-small-item no-border"
-                                                href="#">임시총회소집요구서 제출</a>
+                                        <li><a class="list-group-item nav-small-item no-border" href="#">임시총회소집요구서
+                                                제출</a>
                                         </li>
-                                        <li><a class="list-group-item nav-small-item no-border"
-                                                href="#">임시이사회소집요구서 제출</a>
+                                        <li><a class="list-group-item nav-small-item no-border" href="#">임시이사회소집요구서
+                                                제출</a>
                                         </li>
-                                        <li><a class="list-group-item nav-small-item no-border"
-                                                href="#">임원입후보신청서 제출</a>
+                                        <li><a class="list-group-item nav-small-item no-border" href="#">임원입후보신청서 제출</a>
                                         </li>
-                                    </ul>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="accordion-item">
-                            <h2 class="accordion-header" id="menuDraftnapproveSmallHeading">
-                                <button class="accordion-button accordion-button-1rem collapsed" type="button" data-bs-toggle="collapse"
-                                    data-bs-target="#menuDraftnapproveSmall" aria-expanded="false"
-                                    aria-controls="menuDraftnapproveSmall">
-                                    <i class="bi bi-briefcase me-2"></i>기안/결재
-                                </button>
-                            </h2>
-                            <div id="menuDraftnapproveSmall" class="accordion-collapse collapse"
-                                aria-labelledby="menuDraftnapproveSmallHeading" data-bs-parent="#menuSmallAccordion">
-                                <div class="accordion-body accordion-body-0">
-                                    <ul class="list-group list-group-flush">
-                                        <li><a class="list-group-item nav-small-item no-border"
-                                                href="#">일일활동보고서</a></li>
-                                        <li><a class="list-group-item nav-small-item no-border"
-                                                href="#">공문</a></li>
-                                        <li><a class="list-group-item nav-small-item no-border"
-                                                href="#">지출품의서</a></li>
-                                        <li><a class="list-group-item nav-small-item no-border"
-                                                href="#">지출결의서</a></li>
-                                        <li><a class="list-group-item nav-small-item no-border"
-                                                href="#">사업계획서</a></li>
-                                        <li><a class="list-group-item nav-small-item no-border"
-                                                href="#">사업보고서</a></li>
-                                        <li><a class="list-group-item nav-small-item no-border"
-                                                href="#">수지예산서</a></li>
-                                        <li><a class="list-group-item nav-small-item no-border"
-                                                href="#">수지결산서</a></li>
                                     </ul>
                                 </div>
                             </div>
                         </div>
                         <div class="accordion-item">
                             <h2 class="accordion-header" id="menuDecidenshareSmallHeading">
-                                <button class="accordion-button accordion-button-1rem collapsed" type="button" data-bs-toggle="collapse"
-                                    data-bs-target="#menuDecidenshareSmall" aria-expanded="false"
-                                    aria-controls="menuDecidenshareSmall">
+                                <button class="accordion-button accordion-button-1rem collapsed" type="button"
+                                    data-bs-toggle="collapse" data-bs-target="#menuDecidenshareSmall"
+                                    aria-expanded="false" aria-controls="menuDecidenshareSmall">
                                     <i class="bi bi-calendar4-event me-2"></i>의결/공유
                                 </button>
                             </h2>
@@ -223,18 +198,41 @@
                                                 소집</a></li>
                                         <li><a class="list-group-item nav-small-item no-border" href="#">회의
                                                 출석</a></li>
-                                        <li><a class="list-group-item nav-small-item no-border"
-                                                href="#">정기이사회의사록</a></li>
-                                        <li><a class="list-group-item nav-small-item no-border"
-                                                href="#">임시이사회의사록</a></li>
-                                        <li><a class="list-group-item nav-small-item no-border"
-                                                href="#">정기총회의사록</a></li>
-                                        <li><a class="list-group-item nav-small-item no-border"
-                                                href="#">임시총회의사록</a></li>
-                                        <li><a class="list-group-item nav-small-item no-border"
-                                                href="#">데이터 외부 공유</a></li>
+                                        <li><a class="list-group-item nav-small-item no-border" href="#">총회의사록</a></li>
+                                        <li><a class="list-group-item nav-small-item no-border" href="#">이사회의사록</a></li>
+                                        <li><a class="list-group-item nav-small-item no-border" href="#">데이터 외부 공유</a>
+                                        </li>
                                         <li><a class="list-group-item nav-small-item no-border" href="#">블뭅
                                                 링크 관리</a></li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="accordion-item">
+                            <h2 class="accordion-header" id="menuDraftnapproveSmallHeading">
+                                <button class="accordion-button accordion-button-1rem collapsed" type="button"
+                                    data-bs-toggle="collapse" data-bs-target="#menuDraftnapproveSmall"
+                                    aria-expanded="false" aria-controls="menuDraftnapproveSmall">
+                                    <i class="bi bi-briefcase me-2"></i>기안/결재
+                                </button>
+                            </h2>
+                            <div id="menuDraftnapproveSmall" class="accordion-collapse collapse"
+                                aria-labelledby="menuDraftnapproveSmallHeading" data-bs-parent="#menuSmallAccordion">
+                                <div class="accordion-body accordion-body-0">
+                                    <ul class="list-group list-group-flush">
+                                        <li><span class="list-group-item nav-small-header no-border"><i
+                                                    class="bi bi-arrow-return-right me-2"></i>유통대상문서</span></li>
+                                        <li><a class="list-group-item nav-small-item no-border" href="#">일일활동보고서</a>
+                                        </li>
+                                        <li><a class="list-group-item nav-small-item no-border" href="#">공문</a></li>
+                                        <li><span class="list-group-item nav-small-header top-border"><i
+                                                    class="bi bi-arrow-return-right me-2"></i>내부결재문서</span></li>
+                                        <li><a class="list-group-item nav-small-item no-border" href="#">지출품의서</a></li>
+                                        <li><a class="list-group-item nav-small-item no-border" href="#">지출결의서</a></li>
+                                        <li><a class="list-group-item nav-small-item no-border" href="#">사업계획서</a></li>
+                                        <li><a class="list-group-item nav-small-item no-border" href="#">사업보고서</a></li>
+                                        <li><a class="list-group-item nav-small-item no-border" href="#">수지예산서</a></li>
+                                        <li><a class="list-group-item nav-small-item no-border" href="#">수지결산서</a></li>
                                     </ul>
                                 </div>
                             </div>

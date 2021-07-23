@@ -5,6 +5,7 @@ from django.contrib.auth.decorators import login_required
 # models
 from django.contrib.auth.models import User
 from .models import Profile
+from applynsubmit.models import Applymembership
 
 # Slack
 from slack_sdk import WebClient
@@ -118,13 +119,20 @@ def cron_delete_all_inactive_users(request):
 ####
 @login_required
 def myaccount(request):
+    # obj
+    app = None
     # str, lst
     last_name = request.POST.get("last_name")
     first_name = request.POST.get("first_name")
     phone = request.POST.get("phone")
+    delete_msg = request.POST.get("deleteMsg")
     # boolean
     modified = None
-    if request.method == "POST":
+    unable_to_delete = None
+    wrong_delete_msg = None
+    scroll_to_modify = None
+    scroll_to_delete = None
+    if request.method == "POST" and not delete_msg:
         user = User.objects.get(id=request.user.id)
         user.last_name = last_name
         user.first_name = first_name
@@ -133,11 +141,32 @@ def myaccount(request):
         profile.phone = phone
         profile.save()
         modified = True
+        scroll_to_modify = True
+    elif request.method == "POST" and delete_msg:
+        try:
+            app = Applymembership.objects.get(applicant=request.user, received=True)
+        except:
+            pass
+        if delete_msg == request.user.email and not app:
+            request.user.delete()
+            return redirect("home:main")
+        elif delete_msg == request.user.email and app:
+            unable_to_delete = True
+            scroll_to_delete = True
+        elif not delete_msg == request.user.email:
+            wrong_delete_msg = True
+            scroll_to_delete = True
     return render(
         request,
         "member/myaccount.html",
         {
+            # str, lst
+            "delete_msg": delete_msg,
             # boolean
-            "modified": modified
+            "modified": modified,
+            "unable_to_delete": unable_to_delete,
+            "wrong_delete_msg": wrong_delete_msg,
+            "scroll_to_modify": scroll_to_modify,
+            "scroll_to_delete": scroll_to_delete,
         },
     )

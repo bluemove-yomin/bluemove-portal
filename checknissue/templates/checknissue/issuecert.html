@@ -6,8 +6,8 @@
 <meta property="og:url" content="{% url 'checknissue:issuecert' %}">
 <meta property="og:title" content="블루무브 포털 - 활동증명서 발급">
 <meta property="og:description" content="블루무브 포털 - 활동증명서 발급">
-<meta name="description" content="블루무브 포털 - 활동증명서 발급">
 <meta name="subject" content="블루무브 포털 - 활동증명서 발급">
+<meta name="description" content="블루무브 포털 - 활동증명서 발급">
 <meta name="robots" content="index,follow">
 {% endblock %}
 
@@ -219,14 +219,14 @@
                 <input type="hidden" id="vCode" name="vCode" value="{{ v_code_input|default_if_none:'' }}" readonly
                     hidden>
             </div>
-            <div class="row row-cols-1 row-cols-md-2 g-3" style="padding-top: 1.25rem !important;">
-                <div class="col">
+            <div class="row g-3" style="padding-top: 1.25rem !important;">
+                <div class="col-md-9 col-lg-10">
                     <div class="d-grid">
                         <button type="button" class="btn btn-outline-secondary" aria-label="활동증명서 발급" disabled>
                             <i class="bi bi-file-earmark-pdf me-2"></i>활동증명서 발급</button>
                     </div>
                 </div>
-                <div class="col">
+                <div class="col-md-3 col-lg-2">
                     <div class="d-grid">
                         <button type="button" class="btn btn-outline-secondary" aria-label="인증 초기화"
                             onclick="initVCode(this)">
@@ -240,15 +240,15 @@
                 <input type="hidden" id="vCode" name="vCode" value="{{ v_code_input|default_if_none:'' }}" readonly
                     hidden>
             </div>
-            <div class="row row-cols-1 row-cols-md-2 g-3" style="padding-top: 1.25rem !important;">
-                <div class="col">
+            <div class="row g-3" style="padding-top: 1.25rem !important;">
+                <div class="col-md-9 col-lg-10">
                     <div class="d-grid">
                         <button type="submit" class="btn btn-outline-secondary" aria-label="활동증명서 발급"
                             onclick="cmdPostIssue(this)">
                             <i class="bi bi-file-earmark-pdf me-2"></i>활동증명서 발급</button>
                     </div>
                 </div>
-                <div class="col">
+                <div class="col-md-3 col-lg-2">
                     <div class="d-grid">
                         <button type="button" class="btn btn-outline-secondary" aria-label="인증 초기화"
                             onclick="initVCode(this)">

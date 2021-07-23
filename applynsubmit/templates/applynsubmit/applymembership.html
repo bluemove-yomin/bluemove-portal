@@ -7,15 +7,15 @@
 <meta property="og:url" content="{% url 'applynsubmit:applymembership' %}">
 <meta property="og:title" content="블루무브 포털 - 블루무브 가입 지원">
 <meta property="og:description" content="블루무브 포털 - 블루무브 가입 지원">
-<meta name="description" content="블루무브 포털 - 블루무브 가입 지원">
 <meta name="subject" content="블루무브 포털 - 블루무브 가입 지원">
+<meta name="description" content="블루무브 포털 - 블루무브 가입 지원">
 {% elif "wanted_id=" in request.get_full_path %}
 {% for wanted_row in wanted_list %}
 <meta property="og:url" content="{% url 'applynsubmit:applymembership' %}?wanted_id={{ wanted_id }}">
 <meta property="og:title" content="블루무브 포털 - 블루무브 가입 지원 - {{ wanted_row.title }}">
 <meta property="og:description" content="블루무브 포털 - 블루무브 가입 지원 - {{ wanted_row.title }}">
-<meta name="description" content="블루무브 포털 - 블루무브 가입 지원 - {{ wanted_row.title }}">
 <meta name="subject" content="블루무브 포털 - 블루무브 가입 지원 - {{ wanted_row.title }}">
+<meta name="description" content="블루무브 포털 - 블루무브 가입 지원 - {{ wanted_row.title }}">
 {% endfor %}
 {% endif %}
 <meta name="robots" content="index,follow">
@@ -47,13 +47,6 @@
 ---- inner styles
 -->
 <style type="text/css">
-    .badge {
-        padding: .25em .65em !important;
-        margin-top: .08rem !important;
-        font-size: .9em !important;
-        vertical-align: top !important;
-    }
-
     .notion-page-content div {
         font-family: "Noto Sans KR", "-apple-system", "sans-serif" !important;
         white-space: pre-wrap;
@@ -107,8 +100,7 @@
     <div class="card-body" style="background-color: rgba(0,0,0,.025);">
         <h5 class="card-title pb-1">공고 검색</h5>
         <!-- alert -->
-        {% if not "wanted_id=" in request.get_full_path %}
-        {% elif wrong_url %}
+        {% if wrong_url %}
         <!-- boolean WRONG_URL -->
         <div class="alert alert-secondary alert-dismissible fade show d-flex align-items-center" role="alert">
             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor"
@@ -193,13 +185,13 @@
             <!-- 상태 -->
             <td>
                 {% if "준비 중" in wanted_row.status %}
-                <span class="badge bg-secondary">준비 중</span>
+                <span class="badge badge-bluemove bg-secondary">준비 중</span>
                 {% elif "접수 중" in wanted_row.status %}
-                <span class="badge bg-bluemove">접수 중</span>
+                <span class="badge badge-bluemove bg-bluemove">접수 중</span>
                 {% elif "마감" in wanted_row.status %}
-                <span class="badge bg-dark">마감</span>
+                <span class="badge badge-bluemove bg-dark">마감</span>
                 {% else %}
-                <span class="badge bg-dark">작업 중</span>
+                <span class="badge badge-bluemove bg-dark">작업 중</span>
                 {% endif %}
             </td>
         </tr>
@@ -229,19 +221,19 @@
         <li class="list-group-item px-0">
             <div class="d-flex justify-content-between align-items-center mb-2">
                 <!-- 담당 -->
-                <p class="m-0 vertical">
+                <p class="m-0 vertical" style="color: #545859; font-weight: bold;">
                     {{ wanted_row.team }}
                 </p>
                 <!-- 상태 -->
                 <small>
                     {% if "준비 중" in wanted_row.status %}
-                    <span class="badge bg-secondary">준비 중</span>
+                    <span class="badge badge-bluemove bg-secondary">준비 중</span>
                     {% elif "접수 중" in wanted_row.status %}
-                    <span class="badge bg-bluemove">접수 중</span>
+                    <span class="badge badge-bluemove bg-bluemove">접수 중</span>
                     {% elif "마감" in wanted_row.status %}
-                    <span class="badge bg-dark">마감</span>
+                    <span class="badge badge-bluemove bg-dark">마감</span>
                     {% else %}
-                    <span class="badge bg-dark">작업 중</span>
+                    <span class="badge badge-bluemove bg-dark">작업 중</span>
                     {% endif %}
                 </small>
             </div>
@@ -398,6 +390,7 @@
 </div>
 {% endif %}
 {% endif %}
+
 {% elif "wanted_id=" in request.get_full_path or error %}
 <!--
 ---- inner template 02
@@ -421,13 +414,13 @@
                 </p>
                 <p class="mb-0" style="margin-top: .1rem;">
                     {% if "준비 중" in wanted_row.status %}
-                    <span class="badge bg-secondary">준비 중</span>
+                    <span class="badge badge-bluemove bg-secondary">준비 중</span>
                     {% elif "접수 중" in wanted_row.status %}
-                    <span class="badge bg-bluemove">접수 중</span>
+                    <span class="badge badge-bluemove bg-bluemove">접수 중</span>
                     {% elif "마감" in wanted_row.status %}
-                    <span class="badge bg-dark">마감</span>
+                    <span class="badge badge-bluemove bg-dark">마감</span>
                     {% else %}
-                    <span class="badge bg-dark">작업 중</span>
+                    <span class="badge badge-bluemove bg-dark">작업 중</span>
                     {% endif %}
                 </p>
             </div>
@@ -438,13 +431,13 @@
             </small>
             <small class="d-grid align-items-stretch mt-2">
                 {% if "준비 중" in wanted_row.status %}
-                <span class="badge bg-secondary">준비 중</span>
+                <span class="badge badge-bluemove bg-secondary">준비 중</span>
                 {% elif "접수 중" in wanted_row.status %}
-                <span class="badge bg-bluemove">접수 중</span>
+                <span class="badge badge-bluemove bg-bluemove">접수 중</span>
                 {% elif "마감" in wanted_row.status %}
-                <span class="badge bg-dark">마감</span>
+                <span class="badge badge-bluemove bg-dark">마감</span>
                 {% else %}
-                <span class="badge bg-dark">작업 중</span>
+                <span class="badge badge-bluemove bg-dark">작업 중</span>
                 {% endif %}
             </small>
         </div>

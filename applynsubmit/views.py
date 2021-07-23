@@ -171,12 +171,13 @@ def privacy_masking(obj_app):
         + obj_app.applicant.profile.phone.split("-")[1]
         + "-****"
     )
-    masked_email_pre = (
-        re.sub(r"[A-Za-z0-9._%+-]", "*", obj_app.applicant.email.split("@")[0])
+    masked_email = (
+        obj_app.applicant.email.split("@")[0][:2]
+        + re.sub(r"[A-Za-z0-9._%+-]", "*", obj_app.applicant.email.split("@")[0])[2:]
         + "@"
-        + obj_app.applicant.email.split("@")[1]
+        + obj_app.applicant.email.split("@")[1][:1]
+        + re.sub(r"[A-Za-z0-9]", "*", obj_app.applicant.email.split("@")[1])[1:]
     )
-    masked_email = obj_app.applicant.email[:2] + masked_email_pre[2:]
     return masked_name, masked_phone, masked_email
 
 
@@ -1567,7 +1568,7 @@ def applymembership(request):
         requests.post(
             "https://api.notion.com/v1/databases/" + wanted_db_id + "/query",
             headers=notion_headers,
-            data='{ "filter": { "or": [ {"property": "상태", "text": {"contains": "접수 중"} }, {"property": "상태", "text": {"contains": "준비 중"} } ] }, "sorts": [ {"property": "상태", "direction": "descending"}, {"property": "모집 종료", "direction": "ascending"} ] }'.encode(
+            data='{ "filter": { "or": [ {"property": "상태", "text": {"contains": "접수 중"} }, {"property": "상태", "text": {"contains": "준비 중"} } ] }, "sorts": [ {"property": "상태", "direction": "descending"}, {"property": "모집 종료", "direction": "ascending"}, {"property": "공고명", "direction": "ascending"} ] }'.encode(
                 "utf-8"
             ),
         ).text
@@ -1576,7 +1577,7 @@ def applymembership(request):
         requests.post(
             "https://api.notion.com/v1/databases/" + wanted_db_id + "/query",
             headers=notion_headers,
-            data='{ "filter": {"property": "상태", "text": {"contains": "마감"} }, "sorts": [ {"property": "모집 종료", "direction": "descending"} ] }'.encode(
+            data='{ "filter": {"property": "상태", "text": {"contains": "마감"} }, "sorts": [ {"property": "모집 종료", "direction": "descending"}, {"property": "공고명", "direction": "ascending"} ] }'.encode(
                 "utf-8"
             ),
         ).text
@@ -1648,7 +1649,6 @@ def applymembership(request):
         "applynsubmit/applymembership.html",
         {
             # str, lst
-            "wanted_id": wanted_id,
             "wanted_list": wanted_list,
             "q": q,
             # boolean
