@@ -1404,8 +1404,8 @@
             <div class="accordion-item">
                 <h2 class="accordion-header" id="heading_{{ app.applicant }}">
                     <button class="accordion-button accordion-button-20px bg-black025 collapsed" type="button"
-                        data-bs-toggle="collapse" data-bs-target="#collapse_{{ app.applicant }}" aria-expanded="false"
-                        aria-controls="collapse_{{ app.applicant }}">
+                        data-bs-toggle="collapse" data-bs-target="#collapse_{{ app.applicant|cut:'.' }}" aria-expanded="false"
+                        aria-controls="collapse_{{ app.applicant|cut:'.' }}">
                         <img alt="{{ app.applicant.last_name }}{{ app.applicant.first_name }}님의 Google 계정 프로필 사진"
                             height="28" class="rounded-circle me-2"
                             src="{{ app.applicant.socialaccount_set.all.0.get_avatar_url }}" />
@@ -1422,7 +1422,7 @@
                         </p>
                     </button>
                 </h2>
-                <div id="collapse_{{ app.applicant }}" class="accordion-collapse bg-black025 collapse"
+                <div id="collapse_{{ app.applicant|cut:'.' }}" class="accordion-collapse bg-black025 collapse"
                     aria-labelledby="heading_{{ app.applicant }}" data-bs-parent="#appAccordion">
                     <div class="accordion-body" style="padding-bottom: 1.25rem;">
                         <div class="row row-cols-1 g-3">

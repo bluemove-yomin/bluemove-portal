@@ -1283,7 +1283,9 @@ def applymembership(request):
                 if cmd_post == "create" and not app and not timeout:
                     scroll_to_app = True
                     app = Applymembership.objects.create(
-                        applicant=request.user, wanted_id=wanted_id
+                        applicant=request.user,
+                        wanted_id=wanted_id,
+                        wanted_title=wanted_title,
                     )
                 # save or submit the application
                 elif (
