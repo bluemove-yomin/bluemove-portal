@@ -50,7 +50,7 @@ NOTION_TOKEN = get_secret("NOTION_TOKEN")
 SLACK_BOT_TOKEN = get_secret("SLACK_BOT_TOKEN")
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
 ALLOWED_HOSTS = ["*"]
 
@@ -75,6 +75,7 @@ INSTALLED_APPS = [
     "home.apps.HomeConfig",
     "checknissue.apps.ChecknissueConfig",
     "applynsubmit.apps.ApplynsubmitConfig",
+    "draftnapprove.apps.DraftnapproveConfig",
     "member.apps.MemberConfig",
 ]
 

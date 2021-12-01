@@ -34,7 +34,7 @@ import re
 # user-agents (https://github.com/selwin/python-user-agents)
 import user_agents
 
-# application
+# dateutil (https://github.com/dateutil/dateutil)
 from dateutil import parser
 
 # multiple functions
@@ -70,7 +70,7 @@ mail_service = build("gmail", "v1", credentials=credentials_delegated)
 notion_headers = {
     "Authorization": f"Bearer " + notion_token,
     "Content-Type": "application/json",
-    "Notion-Version": "2021-05-13",
+    "Notion-Version": "2021-08-16",
 }
 
 # Oopy scraping
@@ -79,6 +79,9 @@ bs4_headers = {
 }
 
 # Bluemove data
+# register_id = "16pysy7yaJWVJ-KmfpYR4EICGjORR4GI5"
+register_id = "1HkfnZ-2udmQAgE3u8o54rj6ek6IpcDFPjsgX4ycFATs"
+
 wanted_db_id = "7e8e8ec2-93c9-496e-ada9-40ab78572bbb"
 management_all_channel_id = "CV3THBHJB"
 management_dev_channel_id = "C01L8PETS5S"
@@ -1657,3 +1660,55 @@ def applymembership(request):
             "wrong_url": wrong_url,
         },
     )
+
+def leavemembership(request):
+    return render(request, 'applynsubmit/leavemembership.html')
+
+
+def leavenow(request):
+    # user_identity = request.user.profile.phone
+    # test 코드
+    user_identity = '010-1234-5678'
+
+    bluemover_list = (
+        sheets_service.spreadsheets()
+        .values()
+        .get(
+            spreadsheetId=register_id,
+            range="register!A:O",
+            majorDimension="ROWS",
+        )
+        .execute()
+    ).get("values")
+
+    bm = len(bluemover_list)
+
+    for i in range(bm): # 0~126까지 행 존재
+        count = bluemover_list[i][11].count(user_identity)
+        if count == 1:
+            break
+        if (i == bm-1 and count == 0) :
+            i = 'no data'
+    
+    sheetId = 2123333259
+
+    request_body = {
+        "requests": [
+          {
+            "deleteDimension": {
+              "range": { # endIndex 삭제
+                "sheetId": sheetId,
+                "dimension": "ROWS",
+                "startIndex": i,
+                "endIndex": i+1, 
+              },
+            }
+          },
+        ],
+      }
+    sheets_service.spreadsheets().batchUpdate(
+        spreadsheetId=register_id,
+        body=request_body,
+    ).execute()
+
+    return redirect('home:main')
