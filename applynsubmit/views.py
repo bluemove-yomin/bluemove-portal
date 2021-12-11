@@ -1684,11 +1684,12 @@ def leavenow(request):
     bm = len(bluemover_list)
 
     for i in range(bm): # 0~126까지 행 존재
-        count = bluemover_list[i][11].count(user_identity)
+        count = bluemover_list[i][11].count(user_identity) # 11열이 phone 번호 
         if count == 1:
             break
         if (i == bm-1 and count == 0) :
-            i = 'no data'
+            result = '명부에 없는 회원입니다.'
+            return render(request, 'applynsubmit/leavemembership.html', {"result" : result})
     
     sheetId = 2123333259
 
