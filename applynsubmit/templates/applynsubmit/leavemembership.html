@@ -1,3 +1,8 @@
-<h1>hello</h1>
-<a href="{% url 'applynsubmit:leavenow' %}">삭제</a>
-<!-- {{user.profile.phone}} <br /> -->
+<h1>탈퇴페이지</h1>
+<a href="{% url 'applynsubmit:leavenow' %}" onclick="deleteCheck()">삭제</a>
+
+<script type="text/javascript">
+  const deleteCheck = () => {
+    confirm("정말 탈퇴하시겠습니까?");
+  };
+</script>
