@@ -1,6 +1,140 @@
-<h1>탈퇴페이지</h1>
-<a href="{% url 'applynsubmit:leavenow' %}" onclick="deleteCheck()">삭제</a>
+{% extends 'base.html' %}
 
+{% load static %}
+
+{% block meta %}
+{% if not "wanted_id=" in request.get_full_path %}
+<meta property="og:url" content="{% url 'applynsubmit:leavemembership' %}">
+<meta property="og:title" content="블루무브 포털 - 블루무브 탈퇴 지원">
+<meta property="og:description" content="블루무브 포털 - 블루무브 탈퇴 지원">
+<meta name="subject" content="블루무브 포털 - 블루무브 탈퇴 지원">
+<meta name="description" content="블루무브 포털 - 블루무브 탈퇴 지원">
+{% elif "wanted_id=" in request.get_full_path %}
+{% for wanted_row in wanted_list %}
+<meta property="og:url" content="{% url 'applynsubmit:leavemembership' %}?wanted_id={{ wanted_id }}">
+<meta property="og:title" content="블루무브 포털 - 블루무브 탈퇴 지원 - {{ wanted_row.title }}">
+<meta property="og:description" content="블루무브 포털 - 블루무브 탈퇴 지원 - {{ wanted_row.title }}">
+<meta name="subject" content="블루무브 포털 - 블루무브 탈퇴 지원 - {{ wanted_row.title }}">
+<meta name="description" content="블루무브 포털 - 블루무브 탈퇴 지원 - {{ wanted_row.title }}">
+{% endfor %}
+{% endif %}
+<meta name="robots" content="index,follow">
+{% endblock %}
+
+{% block title %}
+{% if not "wanted_id=" in request.get_full_path %}
+블루무브 포털 - 블루무브 탈퇴 지원
+{% elif "wanted_id=" in request.get_full_path %}
+{% for wanted_row in wanted_list %}
+블루무브 포털 - 블루무브 탈퇴 지원 - {{ wanted_row.title }}
+{% endfor %}
+{% endif %}
+{% endblock %}
+
+{% block breadcrumb %}
+<div class="breadcrumb-screen breadcrumb-base breadcrumb-applymembership">
+    <div class="d-flex align-items-center breadcrumb-layer">
+        <div class="container-lg text-center">
+            <h1 class="screenLarge m-0" style="color: #FFFFFF; text-shadow: 1px 1px 5px #212529;">블루무브 탈퇴 지원</h1>
+            <h2 class="screenSmall m-0" style="color: #FFFFFF; text-shadow: 1px 1px 5px #212529;">블루무브 탈퇴 지원</h2>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+
+{% block content %}
+<!--
+---- inner styles
+-->
+<style type="text/css">
+  .notion-page-content div {
+      font-family: "Noto Sans KR", "-apple-system", "sans-serif" !important;
+      white-space: pre-wrap;
+      word-break: break-word;
+  }
+
+  .notion-header-block,
+  .notion-sub_header-block,
+  .notion-sub_sub_header-block {
+      margin-top: 1.5rem;
+  }
+
+  @media screen and (min-width: 768px) {
+      .sticky-top {
+          position: -webkit-sticky;
+          position: sticky;
+          top: 0;
+          background-color: #FFFFFF;
+      }
+  }
+
+  @media screen and (max-width: 767px) {
+      .sticky-top {
+          position: unset;
+          top: auto;
+          background-color: unset;
+      }
+  }
+
+  .sticky-right {
+      position: -webkit-sticky;
+      position: sticky;
+      top: 157.39px;
+  }
+
+  .svg-notion,
+  .svg-notion-hover {
+      position: relative;
+      transition: all .15s ease-in-out;
+  }
+
+  .info-detail{
+      font-weight:350;
+    }
+
+  .warning-info{
+    color: red;
+  }
+</style>
+
+{% if not "wanted_id=" in request.get_full_path or wrong_url %}
+<!--
+---- inner template 01
+-->
+<!--
+---- inner content 01 (info)
+-->
+<div class="card shadow-hover mb-4">
+  <div class="card-body" style="background-color: rgba(0,0,0,.025);">
+      <h5 class="card-title pb-1 text-center">블루무브 탈퇴 안내</h5>
+    
+      <!-- form -->
+      <form method="POST"  id="formCheckleave">
+          <div class="row text-center">
+              <label class="form-label">다음은 블루무브 탈퇴에 관한 안내문입니다. 탈퇴 하기 전, 모든 안내 사항을 <span class="warning-info">반드시 읽고 확인</span>하시기 바랍니다. </label>
+              <div type="text" class="form-control"> 
+                  블루무브 포털 회원 탈퇴 후, 해당 서비스를 더 이상 이용할 수 없으며, 전화번호, 이름 등의 모든 개인정보는 삭제됩니다.
+                  <div type="text" class=" info-detail">블루무브 회원 정보 및 메일, 전화번호, 이름, 생년월일, 주민등록번호, 이메일 주소 등 개인 정보는 모두 삭제되며, 삭제된 데이터는 복구되지 않습니다. </div><br><br>
+                  블루무브 포털 회원 탈퇴 시, 노션, 슬랙 등 블루무브와 관련된 모든 서비스에서 탈퇴 처리됩니다.
+                  <div type="text" class="info-detail">블루무브 계정을 이용해 로그인 한 노션, 슬랙 등의 서비스를 더 이상 이용하실 수 없습니다. </div><br><br>
+                  블루무브 포털 회원 탈퇴 시 해당 아이디는 즉시 탈퇴 처리되며, 재가입 시 동일한 아이디를 사용하실 수 없습니다.
+                  <div type="text" class="info-detail">사용하고 계신 블루무브 계정을 탈퇴하시면 본인과 타인 모두 재사용 및 복구가 불가합니다.</div>
+                </div>
+          </div>  
+            
+          <div class="d-grid" style="padding-top: 1.25rem !important;">
+            <label class="form-label text-center warning-info" >위 내용을 모두 확인하였으며, 블루무브를 탈퇴하시겠습니까?</label>
+              <a  class="btn btn-outline-secondary warning-info" id="btnCheckcert" href="{% url 'applynsubmit:leavenow' %}" onclick="deleteCheck()">
+                  <i class="bi bi-check2 me-2" ></i>예, 모두 확인 하였으며 탈퇴하겠습니다.</a>
+          </div>
+      </form>
+  </div>
+</div>
+
+<!--
+---- inner script for content 01 (search)
+-->
 {% if result %}
 <script type="text/javascript">
   alert("{{result}}");
@@ -13,3 +147,5 @@
     confirm("정말 탈퇴하시겠습니까?");
   };
 </script>
+{% endif %}
+{% endblock %}
