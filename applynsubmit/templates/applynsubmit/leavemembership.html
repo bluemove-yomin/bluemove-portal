@@ -125,7 +125,7 @@
             
           <div class="d-grid" style="padding-top: 1.25rem !important;">
             <label class="form-label text-center warning-info" >위 내용을 모두 확인하였으며, 블루무브를 탈퇴하시겠습니까?</label>
-              <a  class="btn btn-outline-secondary warning-info" id="btnCheckcert" href="{% url 'applynsubmit:leavenow' %}" onclick="deleteCheck()">
+              <a  class="btn btn-outline-secondary warning-info" id="btnCheckcert" data-uri="{% url 'applynsubmit:leavenow' %}">
                   <i class="bi bi-check2 me-2" ></i>예, 모두 확인 하였으며 탈퇴하겠습니다.</a>
           </div>
       </form>
@@ -138,14 +138,19 @@
 {% if result %}
 <script type="text/javascript">
   alert("{{result}}");
+  location.href = "/";
 </script>
 
 {% endif %}
 
 <script type="text/javascript">
-  const deleteCheck = () => {
-    confirm("정말 탈퇴하시겠습니까?");
-  };
+  const btnCheckcert = document.getElementById("btnCheckcert");
+  btnCheckcert.addEventListener("click", function (event) {
+    if (confirm("정말로 삭제하시겠습니까?")) {
+      alert(`정상적으로 탈퇴되었습니다. \n다음에 좋은 인연으로 다시 만나요!`);
+      location.href = btnCheckcert.dataset.uri;
+    }
+  });
 </script>
 {% endif %}
 {% endblock %}
