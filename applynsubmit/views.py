@@ -1712,4 +1712,5 @@ def leavenow(request):
         body=request_body,
     ).execute()
 
-    return redirect('home:main')
+    result = '정상적으로 탈퇴되었습니다. 다음에 좋은 인연으로 다시 만나요!'
+    return render(request, 'applynsubmit/leavemembership.html', {"result" : result})
