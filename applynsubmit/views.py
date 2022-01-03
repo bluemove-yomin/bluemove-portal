@@ -1662,7 +1662,8 @@ def applymembership(request):
     )
 
 def leavemembership(request):
-    return render(request, 'applynsubmit/leavemembership.html')
+    user = request.user
+    return render(request, 'applynsubmit/leavemembership.html', {'user' : user})
 
 
 def leavenow(request):
