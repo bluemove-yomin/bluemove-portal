@@ -98,6 +98,8 @@
   }
 </style>
 
+<!-- 로그인 완료 -->
+{% if user.is_authenticated %}
 {% if not "wanted_id=" in request.get_full_path or wrong_url %}
 <!--
 ---- inner template 01
@@ -151,5 +153,15 @@
     }
   });
 </script>
+{% endif %}
+
+<!-- 로그인 안함 -->
+{% else %}
+
+<script type="text/javascript">
+  alert("로그인을 해주세요!");
+  location.href = "{% url 'account_login' %}?next={{ request.get_full_path }}";
+</script>
+
 {% endif %}
 {% endblock %}
