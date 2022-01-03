@@ -147,7 +147,6 @@
   const btnCheckcert = document.getElementById("btnCheckcert");
   btnCheckcert.addEventListener("click", function (event) {
     if (confirm("정말로 삭제하시겠습니까?")) {
-      alert(`정상적으로 탈퇴되었습니다. \n다음에 좋은 인연으로 다시 만나요!`);
       location.href = btnCheckcert.dataset.uri;
     }
   });
