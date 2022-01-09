@@ -282,6 +282,27 @@
 ---- inner script for content 01 (authentication)
 -->
 <script type="text/javascript">
+    // call 'validation' function when the user hits the enter key
+    $("#alumniName").on("keyup", function (key) {
+        if (key.keyCode == 13) {
+            validation();
+        }
+    });
+    $("#alumniBirth").on("keyup", function (key) {
+        if (key.keyCode == 13) {
+            validation();
+        }
+    });
+    $("#alumniPhone").on("keyup", function (key) {
+        if (key.keyCode == 13) {
+            validation();
+        }
+    });
+    $("#alumniEmail").on("keyup", function (key) {
+        if (key.keyCode == 13) {
+            validation();
+        }
+    });
     // validation
     $("#alumniName").keyup(function () {
         var foo = $(this).val().replace(/[a-z0-9]|[ \[\]{}()<>?|`~!@#$%^&*-_+=,.;:\"\\]/g, "");
@@ -302,7 +323,7 @@
             event.returnValue = false;
         }
     }
-    function validation() {
+    function validation(form) {
         var patternNum = /[0-9]/; // number
         var patternSpc = /[~!@#$%^&*()_+|<>?:{}]/; // special characters
         var patternEng = /[a-zA-Z]/; // alphabet
@@ -328,17 +349,12 @@
             alert("생년월일은 숫자만 입력해주세요.")
             return false;
         };
-        if (alumniBirth.value.indexOf("19") !== 0) {
-            alert("올바른 생년월일을 입력해주세요.");
-            return false;
-        };
         if (alumniBirth.value.indexOf("-") !== 4 &&
             alumniBirth.value.lastIndexOf("-") !== 7) {
             alert("올바른 생년월일을 입력해주세요.")
             return false;
         };
-        if (Number(alumniBirth.value.slice(3, 4)) == 0 ||
-            Number(alumniBirth.value.slice(5, 7)) == 0 ||
+        if (Number(alumniBirth.value.slice(5, 7)) == 0 ||
             Number(alumniBirth.value.slice(5, 7)) > 12 ||
             Number(alumniBirth.value.slice(8, 10)) == 0 ||
             Number(alumniBirth.value.slice(8, 10)) > 31) {
@@ -405,7 +421,7 @@
             fadeOut();
             // call 'avoiding duplicate requests (btn disabled)' function
             setTimeout(inProgress, 0);
-            return true;
+            return form.submit();
         } else {
             alert("잘못된 값이 있습니다.\n올바른 값을 입력해주세요.")
             return false;
