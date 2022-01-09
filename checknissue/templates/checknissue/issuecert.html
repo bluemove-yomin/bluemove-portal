@@ -178,7 +178,7 @@
         {% endif %}
         <!-- form -->
         <form action="{% url 'checknissue:issuecert' %}" method="POST" enctype="multipart/form-data"
-            onsubmit="return validation(this)">
+            id="formIssuecertReal" onsubmit="return validation()">
             {% csrf_token %}
             <input type="hidden" id="cmdPost" name="cmdPost" value="" readonly hidden>
             <div id="formIssuecert">
@@ -323,12 +323,13 @@
             event.returnValue = false;
         }
     }
-    function validation(form) {
+    function validation() {
         var patternNum = /[0-9]/; // number
         var patternSpc = /[~!@#$%^&*()_+|<>?:{}]/; // special characters
         var patternEng = /[a-zA-Z]/; // alphabet
         var patternKor = /[ㄱ-ㅎ|ㅏ-ㅣ|가-힣]/; // Hangul
         var patternEml = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/ // email
+        var formIssuecertReal = document.querySelector("#formIssuecertReal");
         var alumniName = document.querySelector("#alumniName");
         var alumniBirth = document.querySelector("#alumniBirth");
         var alumniPhone = document.querySelector("#alumniPhone");
@@ -421,7 +422,7 @@
             fadeOut();
             // call 'avoiding duplicate requests (btn disabled)' function
             setTimeout(inProgress, 0);
-            return form.submit();
+            return formIssuecertReal.submit();
         } else {
             alert("잘못된 값이 있습니다.\n올바른 값을 입력해주세요.")
             return false;
