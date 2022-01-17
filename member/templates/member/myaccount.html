@@ -33,6 +33,7 @@
         <h5 class="card-title pb-1">개인정보 수정</h5>
         <!-- alert -->
         {% if modified %}
+        <!-- boolean MODIFIED -->
         <div class="alert alert-primary alert-dismissible fade show d-flex align-items-center" role="alert">
             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor"
                 class="bi bi-person-badge flex-shrink-0 me-2" viewBox="0 0 16 16">
@@ -73,11 +74,20 @@
                             class="form-label">명</label>
                     </div>
                     <div class="input-group">
+                        {% if modified %}
+                        <!-- boolean MODIFIED -->
+                        <input type="text" class="form-control" id="last_name" name="last_name" placeholder="성을 입력하세요."
+                            aria-label="{{ last_name }}{{ first_name }}님의 성 입력" value="{{ last_name }}">
+                        <input type="text" class="form-control" id="first_name" name="first_name" placeholder="이름을 입력하세요."
+                            aria-label="{{ last_name }}{{ first_name }}님의 이름 입력"
+                            value="{{ first_name }}">
+                        {% else %}
                         <input type="text" class="form-control" id="last_name" name="last_name" placeholder="성을 입력하세요."
                             aria-label="{{ user.last_name }}{{ user.first_name }}님의 성 입력" value="{{ user.last_name }}">
                         <input type="text" class="form-control" id="first_name" name="first_name" placeholder="이름을 입력하세요."
                             aria-label="{{ user.last_name }}{{ user.first_name }}님의 이름 입력"
                             value="{{ user.first_name }}">
+                        {% endif %}
                     </div>
                 </div>
                 <div class="col">

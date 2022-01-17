@@ -162,6 +162,8 @@ def myaccount(request):
         {
             # str, lst
             "delete_msg": delete_msg,
+            "last_name": last_name,
+            "first_name": first_name,
             # boolean
             "modified": modified,
             "unable_to_delete": unable_to_delete,

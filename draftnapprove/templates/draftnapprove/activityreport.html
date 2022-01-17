@@ -22,7 +22,15 @@
 <meta name="robots" content="noindex,nofollow">
 {% endblock %}
 
-{% block title %} 블루무브 포털 - 일일활동보고서 {% endblock %}
+{% block title %}
+{% if not "activity_report_id=" in request.get_full_path %}
+블루무브 포털 - 일일활동보고서
+{% elif "activity_report_id=" in request.get_full_path %}
+{% for activity_report_row in activity_report_list %}
+블루무브 포털 - 일일활동보고서 - {{ activity_report_row.title }}
+{% endfor %}
+{% endif %}
+{% endblock %}
 
 {% block breadcrumb %}
 <div class="breadcrumb-screen breadcrumb-base breadcrumb-activityreport">
@@ -338,7 +346,7 @@
                     {% endif %}
                     {% endif %}
                     {% if activity_report_row.5 == "-" %}
-                     예정
+                    예정
                     {% endif %}
                 </small>
             </div>
@@ -1300,7 +1308,7 @@
                 <small>
                     {{ activity_report_row.approver }} 결재
                     {% if activity_report_row.approver_datetime == "-" %}
-                     예정
+                    예정
                     {% endif %}
                 </small>
             </div>
