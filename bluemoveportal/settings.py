@@ -50,7 +50,7 @@ NOTION_TOKEN = get_secret("NOTION_TOKEN")
 SLACK_BOT_TOKEN = get_secret("SLACK_BOT_TOKEN")
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = ["*"]
 
