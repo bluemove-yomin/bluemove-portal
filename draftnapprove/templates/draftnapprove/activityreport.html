@@ -1,0 +1,1728 @@
+{% extends 'base.html' %}
+
+{% load static %}
+
+{% block meta %}
+{% if not "activity_report_id=" in request.get_full_path %}
+<meta property="og:url" content="{% url 'draftnapprove:activityreport' %}">
+<meta property="og:title" content="블루무브 포털 - 일일활동보고서">
+<meta property="og:description" content="블루무브 포털 - 일일활동보고서">
+<meta name="subject" content="블루무브 포털 - 일일활동보고서">
+<meta name="description" content="블루무브 포털 - 일일활동보고서">
+{% elif "activity_report_id=" in request.get_full_path %}
+{% for activity_report_row in activity_report_list %}
+<meta property="og:url"
+    content="{% url 'draftnapprove:activityreport' %}?activity_report_id={{ activity_report_row.id }}">
+<meta property="og:title" content="블루무브 포털 - 일일활동보고서 - {{ activity_report_row.title }}">
+<meta property="og:description" content="블루무브 포털 - 일일활동보고서 - {{ activity_report_row.title }}">
+<meta name="subject" content="블루무브 포털 - 일일활동보고서 - {{ activity_report_row.title }}">
+<meta name="description" content="블루무브 포털 - 일일활동보고서 - {{ activity_report_row.title }}">
+{% endfor %}
+{% endif %}
+<meta name="robots" content="noindex,nofollow">
+{% endblock %}
+
+{% block title %} 블루무브 포털 - 일일활동보고서 {% endblock %}
+
+{% block breadcrumb %}
+<div class="breadcrumb-screen breadcrumb-base breadcrumb-activityreport">
+    <div class="d-flex align-items-center breadcrumb-layer">
+        <div class="container-lg text-center">
+            <h1 class="screenLarge m-0" style="color: #FFFFFF; text-shadow: 1px 1px 5px #212529;">일일활동보고서</h1>
+            <h2 class="screenSmall m-0" style="color: #FFFFFF; text-shadow: 1px 1px 5px #212529;">일일활동보고서</h2>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block content %}
+<!--
+---- inner styles
+-->
+<style type="text/css">
+    @media screen and (min-width: 768px) {
+        .sticky-top {
+            position: -webkit-sticky;
+            position: sticky;
+            top: 0;
+            background-color: #FFFFFF;
+        }
+    }
+
+    @media screen and (max-width: 767px) {
+        .sticky-top {
+            position: unset;
+            top: auto;
+            background-color: unset;
+        }
+    }
+
+    .sticky-right {
+        position: -webkit-sticky;
+        position: sticky;
+        top: 157.39px;
+    }
+</style>
+
+{% if not "activity_report_id=" in request.get_full_path and not write or not "@bluemove.or.kr" in user.email or trashed or wrong_url %}
+<!--
+---- inner template 01
+-->
+<!--
+---- inner content 01 (search)
+-->
+<div class="card shadow-hover mb-4">
+    <div class="card-body" style="background-color: rgba(0,0,0,.025);">
+        <h5 class="card-title pb-1">일일활동보고서 검색</h5>
+        <!-- alert -->
+        {% if submit %}
+        <!-- boolean SUBMIT -->
+        <div class="alert alert-primary alert-dismissible fade show d-flex align-items-center" role="alert">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor"
+                class="bi bi-file-earmark-check flex-shrink-0 me-2" viewBox="0 0 16 16">
+                <path
+                    d="M10.854 7.854a.5.5 0 0 0-.708-.708L7.5 9.793 6.354 8.646a.5.5 0 1 0-.708.708l1.5 1.5a.5.5 0 0 0 .708 0l3-3z" />
+                <path
+                    d="M14 14V4.5L9.5 0H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2zM9.5 3A1.5 1.5 0 0 0 11 4.5h2V14a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1h5.5v2z" />
+            </svg>
+            <div class="vertical" style="word-break: break-word;">
+                제출되었습니다! <span id="emoji"></span>
+            </div>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="안내창 닫기"></button>
+        </div>
+        {% elif trashed %}
+        <!-- boolean TRASHED -->
+        <div class="alert alert-secondary alert-dismissible fade show d-flex align-items-center" role="alert">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor"
+                class="bi bi-emoji-neutral flex-shrink-0 me-2" viewBox="0 0 16 16">
+                <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z" />
+                <path
+                    d="M4 10.5a.5.5 0 0 0 .5.5h7a.5.5 0 0 0 0-1h-7a.5.5 0 0 0-.5.5zm3-4C7 5.672 6.552 5 6 5s-1 .672-1 1.5S5.448 8 6 8s1-.672 1-1.5zm4 0c0-.828-.448-1.5-1-1.5s-1 .672-1 1.5S9.448 8 10 8s1-.672 1-1.5z" />
+            </svg>
+            <div class="vertical">
+                보고서가 유효하지 않습니다. 테크 매니저에게 문의해주세요.
+            </div>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="안내창 닫기"></button>
+        </div>
+        {% elif wrong_url %}
+        <!-- boolean WRONG_URL -->
+        <div class="alert alert-secondary alert-dismissible fade show d-flex align-items-center" role="alert">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor"
+                class="bi bi-emoji-neutral flex-shrink-0 me-2" viewBox="0 0 16 16">
+                <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z" />
+                <path
+                    d="M4 10.5a.5.5 0 0 0 .5.5h7a.5.5 0 0 0 0-1h-7a.5.5 0 0 0-.5.5zm3-4C7 5.672 6.552 5 6 5s-1 .672-1 1.5S5.448 8 6 8s1-.672 1-1.5zm4 0c0-.828-.448-1.5-1-1.5s-1 .672-1 1.5S9.448 8 10 8s1-.672 1-1.5z" />
+            </svg>
+            <div class="vertical">
+                URL이 유효하지 않습니다. 혹시 오탈자가 있나요?
+            </div>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="안내창 닫기"></button>
+        </div>
+        {% endif %}
+        <!-- form -->
+        <form action="{% url 'draftnapprove:activityreport' %}" method="GET" onsubmit="return validation(this)">
+            <div class="input-group">
+                <input type="text" class="form-control" id="q" name="q" placeholder="검색어를 입력하세요." aria-label="검색어 입력"
+                    value="{{ q|default_if_none:'' }}" required>
+                <button type="submit" class="btn btn-outline-secondary" aria-label="검색">
+                    <i class="bi bi-search me-2"></i>검색</button>
+                {% if '?q=' in request.get_full_path %}
+                <button type="button" class="btn btn-outline-secondary dropdown-toggle dropdown-toggle-split"
+                    data-bs-toggle="dropdown" aria-expanded="false" aria-label="검색 옵션"></button>
+                <ul class="dropdown-menu dropdown-menu-end">
+                    <li><a class="dropdown-item fade-onclick" href="{% url 'draftnapprove:activityreport' %}">검색 초기화</a>
+                    </li>
+                </ul>
+                {% endif %}
+            </div>
+        </form>
+    </div>
+</div>
+
+<!--
+---- inner script for content 01 (search)
+-->
+<script type="text/javascript">
+    // validation
+    function validation() {
+        if (document.querySelector("#q").value.length <= 1) {
+            alert("검색어는 두 글자 이상 입력해주세요.");
+            return false;
+        };
+        // call 'spinner (transition)' function
+        fadeOut();
+        // call 'avoiding duplicate requests (btn disabled)' function
+        setTimeout(inProgress, 0);
+    };
+</script>
+
+<!--
+---- inner content 02 (activity report list)
+-->
+<!-- content large -->
+<table class="table screenLarge m-0">
+    <thead>
+        <tr class="text-center" style="color: #545859;">
+            <th class="pt-0" scope="col">프로젝트</th>
+            <th class="pt-0" scope="col">활동명</th>
+            <th class="pt-0" scope="col">보고일시</th>
+            <th class="pt-0" scope="col">보고자</th>
+            <th class="pt-0" scope="col">결재일시</th>
+            <th class="pt-0" scope="col">결재자</th>
+            <th class="pt-0" scope="col">상태</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for activity_report_row in activity_report_list %}
+        <tr class="text-center">
+            <!-- 프로젝트 -->
+            <th scope="row" style="color: #545859; font-weight: bold;">
+                {{ activity_report_row.0 }}
+            </th>
+            <!-- 활동명 -->
+            <td>
+                {% if "@bluemove.or.kr" in user.email %}
+                <a href="javascript:void(0);"
+                    onclick="if ('URLSearchParams' in window) { var activityReportId = '{{ activity_report_row.9 }}'.split('d/')[1]; var searchParams = new URLSearchParams(window.location.search); searchParams.set('activity_report_id', activityReportId); window.location.search = searchParams.toString(); fadeOut(); setTimeout(inProgress, 0); };"
+                    class="a-bluemove">{{ activity_report_row.1 }}</a>
+                {% else %}
+                {{ activity_report_row.1 }}
+                {% endif %}
+            </td>
+            <!-- 보고일시 -->
+            <td>
+                {{ activity_report_row.2 }}
+            </td>
+            <!-- 보고자 -->
+            <td>
+                {% if "@bluemove.or.kr" in user.email %}
+                {{ activity_report_row.3 }}
+                {% else %}
+                {% if 3 >= activity_report_row.3|length %}
+                {{ activity_report_row.3|slice:"0:1" }}*{{ activity_report_row.3|slice:"2:" }}
+                {% elif activity_report_row.3|length > 3 %}
+                {{ activity_report_row.3|slice:"0:1" }}**{{ activity_report_row.3|slice:"3:" }}
+                {% endif %}
+                {% endif %}
+            </td>
+            <!-- 결재일시 -->
+            <td>
+                {{ activity_report_row.5 }}
+            </td>
+            <!-- 결재자 -->
+            <td>
+                {% if "@bluemove.or.kr" in user.email %}
+                {{ activity_report_row.6 }}
+                {% else %}
+                {% if 3 >= activity_report_row.6|length %}
+                {{ activity_report_row.6|slice:"0:1" }}*{{ activity_report_row.6|slice:"2:" }}
+                {% elif activity_report_row.6|length > 3 %}
+                {{ activity_report_row.6|slice:"0:1" }}**{{ activity_report_row.6|slice:"3:" }}
+                {% endif %}
+                {% endif %}
+            </td>
+            <!-- 상태 -->
+            <td style="color: #0077C8;">
+                {% if "대기" in activity_report_row.8 %}
+                <span class="badge badge-bluemove bg-secondary">대기</span>
+                {% elif "반려" in activity_report_row.8 %}
+                <span class="badge badge-bluemove bg-danger">반려</span>
+                {% elif "승인" in activity_report_row.8 %}
+                <span class="badge badge-bluemove bg-bluemove">승인</span>
+                {% endif %}
+            </td>
+        </tr>
+        {% empty %}
+        <tr>
+            <td colspan="7">
+                <div class="text-center my-4">
+                    <h2 class="mb-2" style="color: rgba(0,0,0,.25); font-weight: bolder;"><i
+                            class="bi bi-tornado me-2"></i>휑...</h2>
+                    <p class="text-muted m-0">
+                        {% if "?q=" in request.get_full_path %}
+                        불러올 정보가 없습니다. 혹시 오탈자가 있나요?
+                        {% else %}
+                        등록된 일일활동보고서가 없습니다.
+                        {% endif %}
+                    </p>
+                </div>
+            </td>
+        </tr>
+        {% endfor %}
+        {% if "@bluemove.or.kr" in user.email and not "?q=" in request.get_full_path %}
+        <tr>
+            <td class="p-0" colspan="7" onmouseover="bgColorIn(this);" onmouseout="bgColorOut(this);">
+                <div class="text-center">
+                    <div class="card border-0" style="padding: 8px; background-color: transparent;">
+                        <form action="{% url 'draftnapprove:activityreport' %}" method="POST"
+                            enctype="multipart/form-data" class="formActivityReportWrite">
+                            {% csrf_token %}
+                            <input type="hidden" id="cmdPost" name="cmdPost" value="write" readonly hidden>
+                            <p class="text-muted m-0">
+                                <a href="javascript:void(0);" class="a-dark-bluemove stretched-link"
+                                    onclick="activityReportWrite();">
+                                    <i class="bi bi-plus me-1"></i>여기를 눌러 작성하세요.
+                                </a>
+                            </p>
+                        </form>
+                    </div>
+                </div>
+            </td>
+        </tr>
+        {% endif %}
+    </tbody>
+</table>
+<!-- content small -->
+<div class="screenSmall">
+    <ul class="list-group list-group-flush">
+        {% for activity_report_row in activity_report_list %}
+        <li class="list-group-item px-0">
+            <div class="d-flex justify-content-between align-items-center mb-1">
+                <!-- 프로젝트 -->
+                <small class="m-0 vertical" style="color: #545859; font-weight: bold;">
+                    {{ activity_report_row.0 }}
+                </small>
+                <!-- 상태 -->
+                <small>
+                    {% if "대기" in activity_report_row.8 %}
+                    <span class="badge badge-bluemove bg-secondary">대기</span>
+                    {% elif "반려" in activity_report_row.8 %}
+                    <span class="badge badge-bluemove bg-danger">반려</span>
+                    {% elif "승인" in activity_report_row.8 %}
+                    <span class="badge badge-bluemove bg-bluemove">승인</span>
+                    {% endif %}
+                </small>
+            </div>
+            <!-- 활동명 -->
+            <h5>
+                {% if "@bluemove.or.kr" in user.email %}
+                <a href="javascript:void(0);"
+                    onclick="if ('URLSearchParams' in window) { var activityReportId = '{{ activity_report_row.9 }}'.split('d/')[1]; var searchParams = new URLSearchParams(window.location.search); searchParams.set('activity_report_id', activityReportId); window.location.search = searchParams.toString(); fadeOut(); setTimeout(inProgress, 0); };"
+                    class="a-bluemove">{{ activity_report_row.1 }}</a>
+                {% else %}
+                {{ activity_report_row.1 }}
+                {% endif %}
+            </h5>
+            <div class="d-flex justify-content-between align-items-center">
+                <!-- 보고일시 -->
+                <small aria-label="보고일시">
+                    {{ activity_report_row.2 }}
+                </small>
+                <!-- 보고자 -->
+                <small aria-label="보고자">
+                    {% if "@bluemove.or.kr" in user.email %}
+                    {{ activity_report_row.3 }} 보고
+                    {% else %}
+                    {% if 3 >= activity_report_row.3|length %}
+                    {{ activity_report_row.3|slice:"0:1" }}*{{ activity_report_row.3|slice:"2:" }} 보고
+                    {% elif activity_report_row.3|length > 3 %}
+                    {{ activity_report_row.3|slice:"0:1" }}**{{ activity_report_row.3|slice:"3:" }} 보고
+                    {% endif %}
+                    {% endif %}
+                </small>
+            </div>
+            <div class="d-flex justify-content-between align-items-center">
+                <!-- 결재일시 -->
+                <small aria-label="결재일시">
+                    {{ activity_report_row.5 }}
+                </small>
+                <!-- 결재자 -->
+                <small aria-label="결재자">
+                    {% if "@bluemove.or.kr" in user.email %}
+                    {{ activity_report_row.6 }} 결재
+                    {% else %}
+                    {% if 3 >= activity_report_row.6|length %}
+                    {{ activity_report_row.6|slice:"0:1" }}*{{ activity_report_row.6|slice:"2:" }} 결재
+                    {% elif activity_report_row.6|length > 3 %}
+                    {{ activity_report_row.6|slice:"0:1" }}**{{ activity_report_row.6|slice:"3:" }} 결재
+                    {% endif %}
+                    {% endif %}
+                    {% if activity_report_row.5 == "-" %}
+                     예정
+                    {% endif %}
+                </small>
+            </div>
+        </li>
+        {% empty %}
+        <li class="list-group-item text-center px-0">
+            <h2 class="mb-2" style="color: rgba(0,0,0,.25); font-weight: bolder;"><i class="bi bi-tornado me-2"></i>휑...
+            </h2>
+            <p class="text-muted m-0">
+                {% if '?q=' in request.get_full_path %}
+                불러올 정보가 없습니다.<br>혹시 오탈자가 있나요?
+                {% else %}
+                등록된 일일활동보고서가 없습니다.
+                {% endif %}
+            </p>
+        </li>
+        {% endfor %}
+        {% if "@bluemove.or.kr" in user.email and not "?q=" in request.get_full_path %}
+        <li class="list-group-item text-center px-0" onmouseover="bgColorIn(this);" onmouseout="bgColorOut(this);">
+            <form action="{% url 'draftnapprove:activityreport' %}" method="POST" enctype="multipart/form-data"
+                class="formActivityReportWrite">
+                {% csrf_token %}
+                <input type="hidden" id="cmdPost" name="cmdPost" value="write" readonly hidden>
+                <p class="text-muted m-0 vertical">
+                    <a href="javascript:void(0);" class="a-dark-bluemove stretched-link"
+                        onclick="activityReportWrite();">
+                        <i class="bi bi-plus me-1"></i>여기를 눌러 작성하세요.
+                    </a>
+                </p>
+            </form>
+        </li>
+        {% endif %}
+    </ul>
+</div>
+
+<!--
+---- inner script for content 02 (activity report list)
+-->
+<script type="text/javascript">
+    function bgColorIn(obj) {
+        obj.setAttribute("style", "padding: 8px; background-color: rgba(0,0,0,.025);");
+    }
+    function bgColorOut(obj) {
+        obj.setAttribute("style", "padding: 8px; background-color: transparent;")
+    }
+    function activityReportWrite() {
+        for (var i = 0; i < document.querySelectorAll(".formActivityReportWrite").length; i++) {
+            document.querySelectorAll(".formActivityReportWrite")[i].submit();
+            // call 'spinner (transition)' function
+            fadeOut();
+            // call 'avoiding duplicate requests (btn disabled)' function
+            setTimeout(inProgress, 0);
+        }
+    }
+</script>
+
+<!--
+---- inner content 03 (paginator)
+-->
+{% if '?q=' in request.get_full_path %}
+{% if bluemover_list.has_other_pages %}
+<!-- when searching -->
+<div class="mt-4 p-0">
+    <nav aria-label="페이지 내비게이터" style="background-color: transparent;">
+        <!-- content large -->
+        <div class="screenLarge">
+            <ul class="pagination justify-content-center m-0">
+                {% if bluemover_list.has_previous %}
+                <li class="page-item">
+                    <a class="page-link fade-onclick" href="{{ request.path }}?q={{ q }}&page=1">맨 앞</a>
+                </li>
+                {% endif %}
+                {% for i in bluemover_list.paginator.page_range %}
+                {% if bluemover_list.number == i %}
+                <li class="page-item active" aria-current="page">
+                    <span class="page-link">{{ i }}</span>
+                </li>
+                {% elif i > bluemover_list.number|add:'-7' and bluemover_list.number|add:'7' > i %}
+                <li class="page-item">
+                    <a class="page-link fade-onclick" href="{{ request.path }}?q={{ q }}&page={{ i }}">{{ i }}</a>
+                </li>
+                {% endif %}
+                {% endfor %}
+                {% if bluemover_list.has_next %}
+                <li class="page-item">
+                    <a class="page-link fade-onclick"
+                        href="{{ request.path }}?q={{ q }}&page={{ bluemover_list.paginator.num_pages }}">맨 뒤</a>
+                </li>
+                {% endif %}
+            </ul>
+        </div>
+        <!-- content small -->
+        <div class="screenSmall">
+            <ul class="pagination justify-content-center m-0">
+                {% if bluemover_list.has_previous %}
+                <li class="page-item">
+                    <a class="page-link fade-onclick" href="{{ request.path }}?q={{ q }}&page=1">맨 앞</a>
+                </li>
+                {% endif %}
+                {% for i in bluemover_list.paginator.page_range %}
+                {% if bluemover_list.number == i %}
+                <li class="page-item active" aria-current="page">
+                    <span class="page-link">{{ i }}</span>
+                </li>
+                {% elif i > bluemover_list.number|add:'-3' and bluemover_list.number|add:'3' > i %}
+                <li class="page-item">
+                    <a class="page-link fade-onclick" href="{{ request.path }}?q={{ q }}&page={{ i }}">{{ i }}</a>
+                </li>
+                {% endif %}
+                {% endfor %}
+                {% if bluemover_list.has_next %}
+                <li class="page-item">
+                    <a class="page-link fade-onclick"
+                        href="{{ request.path }}?q={{ q }}&page={{ bluemover_list.paginator.num_pages }}">맨 뒤</a>
+                </li>
+                {% endif %}
+            </ul>
+        </div>
+    </nav>
+</div>
+{% endif %}
+{% else %}
+{% if bluemover_list.has_other_pages %}
+<!-- when not searching (default) -->
+<div class="mt-4 p-0">
+    <nav aria-label="페이지 내비게이터" style="background-color: transparent;">
+        <!-- content large -->
+        <div class="screenLarge">
+            <ul class="pagination justify-content-center m-0">
+                {% if bluemover_list.has_previous %}
+                <li class="page-item">
+                    <a class="page-link fade-onclick" href="?page=1">맨 앞</a>
+                </li>
+                {% endif %}
+                {% for i in bluemover_list.paginator.page_range %}
+                {% if bluemover_list.number == i %}
+                <li class="page-item active" aria-current="page">
+                    <span class="page-link">{{ i }}</span>
+                </li>
+                {% elif i > bluemover_list.number|add:'-7' and bluemover_list.number|add:'7' > i %}
+                <li class="page-item">
+                    <a class="page-link fade-onclick" href="?page={{ i }}">{{ i }}</a>
+                </li>
+                {% endif %}
+                {% endfor %}
+                {% if bluemover_list.has_next %}
+                <li class="page-item">
+                    <a class="page-link fade-onclick" href="?page={{ bluemover_list.paginator.num_pages }}">맨 뒤</a>
+                </li>
+                {% endif %}
+            </ul>
+        </div>
+        <!-- content small -->
+        <div class="screenSmall">
+            <ul class="pagination justify-content-center m-0">
+                {% if bluemover_list.has_previous %}
+                <li class="page-item">
+                    <a class="page-link fade-onclick" href="?page=1">맨 앞</a>
+                </li>
+                {% endif %}
+                {% for i in bluemover_list.paginator.page_range %}
+                {% if bluemover_list.number == i %}
+                <li class="page-item active" aria-current="page">
+                    <span class="page-link">{{ i }}</span>
+                </li>
+                {% elif i > bluemover_list.number|add:'-3' and bluemover_list.number|add:'3' > i %}
+                <li class="page-item">
+                    <a class="page-link fade-onclick" href="?page={{ i }}">{{ i }}</a>
+                </li>
+                {% endif %}
+                {% endfor %}
+                {% if bluemover_list.has_next %}
+                <li class="page-item">
+                    <a class="page-link fade-onclick" href="?page={{ bluemover_list.paginator.num_pages }}">맨 뒤</a>
+                </li>
+                {% endif %}
+            </ul>
+        </div>
+    </nav>
+</div>
+{% endif %}
+{% endif %}
+{% elif not "activity_report_id=" in request.get_full_path and write and "@bluemove.or.kr" in user.email %}
+<!--
+---- inner template 02
+-->
+<!--
+---- inner content 04 (activity report form)
+-->
+<div class="card shadow-hover">
+    <div class="card-body" style="background-color: rgba(0,0,0,.025);">
+        <h5 class="card-title pb-1">일일활동보고서 작성</h5>
+        <!-- form -->
+        <form action="{% url 'draftnapprove:activityreport' %}" method="POST" enctype="multipart/form-data"
+            id="formActivityReport" onsubmit="return activityReportSubmit()">
+            {% csrf_token %}
+            <input type="hidden" id="cmdPost" name="cmdPost" value="" readonly hidden>
+            <div id="formActivityReportCreate">
+                <div class="row row-cols-1 row-cols-md-2 g-3" style="margin-bottom: 1rem;">
+                    <div class="col">
+                        <label for="activityReportProject" class="form-label">소속 프로젝트</label>
+                        <select class="form-select" id="activityReportProject" name="activityReportProject"
+                            aria-label="소속 프로젝트 선택" required>
+                            <option selected hidden>소속 프로젝트를 선택하세요.</option>
+                            <option disabled>소속 프로젝트를 선택하세요.</option>
+                            {% for project_name, project_approver, project_approver_email, project_folder_url, project_url in project_list %}
+                            <option
+                                value="{{ project_name }}#{{ project_approver }}#{{ project_approver_email }}#{{ project_folder_url }}#{{ project_url }}">
+                                {{ project_name }}</option>
+                            {% empty %}
+                            <option disabled>진행 중인 프로젝트가 없습니다.</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col">
+                        <label for="activityReportTitle" class="form-label">활동명
+                            <a href="#none" class="ms-1" data-bs-toggle="tooltip" data-bs-placement="right" title=""
+                                data-bs-original-title="공백 포함 30자까지 입력 가능합니다." style="color: #545859 !important;"
+                                aria-label="도움말">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                                    class="bi bi-question-circle" viewBox="0 0 16 16" style="margin-bottom: .2rem;">
+                                    <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z" />
+                                    <path
+                                        d="M5.255 5.786a.237.237 0 0 0 .241.247h.825c.138 0 .248-.113.266-.25.09-.656.54-1.134 1.342-1.134.686 0 1.314.343 1.314 1.168 0 .635-.374.927-.965 1.371-.673.489-1.206 1.06-1.168 1.987l.003.217a.25.25 0 0 0 .25.246h.811a.25.25 0 0 0 .25-.25v-.105c0-.718.273-.927 1.01-1.486.609-.463 1.244-.977 1.244-2.056 0-1.511-1.276-2.241-2.673-2.241-1.267 0-2.655.59-2.75 2.286zm1.557 5.763c0 .533.425.927 1.01.927.609 0 1.028-.394 1.028-.927 0-.552-.42-.94-1.029-.94-.584 0-1.009.388-1.009.94z" />
+                                </svg>
+                            </a>
+                        </label>
+                        <input type="text" class="form-control" id="activityReportTitle" name="activityReportTitle"
+                            placeholder="활동명을 입력하세요." aria-label="활동명 입력" maxlength="30" required>
+                    </div>
+                    <div class="col">
+                        <label for="activityReportDate" class="form-label">활동 연월일</label>
+                        <input type="text" class="form-control" id="activityReportDate" name="activityReportDate"
+                            placeholder="활동 연월일 8자리를 입력하세요." aria-label="활동 연월일 8자리 입력" minlength="10" maxlength="10"
+                            onkeypress="onlyNumbers(event)" required>
+                    </div>
+                    <div class="col">
+                        <div class="d-flex justify-content-start">
+                            <label for="activityReportTimeStart" class="form-label">활동 시간
+                                <a href="#none" class="ms-1" data-bs-toggle="tooltip" data-bs-placement="right" title=""
+                                    data-bs-original-title="'HH:MM' 형태에 맞춰 24시간제로 입력해주세요."
+                                    style="color: #545859 !important;" aria-label="도움말">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                                        class="bi bi-question-circle" viewBox="0 0 16 16" style="margin-bottom: .2rem;">
+                                        <path
+                                            d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z" />
+                                        <path
+                                            d="M5.255 5.786a.237.237 0 0 0 .241.247h.825c.138 0 .248-.113.266-.25.09-.656.54-1.134 1.342-1.134.686 0 1.314.343 1.314 1.168 0 .635-.374.927-.965 1.371-.673.489-1.206 1.06-1.168 1.987l.003.217a.25.25 0 0 0 .25.246h.811a.25.25 0 0 0 .25-.25v-.105c0-.718.273-.927 1.01-1.486.609-.463 1.244-.977 1.244-2.056 0-1.511-1.276-2.241-2.673-2.241-1.267 0-2.655.59-2.75 2.286zm1.557 5.763c0 .533.425.927 1.01.927.609 0 1.028-.394 1.028-.927 0-.552-.42-.94-1.029-.94-.584 0-1.009.388-1.009.94z" />
+                                    </svg>
+                                </a>
+                            </label>
+                        </div>
+                        <div class="input-group">
+                            <input type="text" class="form-control" id="activityReportTimeStart"
+                                name="activityReportTimeStart" placeholder="시작 시각을 입력하세요." aria-label="활동 시작 시각 4자리 입력"
+                                minlength="5" maxlength="5" onkeypress="onlyNumbers(event)" required>
+                            <span class="input-group-text">~</span>
+                            <input type="text" class="form-control" id="activityReportTimeEnd"
+                                name="activityReportTimeEnd" placeholder="종료 시각을 입력하세요." aria-label="활동 종료 시각 4자리 입력"
+                                minlength="5" maxlength="5" onkeypress="onlyNumbers(event)" required>
+                            <span class="input-group-text" id="activityReportDurationInfo">0.0시간</span>
+                            <input type="hidden" id="activityReportDuration" name="activityReportDuration" value=""
+                                readonly required hidden>
+                        </div>
+                    </div>
+                    <div class="col">
+                        <div class="d-flex justify-content-between">
+                            <label for="activityReportAddress" class="form-label">활동 장소</label>
+                            <div class="form-check form-switch">
+                                <label class="form-check-label" for="activityReportAddressOnline">비대면</label>
+                                <input class="form-check-input" type="checkbox" id="activityReportAddressOnline"
+                                    value="false" onclick="activityReportAddressCheck();">
+                            </div>
+                        </div>
+                        <div class="input-group" id="activityReportAddressInputGroup">
+                            <input type="text" class="form-control" id="activityReportAddress"
+                                name="activityReportAddress" placeholder="주소를 검색하세요." aria-label="오른쪽 '주소 검색' 버튼 클릭"
+                                readonly required>
+                            <input type="button" class="btn btn-outline-secondary" id="activityReportAddressBtn"
+                                onclick="activityReportExecDaumPostcode();" value="주소 검색">
+                        </div>
+                    </div>
+                    <div class="col">
+                        <label for="activityReportDrafter" class="form-label">보고자</label>
+                        <input type="text" class="form-control" id="activityReportDrafter" name="activityReportDrafter"
+                            aria-label="보고자 자동 입력" value="{{ user.last_name }}{{ user.first_name }}" readonly required>
+                    </div>
+                </div>
+                <div class="row row-cols-1 g-3">
+                    <div class="col">
+                        <label for="activityReportContent" class="form-label">활동 내용
+                            <a href="#none" class="ms-1" data-bs-toggle="tooltip" data-bs-placement="right" title=""
+                                data-bs-original-title="주요 시간대별로 나누어 입력해주세요." style="color: #545859 !important;"
+                                aria-label="도움말">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                                    class="bi bi-question-circle" viewBox="0 0 16 16" style="margin-bottom: .2rem;">
+                                    <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z" />
+                                    <path
+                                        d="M5.255 5.786a.237.237 0 0 0 .241.247h.825c.138 0 .248-.113.266-.25.09-.656.54-1.134 1.342-1.134.686 0 1.314.343 1.314 1.168 0 .635-.374.927-.965 1.371-.673.489-1.206 1.06-1.168 1.987l.003.217a.25.25 0 0 0 .25.246h.811a.25.25 0 0 0 .25-.25v-.105c0-.718.273-.927 1.01-1.486.609-.463 1.244-.977 1.244-2.056 0-1.511-1.276-2.241-2.673-2.241-1.267 0-2.655.59-2.75 2.286zm1.557 5.763c0 .533.425.927 1.01.927.609 0 1.028-.394 1.028-.927 0-.552-.42-.94-1.029-.94-.584 0-1.009.388-1.009.94z" />
+                                </svg>
+                            </a>
+                        </label>
+                        <textarea class="form-control" id="activityReportContent" name="activityReportContent"
+                            aria-label="시간대별 활동 내용 입력" rows="3"
+                            required>00:00~00:00 활동 내용 간략히 입력&#13;&#10;00:00~00:00 활동 내용 간략히 입력&#13;&#10;00:00~00:00 활동 내용 간략히 입력</textarea>
+                    </div>
+                    <div class="col">
+                        <div class="row row-cols-1 row-cols-md-3 g-3">
+                            <div class="col">
+                                <label class="form-label">활동 사진
+                                    <a href="#none" class="ms-1" data-bs-toggle="tooltip" data-bs-placement="right"
+                                        title="" data-bs-original-title="참가자 전원의 얼굴이 나온 단체 사진을 포함해주세요."
+                                        style="color: #545859 !important;" aria-label="도움말">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
+                                            fill="currentColor" class="bi bi-question-circle" viewBox="0 0 16 16"
+                                            style="margin-bottom: .2rem;">
+                                            <path
+                                                d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z" />
+                                            <path
+                                                d="M5.255 5.786a.237.237 0 0 0 .241.247h.825c.138 0 .248-.113.266-.25.09-.656.54-1.134 1.342-1.134.686 0 1.314.343 1.314 1.168 0 .635-.374.927-.965 1.371-.673.489-1.206 1.06-1.168 1.987l.003.217a.25.25 0 0 0 .25.246h.811a.25.25 0 0 0 .25-.25v-.105c0-.718.273-.927 1.01-1.486.609-.463 1.244-.977 1.244-2.056 0-1.511-1.276-2.241-2.673-2.241-1.267 0-2.655.59-2.75 2.286zm1.557 5.763c0 .533.425.927 1.01.927.609 0 1.028-.394 1.028-.927 0-.552-.42-.94-1.029-.94-.584 0-1.009.388-1.009.94z" />
+                                        </svg>
+                                    </a>
+                                </label>
+                                <div class="card" id="activityReportImageOneCard"
+                                    style="background-color: transparent; border-style: dashed; border-color: rgba(0,0,0,.25)">
+                                    <div class="card-body">
+                                        <div class="text-center my-4">
+                                            <h2 style="color: rgba(0,0,0,.25); font-weight: bolder;"><i
+                                                    class="bi bi-image me-2"></i>단체 사진 첨부
+                                            </h2>
+                                            <p class="text-muted m-0">
+                                                <a href="javascript:void(0);" class="a-dark-bluemove stretched-link"
+                                                    aria-label="Google Drive에서 단체 사진 선택" onclick="attachImage(this);">
+                                                    <span>여기를 눌러 첨부하세요.</span>
+                                                </a>
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <input type="hidden" id="activityReportImageOneId" name="activityReportImageOneId"
+                                    value="" readonly required hidden>
+                            </div>
+                            <div class="col">
+                                <label class="form-label screenLarge" style="visibility: hidden;">활동 사진</label>
+                                <div class="card" id="activityReportImageTwoCard"
+                                    style="background-color: transparent; border-style: dashed; border-color: rgba(0,0,0,.25)">
+                                    <div class="card-body">
+                                        <div class="text-center my-4">
+                                            <h2 style="color: rgba(0,0,0,.25); font-weight: bolder;"><i
+                                                    class="bi bi-image me-2"></i>활동 사진 첨부
+                                            </h2>
+                                            <p class="text-muted m-0">
+                                                <a href="javascript:void(0);" class="a-dark-bluemove stretched-link"
+                                                    aria-label="Google Drive에서 활동 사진 선택" onclick="attachImage(this);">
+                                                    <span>여기를 눌러 첨부하세요.</span>
+                                                </a>
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <input type="hidden" id="activityReportImageTwoId" name="activityReportImageTwoId"
+                                    value="" readonly required hidden>
+                            </div>
+                            <div class="col">
+                                <label class="form-label screenLarge" style="visibility: hidden;">활동 사진</label>
+                                <div class="card" id="activityReportImageThreeCard"
+                                    style="background-color: transparent; border-style: dashed; border-color: rgba(0,0,0,.25)">
+                                    <div class="card-body">
+                                        <div class="text-center my-4">
+                                            <h2 style="color: rgba(0,0,0,.25); font-weight: bolder;"><i
+                                                    class="bi bi-image me-2"></i>활동 사진 첨부
+                                            </h2>
+                                            <p class="text-muted m-0">
+                                                <a href="javascript:void(0);" class="a-dark-bluemove stretched-link"
+                                                    aria-label="Google Drive에서 활동 사진 선택" onclick="attachImage(this);">
+                                                    <span>여기를 눌러 첨부하세요.</span>
+                                                </a>
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <input type="hidden" id="activityReportImageThreeId" name="activityReportImageThreeId"
+                                    value="" readonly required hidden>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col">
+                        <div class="screenLarge">
+                            <div class="d-flex justify-content-between">
+                                <label for="activityReportParticipant" class="form-label">참가자</label>
+                                <small style="margin-top: .125rem;"><i class="bi bi-person me-1"></i><span
+                                        class="activityReportParticipantAddedLength" aria-label="참가자로 추가된 인원수">1명 추가됨 /
+                                        15명까지 추가 가능</span></small>
+                            </div>
+                        </div>
+                        <div class="screenSmall">
+                            <label for="activityReportParticipant" class="form-label">참가자</label>
+                            <small class="d-flex justify-content-center border border-secondary rounded-1"
+                                style="border-color: rgba(0,0,0,.3) !important; margin-bottom: .8rem;"><i
+                                    class="bi bi-person me-1"></i><span class="activityReportParticipantAddedLength"
+                                    aria-label="참가자로 추가된 인원수">1명 추가됨 /
+                                    15명까지 추가 가능</span>
+                            </small>
+                        </div>
+                        <select class="form-select" id="activityReportParticipant" name="activityReportParticipant"
+                            aria-label="추가 가능한 인원" size="5" multiple>
+                            <option disabled>추가 가능한 인원</option>
+                            {% for participant_name, participant_org_unit, participant_number, participant_email in bluemover_list %}
+                            <option value="{{ participant_name }}#{{ participant_number }}#{{ participant_email }}">
+                                {% if "이사회" in participant_org_unit %}
+                                {{ participant_name }} 🌊 이사회 {{ participant_email }}
+                                {% elif "사무국" in participant_org_unit %}
+                                {{ participant_name }} 🐳 사무국 {{ participant_email }}
+                                {% elif "교육팀" in participant_org_unit %}
+                                {{ participant_name }} 👩‍🏫 교육팀 {{ participant_email }}
+                                {% elif "콘텐츠팀" in participant_org_unit %}
+                                {{ participant_name }} 🎧 콘텐츠팀 {{ participant_email }}
+                                {% endif %}
+                            </option>
+                            {% empty %}
+                            <option disabled>블루무버 명단을 불러올 수 없습니다.</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col text-center">
+                        <button type="button" class="btn btn-outline-secondary btn-sm me-2"
+                            id="activityReportParticipantBtnAdd" aria-label="참가자 추가"><i
+                                class="bi bi-arrow-down me-2"></i>추가</button>
+                        <button type="button" class="btn btn-outline-danger btn-sm"
+                            id="activityReportParticipantBtnRemove" aria-label="참가자 제거"><i
+                                class="bi bi-arrow-up me-2"></i>제거</button>
+                    </div>
+                    <div class="col">
+                        <select class="form-select" id="activityReportParticipantAdded"
+                            name="activityReportParticipantAdded" aria-label="참가자로 추가된 인원" size="5" multiple>
+                            <option disabled>참가자로 추가된 인원</option>
+                            {% for participant_name, participant_org_unit, participant_number, participant_email in bluemover_list_self %}
+                            <option value="{{ participant_name }}#{{ participant_number }}#{{ participant_email }}"
+                                disabled>
+                                {% if "이사회" in participant_org_unit %}
+                                {{ participant_name }} 🌊 이사회 {{ participant_email }} (나)
+                                {% elif "사무국" in participant_org_unit %}
+                                {{ participant_name }} 🐳 사무국 {{ participant_email }} (나)
+                                {% elif "교육팀" in participant_org_unit %}
+                                {{ participant_name }} 👩‍🏫 교육팀 {{ participant_email }} (나)
+                                {% elif "콘텐츠팀" in participant_org_unit %}
+                                {{ participant_name }} 🎧 콘텐츠팀 {{ participant_email }} (나)
+                                {% endif %}
+                            </option>
+                            {% empty %}
+                            <option disabled>{{ user.last_name }}{{ user.first_name }}님의 블루무버 계정 정보를 불러올 수 없습니다.
+                            </option>
+                            {% endfor %}
+                        </select>
+                        {% for participant_name, participant_org_unit, participant_number, participant_email in bluemover_list_self %}
+                        <input type="hidden" id="activityReportParticipantAddedNameNumberEmail"
+                            name="activityReportParticipantAddedNameNumberEmail"
+                            value="{{ participant_name }}#{{ participant_number }}#{{ participant_email }}" readonly
+                            required hidden>
+                        {% empty %}
+                        <input type="hidden" id="activityReportParticipantAddedNameNumberEmail"
+                            name="activityReportParticipantAddedNameNumberEmail" value="" readonly required hidden>
+                        {% endfor %}
+                    </div>
+                </div>
+                <div class="row g-3" style="padding-top: 1.25rem !important;">
+                    <div class="col-md-9 col-lg-10">
+                        <div class="d-grid">
+                            <button type="button" class="btn btn-outline-secondary" aria-label="일일활동보고서 제출"
+                                onclick="activityReportSubmit();">
+                                <i class="bi bi-file-earmark-text me-2"></i>일일활동보고서 제출</button>
+                        </div>
+                    </div>
+                    <div class="col-md-3 col-lg-2">
+                        <div class="d-grid">
+                            <button type="button" class="btn btn-outline-secondary" aria-label="일일활동보고서 작성 취소"
+                                onclick="activityReportCancel();">
+                                <i class="bi bi-arrow-counterclockwise me-2"></i>작성 취소</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!--
+---- inner script for content 04 (activity report form)
+-->
+<!-- Daum Postcode API (https://postcode.map.daum.net) -->
+<script src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
+<!-- Google Picker API (https://developers.google.com/picker) -->
+<script type="text/javascript" src="https://apis.google.com/js/api.js"></script>
+<script type="text/javascript">
+    // activityReportAddressOnline
+    function activityReportAddressCheck() {
+        var activityReportAddressOnline = document.querySelector("#activityReportAddressOnline");
+        var activityReportAddressInputGroup = document.querySelector("#activityReportAddressInputGroup");
+        var activityReportAddress = document.querySelector("#activityReportAddress");
+        if (activityReportAddressOnline.value == "false") {
+            activityReportAddressOnline.value = "true";
+            activityReportAddressOnline.checked = true;
+            activityReportAddress.value = "온라인";
+            activityReportAddressBtn.parentNode.removeChild(activityReportAddressBtn);
+        } else {
+            activityReportAddressOnline.value = "false";
+            activityReportAddressOnline.checked = false;
+            activityReportAddress.value = "";
+            var $input = document.createElement("input");
+            $input.type = "button";
+            $input.className = "btn btn-outline-secondary";
+            $input.id = "activityReportAddressBtn";
+            $input.setAttribute("onclick", "activityReportExecDaumPostcode();");
+            $input.value = "주소 검색";
+            activityReportAddressInputGroup.appendChild($input);
+        }
+    }
+    // Daum Postcode API
+    function activityReportExecDaumPostcode() {
+        var themeObj = {
+            postcodeTextColor: "#0077C8"
+        };
+        new daum.Postcode({
+            oncomplete: function (data) {
+                var addr = "";
+                addr = data.roadAddress;
+                document.getElementById("activityReportAddress").value = addr;
+            },
+            theme: themeObj
+        }).open();
+    }
+    // Google Picker API
+    var developerKey = "AIzaSyBu3xu6qtpDNhSGpeCR0KlR5rVSMUhhzsQ";
+    var clientId = "576834225714-p62qagbh82s81bbgbjg7cas0afr09mn8.apps.googleusercontent.com"
+    var appId = "576834225714";
+    var scope = ["https://www.googleapis.com/auth/drive.file"];
+    var pickerApiLoaded = false;
+    var oauthToken;
+    var activityReportImageOneCard = document.querySelector("#activityReportImageOneCard");
+    var activityReportImageTwoCard = document.querySelector("#activityReportImageTwoCard");
+    var activityReportImageThreeCard = document.querySelector("#activityReportImageThreeCard");
+    function attachImage(obj) {
+        var activityReportImageParentDivId = obj.offsetParent.id;
+        var activityReportImageParentH2Id = obj.parentNode.previousElementSibling;
+        var activityReportImageChildSpanId = obj.firstElementChild;
+        function loadPicker() {
+            if (pickerApiLoaded == true) {
+                createPicker();
+            } else {
+                gapi.load("auth", { "callback": onAuthApiLoad });
+                gapi.load("picker", { "callback": onPickerApiLoad });
+            }
+        }
+        function onAuthApiLoad() {
+            window.gapi.auth.authorize(
+                {
+                    "client_id": clientId,
+                    "scope": scope,
+                    "immediate": false
+                },
+                handleAuthResult);
+        }
+        function onPickerApiLoad() {
+            pickerApiLoaded = true;
+            createPicker();
+        }
+        function handleAuthResult(authResult) {
+            if (authResult && !authResult.error) {
+                oauthToken = authResult.access_token;
+                createPicker();
+            }
+        }
+        function createPicker() {
+            if (pickerApiLoaded && oauthToken) {
+                var view = new google.picker.View(google.picker.ViewId.DOCS_IMAGES);
+                view.setMimeTypes("image/png,image/jpeg,image/jpg");
+                var picker = new google.picker.PickerBuilder()
+                    .enableFeature(google.picker.Feature.NAV_HIDDEN)
+                    .enableFeature(google.picker.Feature.SIMPLE_UPLOAD_ENABLED)
+                    .enableFeature(google.picker.Feature.SUPPORT_DRIVES)
+                    .setAppId(appId)
+                    .setOAuthToken(oauthToken)
+                    .addView(view)
+                    .addView(new google.picker.DocsUploadView())
+                    .setTitle("활동 사진을 선택하세요.")
+                    .setSelectableMimeTypes("image/png,image/jpeg,image/jpg")
+                    .setLocale("ko")
+                    .setDeveloperKey(developerKey)
+                    .setCallback(pickerCallback)
+                    .build();
+                picker.setVisible(true);
+            }
+        }
+        function pickerCallback(data) {
+            if (data.action == google.picker.Action.PICKED) {
+                var fileId = data.docs[0].id;
+                changeBgImage(fileId);
+                inputImageId(fileId);
+            }
+        }
+        function changeBgImage(fileId) {
+            styleValue = "background-image: url('https://lh3.googleusercontent.com/d/" + fileId + "=s360'); background-size: cover; background-position: center center; background-color: transparent; border: 1px solid #ced4da;";
+            if (activityReportImageParentDivId == activityReportImageOneCard.id) {
+                activityReportImageOneCard.setAttribute("style", styleValue);
+            } else if (activityReportImageParentDivId == activityReportImageTwoCard.id) {
+                activityReportImageTwoCard.setAttribute("style", styleValue);
+            } else if (activityReportImageParentDivId == activityReportImageThreeCard.id) {
+                activityReportImageThreeCard.setAttribute("style", styleValue);
+            }
+            activityReportImageParentH2Id.setAttribute("style", "visibility: hidden;");
+            activityReportImageChildSpanId.setAttribute("style", "visibility: hidden;");
+        }
+        function inputImageId(fileId) {
+            if (activityReportImageParentDivId == activityReportImageOneCard.id) {
+                activityReportImageOneId.value = fileId;
+            } else if (activityReportImageParentDivId == activityReportImageTwoCard.id) {
+                activityReportImageTwoId.value = fileId;
+            } else if (activityReportImageParentDivId == activityReportImageThreeCard.id) {
+                activityReportImageThreeId.value = fileId;
+            }
+        }
+        loadPicker();
+    }
+    // activityReportParticipant
+    function activityReportParticipantAddedNameNumberEmailText() {
+        var selectedOptionValue = $("#activityReportParticipantAdded option").map(function () { return $(this).val(); }).get().slice(1).sort();
+        $("#activityReportParticipantAddedNameNumberEmail").val(selectedOptionValue);
+    }
+    function activityReportParticipantAddedLengthText(i) {
+        $(".activityReportParticipantAddedLength").text(i + "명 추가됨 / 15명까지 추가 가능");
+    }
+    $("#activityReportParticipantBtnAdd").click(function () {
+        var selectedOption = $("#activityReportParticipant option:selected");
+        if (selectedOption.length + $("#activityReportParticipantAdded option").length - 1 > 15) {
+            alert("참가자는 최대 15명까지 추가 가능합니다.");
+        } else {
+            $("#activityReportParticipantAdded").append(selectedOption);
+            activityReportParticipantAddedNameNumberEmailText();
+            activityReportParticipantAddedLengthText($("#activityReportParticipantAdded option").length - 1);
+        }
+    });
+    $("#activityReportParticipantBtnRemove").click(function () {
+        var selectedOption = $("#activityReportParticipantAdded option:selected");
+        $("#activityReportParticipant").append(selectedOption);
+        activityReportParticipantAddedNameNumberEmailText();
+        activityReportParticipantAddedLengthText($("#activityReportParticipantAdded option").length - 1);
+    });
+    $("#activityReportParticipant").dblclick(function () {
+        var selectedOption = $("#activityReportParticipant option:selected");
+        if (selectedOption.length + $("#activityReportParticipantAdded option").length - 1 > 15) {
+            alert("참가자는 최대 15명까지 추가 가능합니다.");
+        } else {
+            $("#activityReportParticipantAdded").append(selectedOption);
+            activityReportParticipantAddedNameNumberEmailText();
+            activityReportParticipantAddedLengthText($("#activityReportParticipantAdded option").length - 1);
+        }
+    });
+    $("#activityReportParticipantAdded").dblclick(function () {
+        var selectedOption = $("#activityReportParticipantAdded option:selected");
+        $("#activityReportParticipant").append(selectedOption);
+        activityReportParticipantAddedNameNumberEmailText();
+        activityReportParticipantAddedLengthText($("#activityReportParticipantAdded option").length - 1);
+    });
+    $("#activityReportParticipant").on("keyup", function (key) {
+        if (key.keyCode == 13) {
+            var selectedOption = $("#activityReportParticipant option:selected");
+            if (selectedOption.length + $("#activityReportParticipantAdded option").length - 1 > 15) {
+                alert("참가자는 최대 15명까지 추가 가능합니다.");
+            } else {
+                $("#activityReportParticipantAdded").append(selectedOption);
+                activityReportParticipantAddedNameNumberEmailText();
+                activityReportParticipantAddedLengthText($("#activityReportParticipantAdded option").length - 1);
+            }
+        }
+    });
+    $("#activityReportParticipantAdded").on("keyup", function (key) {
+        if (key.keyCode == 13 || key.keyCode == 8 || key.keyCode == 46) {
+            var selectedOption = $("#activityReportParticipantAdded option:selected");
+            $("#activityReportParticipant").append(selectedOption);
+            activityReportParticipantAddedNameNumberEmailText();
+            activityReportParticipantAddedLengthText($("#activityReportParticipantAdded option").length - 1);
+        }
+    });
+    // validation
+    var patternNum = /[0-9]/; // number
+    var patternKorAndNum = /^[ㄱ-ㅎ|가-힣|0-9|\s]+$/; // Hangul and number
+    var project = document.querySelector("#activityReportProject");
+    var title = document.querySelector("#activityReportTitle");
+    var date = document.querySelector("#activityReportDate");
+    var timeStart = document.querySelector("#activityReportTimeStart");
+    var timeEnd = document.querySelector("#activityReportTimeEnd");
+    var durationInfo = document.querySelector("#activityReportDurationInfo");
+    var duration = document.querySelector("#activityReportDuration");
+    var address = document.querySelector("#activityReportAddress");
+    var content = document.querySelector("#activityReportContent");
+    var participantAdded = document.querySelector("#activityReportParticipantAdded");
+    $("#activityReportDate").keyup(function () {
+        var foo = $(this).val().replace(/[^0-9]/g, "").replace(/(^20[0-9]{2})([0-9]+)?([0-9]{2})$/, "$1-$2-$3").replace("--", "-");
+        $(this).val(foo);
+    });
+    $("#activityReportTimeStart").keyup(function () {
+        var foo = $(this).val().replace(/[^0-9]/g, "");
+        if (foo.length > 0) {
+            foo = foo.match(new RegExp(".{1,2}", "g")).join(":");
+        }
+        $(this).val(foo);
+    });
+    $("#activityReportTimeEnd").keyup(function () {
+        var foo = $(this).val().replace(/[^0-9]/g, "");
+        if (foo.length > 0) {
+            foo = foo.match(new RegExp(".{1,2}", "g")).join(":");
+        }
+        $(this).val(foo);
+    });
+    function onlyNumbers(e) {
+        var regInt = /[^0-9]/gi;
+        var inputKeyChar = String.fromCharCode(event.keyCode);
+        if (regInt.test(inputKeyChar)) {
+            event.returnValue = false;
+        }
+    };
+    function activityReportDurationInfoCalc(e) {
+        var timeStartHours = Math.round((Number(timeStart.value.split(":")[0]) + timeStart.value.split(":")[1] / 60) * 10) / 10;
+        var timeEndHours = Math.round((Number(timeEnd.value.split(":")[0]) + timeEnd.value.split(":")[1] / 60) * 10) / 10;
+        var booleanKeyCode = [9, 16, 37, 38, 39, 40, 116].indexOf(e.keyCode) == -1;
+        if ((timeStart.value.indexOf(":") == 2 && timeEnd.value.indexOf(":") == 2) &&
+            (timeStart.value.length == 5 && timeEnd.value.length == 5)) {
+            if (timeStart.value.split(":")[0] >= 24 ||
+                timeEnd.value.split(":")[0] > 24 ||
+                (timeEnd.value.split(":")[0] == 24 && timeEnd.value.split(":")[1] != 00) ||
+                timeStart.value.split(":")[1] >= 60 ||
+                timeEnd.value.split(":")[1] >= 60 ||
+                timeEndHours == timeStartHours ||
+                timeEndHours < timeStartHours) {
+                if (booleanKeyCode == true) {
+                    alert("올바른 활동 시간을 입력해주세요.");
+                }
+                durationInfo.setAttribute("style", "background: #ffc107; border-color: #ffc107;")
+                return false;
+            }
+            if (Math.abs(timeEnd.value.split(":")[1] - timeStart.value.split(":")[1]) != 0 && Math.abs(timeEnd.value.split(":")[1] - timeStart.value.split(":")[1]) != 30) {
+                if (booleanKeyCode == true) {
+                    alert("활동 시간은 30분 간격으로 입력해주세요.");
+                }
+                durationInfo.setAttribute("style", "background: #ffc107; border-color: #ffc107;")
+                return false;
+            }
+            if (timeEndHours - timeStartHours > 8) {
+                if (booleanKeyCode == true) {
+                    alert("활동 시간은 8시간을 초과할 수 없습니다.");
+                }
+                durationInfo.setAttribute("style", "background: #ffc107; border-color: #ffc107;")
+                return false;
+            }
+            if (timeEndHours > timeStartHours) {
+                durationInfo.setAttribute("style", "background: #0077C8; border-color: #0077C8; color: #FFFFFF;")
+                if (String(timeEndHours - timeStartHours).indexOf(".") != 1) {
+                    durationInfo.innerText = timeEndHours - timeStartHours + ".0시간";
+                    duration.value = timeEndHours - timeStartHours + ".0시간";
+                } else {
+                    durationInfo.innerText = timeEndHours - timeStartHours + "시간";
+                    duration.value = timeEndHours - timeStartHours + "시간";
+                }
+            }
+        } else {
+            durationInfo.innerText = "0.0시간";
+            durationInfo.setAttribute("style", "")
+            duration.value = "";
+            return false;
+        }
+    };
+    timeStart.addEventListener("keyup", activityReportDurationInfoCalc);
+    timeEnd.addEventListener("keyup", activityReportDurationInfoCalc);
+    function activityReportSubmit() {
+        if (project.value == "소속 프로젝트를 선택하세요.") {
+            alert("소속 프로젝트를 선택해주세요.");
+            return false;
+        }
+        if (title.value == "") {
+            alert("활동명을 입력해주세요.");
+            return false;
+        }
+        if (title.value.length <= 4) {
+            alert("활동명은 다섯 글자 이상 입력해주세요.");
+            return false;
+        }
+        if (title.value.length > 30) {
+            alert("활동명은 공백 포함 최대 30자까지 입력 가능합니다.");
+            return false;
+        }
+        if (!patternKorAndNum.test(title.value)) {
+            alert("활동명은 한글 및 숫자만 입력해주세요.");
+            return false;
+        }
+        if (date.value == "") {
+            alert("활동 연월일을 입력해주세요.");
+            return false;
+        }
+        if (!patternNum.test(date.value)) {
+            alert("활동 연월일은 숫자만 입력해주세요.");
+            return false;
+        }
+        if (date.value.length !== 10) {
+            alert("올바른 활동 연월일을 입력해주세요.");
+            return false;
+        }
+        if (date.value.indexOf("20") !== 0) {
+            alert("올바른 활동 연월일을 입력해주세요.");
+            return false;
+        }
+        if (date.value.indexOf("-") !== 4 &&
+            date.value.lastIndexOf("-") !== 7) {
+            alert("올바른 활동 연월일을 입력해주세요.");
+            return false;
+        }
+        if (Number(date.value.slice(5, 7)) == 0 ||
+            Number(date.value.slice(5, 7)) > 12 ||
+            Number(date.value.slice(8, 10)) == 0 ||
+            Number(date.value.slice(8, 10)) > 31) {
+            alert("올바른 활동 연월일을 입력해주세요.");
+            return false;
+        }
+        if (date.value.slice(5, 10) == "02-30" ||
+            date.value.slice(5, 10) == "02-31" ||
+            date.value.slice(5, 10) == "04-31" ||
+            date.value.slice(5, 10) == "06-31" ||
+            date.value.slice(5, 10) == "09-31" ||
+            date.value.slice(5, 10) == "11-31") {
+            alert("올바른 활동 연월일을 입력해주세요.");
+            return false;
+        }
+        if (Number(date.value.split("-")[0]) + Number(date.value.split("-")[1]) + Number(date.value.split("-")[2]) >
+            new Date().getFullYear() + new Date().getMonth() + 1 + new Date().getDate()) {
+            alert("활동 연월일은 현재 또는 과거의 날짜로 입력해주세요.");
+            return false;
+        }
+        if (timeStart.value == "") {
+            alert("활동 시작 시각을 입력해주세요.");
+            return false;
+        }
+        if (timeEnd.value == "") {
+            alert("활동 종료 시각을 입력해주세요.");
+            return false;
+        }
+        if (durationInfo.innerText == "0.0시간") {
+            alert("올바른 활동 시간을 입력해주세요.");
+            return false;
+        }
+        if (address.value == "") {
+            alert("활동 장소를 입력해주세요.");
+            return false;
+        }
+        if (content.value == "") {
+            alert("활동 내용을 입력해주세요.");
+            return false;
+        }
+        if (activityReportImageOneId.value == "") {
+            alert("단체 사진을 첨부해주세요.");
+            return false;
+        }
+        if (activityReportImageTwoId.value == "") {
+            alert("활동 사진을 첨부해주세요.");
+            return false;
+        }
+        if (activityReportImageThreeId.value == "") {
+            alert("활동 사진을 첨부해주세요.");
+            return false;
+        }
+        if (activityReportImageOneId.value == activityReportImageTwoId.value) {
+            alert("첫 번째와 두 번째 활동 사진이 중복됩니다.\n서로 다른 사진을 첨부해주세요.");
+            return false;
+        }
+        if (activityReportImageOneId.value == activityReportImageThreeId.value) {
+            alert("첫 번째와 세 번째 활동 사진이 중복됩니다.\n서로 다른 사진을 첨부해주세요.");
+            return false;
+        }
+        if (activityReportImageTwoId.value == activityReportImageThreeId.value) {
+            alert("두 번째와 세 번째 활동 사진이 중복됩니다.\n서로 다른 사진을 첨부해주세요.");
+            return false;
+        }
+        if (participantAdded.options.length == 2) {
+            if (confirm("참가자로 추가된 인원이 {{ user.last_name }}{{ user.first_name }}님 한 명뿐입니다.\n맞다면 '확인'을 클릭해주세요.") == false) {
+                return false;
+            }
+        }
+        if (confirm("아래 내용을 최종 확인해주세요.\n✔️ 활동 내용을 주요 시간대별로 나누어 입력하셨나요?\n✔️ 참가자를 빠짐없이 모두 추가하셨나요?\n\n정말 일일활동보고서를 제출하시겠어요?")) {
+            cmdPost.value = "submit";
+            formActivityReport.submit();
+            // call 'spinner (transition)' function
+            fadeOut();
+            // call 'avoiding duplicate requests (btn disabled)' function
+            setTimeout(inProgress, 0);
+        } else {
+            return false;
+        }
+    }
+    // activityReportCancel
+    function activityReportCancel() {
+        if (confirm("정말 일일활동보고서 작성을 취소하시겠어요?")) {
+            location.href = location.protocol + "//" + location.host + location.pathname;
+            // call 'spinner (transition)' function
+            fadeOut();
+            // call 'avoiding duplicate requests (btn disabled)' function
+            setTimeout(inProgress, 0);
+        }
+    }
+</script>
+{% elif "activity_report_id=" in request.get_full_path and "@bluemove.or.kr" in user.email %}
+<!--
+---- inner template 03
+-->
+<!--
+---- inner content 05 (activity report details)
+-->
+<div class="row">
+    <!-- column top -->
+    <div class="col-md-12 sticky-top" style="padding-top: 32px;">
+        {% for activity_report_row in activity_report_list %}
+        <p class="mb-1">{{ activity_report_row.project }}</p>
+        <h2 class="mb-2"
+            style="word-break: break-word; overflow: hidden; text-overflow: ellipsis; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical;">
+            {{ activity_report_row.title }}
+        </h2>
+        <div class="screenLarge">
+            <div class="d-flex justify-content-between">
+                <p class="vertical m-0">
+                    {% if activity_report_row.approver_datetime != "-" %}
+                    {{ activity_report_row.drafter_datetime }} {{ activity_report_row.drafter }}
+                    보고│{{ activity_report_row.approver_datetime }} {{ activity_report_row.approver }} 결재
+                    {% elif activity_report_row.approver_datetime == "-" %}
+                    {{ activity_report_row.drafter_datetime }} {{ activity_report_row.drafter }}
+                    보고│{{ activity_report_row.approver }} 결재 예정
+                    {% endif %}
+                </p>
+                <p class="mb-0" style="margin-top: .1rem;">
+                    {% if "대기" in activity_report_row.status %}
+                    <span class="badge badge-bluemove bg-secondary">대기</span>
+                    {% elif "반려" in activity_report_row.status %}
+                    <span class="badge badge-bluemove bg-danger">반려</span>
+                    {% elif "승인" in activity_report_row.status %}
+                    <span class="badge badge-bluemove bg-bluemove">승인</span>
+                    {% endif %}
+                </p>
+            </div>
+        </div>
+        <div class="screenSmall">
+            <div class="d-flex justify-content-between">
+                <small>
+                    {{ activity_report_row.drafter_datetime }}
+                </small>
+                <small>
+                    {{ activity_report_row.drafter }} 보고
+                </small>
+            </div>
+            <div class="d-flex justify-content-between">
+                <small>
+                    {{ activity_report_row.approver_datetime }}
+                </small>
+                <small>
+                    {{ activity_report_row.approver }} 결재
+                    {% if activity_report_row.approver_datetime == "-" %}
+                     예정
+                    {% endif %}
+                </small>
+            </div>
+            <small class="d-grid align-items-stretch mt-2">
+                {% if "대기" in activity_report_row.status %}
+                <span class="badge badge-bluemove bg-secondary">대기</span>
+                {% elif "반려" in activity_report_row.status %}
+                <span class="badge badge-bluemove bg-danger">반려</span>
+                {% elif "승인" in activity_report_row.status %}
+                <span class="badge badge-bluemove bg-bluemove">승인</span>
+                {% endif %}
+            </small>
+        </div>
+        <hr class="text-black-50" style="margin-top: 1.5rem; margin-bottom: 0;">
+        {% endfor %}
+    </div>
+    <!-- column left -->
+    <div class="col-md-8">
+        <div class="screenLarge" style="margin-bottom: 1.9rem;"></div>
+        <div class="screenSmall" style="margin-bottom: 1.5rem;"></div>
+        <div class="screenSmall mb-4">
+            {% for activity_report_row in activity_report_list %}
+            {% if user.email|lower in activity_report_row.approver_email and "대기" in activity_report_row.status %}
+            <div class="d-grid" style="margin-bottom: 1rem;">
+                <a href="javascript:void(0);" class="btn btn-outline-primary" onclick="activityReportApprove();"
+                    aria-label="보고서 승인"><i class="bi bi-check2-square me-2"></i>보고서 승인</a>
+            </div>
+            {% endif %}
+            {% endfor %}
+        </div>
+        <!-- alert -->
+        {% if approve %}
+        <!-- boolean APPROVE -->
+        <div class="alert alert-primary alert-dismissible fade show d-flex align-items-center" role="alert">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor"
+                class="bi bi-file-earmark-check flex-shrink-0 me-2" viewBox="0 0 16 16">
+                <path
+                    d="M10.854 7.854a.5.5 0 0 0-.708-.708L7.5 9.793 6.354 8.646a.5.5 0 1 0-.708.708l1.5 1.5a.5.5 0 0 0 .708 0l3-3z" />
+                <path
+                    d="M14 14V4.5L9.5 0H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2zM9.5 3A1.5 1.5 0 0 0 11 4.5h2V14a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1h5.5v2z" />
+            </svg>
+            <div class="vertical" style="word-break: break-word;">
+                승인되었습니다! <span id="emoji"></span>
+            </div>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="안내창 닫기"></button>
+        </div>
+        {% endif %}
+        <div class="alert alert-secondary d-flex align-items-center" role="alert">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor"
+                class="bi bi-shield-lock flex-shrink-0 me-2" viewBox="0 0 16 16">
+                <path
+                    d="M5.338 1.59a61.44 61.44 0 0 0-2.837.856.481.481 0 0 0-.328.39c-.554 4.157.726 7.19 2.253 9.188a10.725 10.725 0 0 0 2.287 2.233c.346.244.652.42.893.533.12.057.218.095.293.118a.55.55 0 0 0 .101.025.615.615 0 0 0 .1-.025c.076-.023.174-.061.294-.118.24-.113.547-.29.893-.533a10.726 10.726 0 0 0 2.287-2.233c1.527-1.997 2.807-5.031 2.253-9.188a.48.48 0 0 0-.328-.39c-.651-.213-1.75-.56-2.837-.855C9.552 1.29 8.531 1.067 8 1.067c-.53 0-1.552.223-2.662.524zM5.072.56C6.157.265 7.31 0 8 0s1.843.265 2.928.56c1.11.3 2.229.655 2.887.87a1.54 1.54 0 0 1 1.044 1.262c.596 4.477-.787 7.795-2.465 9.99a11.775 11.775 0 0 1-2.517 2.453 7.159 7.159 0 0 1-1.048.625c-.28.132-.581.24-.829.24s-.548-.108-.829-.24a7.158 7.158 0 0 1-1.048-.625 11.777 11.777 0 0 1-2.517-2.453C1.928 10.487.545 7.169 1.141 2.692A1.54 1.54 0 0 1 2.185 1.43 62.456 62.456 0 0 1 5.072.56z" />
+                <path
+                    d="M9.5 6.5a1.5 1.5 0 0 1-1 1.415l.385 1.99a.5.5 0 0 1-.491.595h-.788a.5.5 0 0 1-.49-.595l.384-1.99a1.5 1.5 0 1 1 2-1.415z" />
+            </svg>
+            <div class="vertical" style="word-break: break-word;">
+                활동 사진 및 참가자 개인정보가 유출되지 않도록 각별한 유의 부탁드립니다.
+            </div>
+        </div>
+        {% for activity_report_row in activity_report_list %}
+        <div class="card shadow-hover mb-4">
+            <div class="card-body" style="background-color: rgba(0,0,0,.025);">
+                <h5 class="card-title pb-1">활동 개요</h5>
+                <div class="pt-3" style="border-radius: .25rem;">
+                    <div class="row row-cols-1 row-cols-sm-2 g-4">
+                        <div class="col">
+                            <div class="card border-0" style="background-color: transparent;">
+                                <div class="card-body p-0">
+                                    <p class="card-title" style="margin-top: .1rem;"><span
+                                            class="badge badge-bluemove bg-secondary">소속 프로젝트</span></p>
+                                    <p class="card-text">{{ activity_report_row.project }}</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col">
+                            <div class="card border-0" style="background-color: transparent;">
+                                <div class="card-body p-0">
+                                    <p class="card-title" style="margin-top: .1rem;"><span
+                                            class="badge badge-bluemove bg-secondary">활동명</span></p>
+                                    <p class="card-text">{{ activity_report_row.title }}</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col">
+                            <div class="card border-0" style="background-color: transparent;">
+                                <div class="card-body p-0">
+                                    <p class="card-title" style="margin-top: .1rem;"><span
+                                            class="badge badge-bluemove bg-secondary">활동 연월일</span></p>
+                                    <p class="card-text">{{ activity_report_row.date }}</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col">
+                            <div class="card border-0" style="background-color: transparent;">
+                                <div class="card-body p-0">
+                                    <p class="card-title" style="margin-top: .1rem;"><span
+                                            class="badge badge-bluemove bg-secondary">활동 시간</span></p>
+                                    <p class="card-text">{{ activity_report_row.time_duration }}</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col">
+                            <div class="card border-0" style="background-color: transparent;">
+                                <div class="card-body p-0">
+                                    <p class="card-title" style="margin-top: .1rem;"><span
+                                            class="badge badge-bluemove bg-secondary">활동 장소</span></p>
+                                    <p class="card-text">{{ activity_report_row.address }}</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col">
+                            <div class="card border-0" style="background-color: transparent;">
+                                <div class="card-body p-0">
+                                    <p class="card-title" style="margin-top: .1rem;"><span
+                                            class="badge badge-bluemove bg-secondary">보고자</span></p>
+                                    <p class="card-text">{{ activity_report_row.drafter }}</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row row-cols-1 g-4" style="padding-top: 1.5rem;">
+                        <div class="col">
+                            <div class="card border-0" style="background-color: transparent;">
+                                <div class="card-body p-0">
+                                    <p class="card-title" style="margin-top: .1rem;"><span
+                                            class="badge badge-bluemove bg-secondary">활동 내용</span></p>
+                                    <p class="card-text">{{ activity_report_row.content|linebreaksbr }}</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col">
+                            <div class="card border-0" style="background-color: transparent;">
+                                <div class="card-body p-0">
+                                    <p class="card-title" style="margin-top: .1rem;"><span
+                                            class="badge badge-bluemove bg-secondary">단체 사진</span></p>
+                                    <img src="https://lh3.googleusercontent.com/d/{{ activity_report_row.image_one_id }}"
+                                        style="width: 100%; border-radius: .25rem; margin-top: .4rem;" alt="단체 사진">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="card shadow-hover mb-4">
+            <div class="card-body" style="background-color: rgba(0,0,0,.025);">
+                <h5 class="card-title pb-1">활동 사진</h5>
+                <div class="pt-3" style="border-radius: .25rem;">
+                    <div class="row row-cols-1 row-cols-sm-2 g-4">
+                        <div class="col">
+                            <div class="card border-0" style="background-color: transparent;">
+                                <div class="card-body p-0">
+                                    <p class="card-title" style="margin-top: .1rem;">
+                                        <img src="https://lh3.googleusercontent.com/d/{{ activity_report_row.image_two_id }}"
+                                            style="width: 100%; border-radius: .25rem;" alt="첫 번째 활동 사진">
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col">
+                            <div class="card border-0" style="background-color: transparent;">
+                                <div class="card-body p-0">
+                                    <p class="card-title" style="margin-top: .1rem;">
+                                        <img src="https://lh3.googleusercontent.com/d/{{ activity_report_row.image_three_id }}"
+                                            style="width: 100%; border-radius: .25rem;" alt="두 번째 활동 사진">
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="card shadow-hover">
+            <div class="card-body px-0" style="background-color: rgba(0,0,0,.025);">
+                <div class="screenLarge" style="padding-left: 1.25rem; padding-right: 1.25rem;">
+                    <div class="d-flex justify-content-between">
+                        <h5 class="card-title pb-1">
+                            참가자 명단
+                        </h5>
+                        <small style="margin-top: .25rem;">
+                            <i class="bi bi-person me-1"></i>총 {{ activity_report_row.participant|length }}명 참가
+                        </small>
+                    </div>
+                </div>
+                <div class="screenSmall" style="padding-left: 1.25rem; padding-right: 1.25rem;">
+                    <h5 class="card-title pb-1">
+                        참가자 명단
+                    </h5>
+                    <small class="d-flex justify-content-center border border-secondary rounded-1"
+                        style="border-color: rgba(0,0,0,.3) !important;">
+                        <i class="bi bi-person me-1"></i>총 {{ activity_report_row.participant|length }}명 참가
+                    </small>
+                </div>
+                <div class="pt-3" style="border-radius: .25rem; padding-left: 1.25rem; padding-right: 1.25rem;">
+                    <div class="row row-cols-1 row-cols-sm-2 g-4">
+                        {% for participant in activity_report_row.participant %}
+                        <div class="col">
+                            <div class="card p-3" style="background-color: transparent;"
+                                onmouseover="onmouseoverParticipant(this)" onmouseout="onmouseoutParticipant(this)">
+                                <div class="card-body p-0">
+                                    <p class="card-title" style="margin-top: .1rem;"><span
+                                            class="badge badge-bluemove bg-secondary">{{ forloop.counter }}.
+                                            {{ participant.0 }}</span></p>
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <span>
+                                            <i class="bi bi-123 me-2"></i>회번
+                                        </span>{{ participant.1 }}
+                                    </div>
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <span>
+                                            <i class="bi bi-calendar-date me-2"></i>생년월일
+                                        </span>****-{{ participant.2|slice:"5:" }}
+                                    </div>
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <span>
+                                            <i class="bi bi-telephone me-2"></i>연락처
+                                        </span>{{ participant.3|slice:":8" }}-****
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+                <div class="text-end mt-2" style="padding-left: 1.25rem; padding-right: 1.25rem;">
+                    <small>개인정보 일부 마스킹됨</small>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+        <div class="screenSmall mt-4">
+            {% for activity_report_row in activity_report_list %}
+            {% if user.email|lower in activity_report_row.approver_email and "대기" in activity_report_row.status %}
+            <div class="d-grid" style="margin-bottom: 1rem;">
+                <a href="javascript:void(0);" class="btn btn-outline-secondary" onclick="openGoogleDocs();"
+                    aria-label="보고서 원본 보기"><i class="bi bi-google me-2"></i>보고서 원본 보기</a>
+            </div>
+            <div class="d-grid" style="margin-bottom: 2rem;">
+                <a href="{% url 'draftnapprove:activityreport' %}" class="btn btn-outline-secondary fade-onclick"
+                    aria-label="다른 보고서 보러 목록으로 이동하기"><i class="bi bi-list-ul me-2"></i>다른 보고서 보기</a>
+            </div>
+            <div class="d-grid" style="margin-bottom: .5rem;">
+                <a href="javascript:void(0);" class="btn btn-outline-danger" onclick="activityReportReturn();"
+                    aria-label="보고서 반려"><i class="bi bi-slash-circle me-2"></i>보고서 반려</a>
+            </div>
+            {% else %}
+            <div class="d-grid" style="margin-bottom: 1rem;">
+                <a href="javascript:void(0);" class="btn btn-outline-secondary" onclick="openGoogleDocs();"
+                    aria-label="보고서 원본 보기"><i class="bi bi-google me-2"></i>보고서 원본 보기</a>
+            </div>
+            <div class="d-grid">
+                <a href="{% url 'draftnapprove:activityreport' %}" class="btn btn-outline-secondary fade-onclick"
+                    aria-label="다른 보고서 보러 목록으로 이동하기"><i class="bi bi-list-ul me-2"></i>다른 보고서 보기</a>
+            </div>
+            {% endif %}
+            {% endfor %}
+        </div>
+    </div>
+    <!-- column right -->
+    <div class="col-md-4">
+        <div class="d-grid sticky-right">
+            <div class="screenLarge" style="margin-top: 1.9rem;">
+                {% for activity_report_row in activity_report_list %}
+                {% if user.email|lower in activity_report_row.approver_email and "대기" in activity_report_row.status %}
+                <div class="d-grid" style="margin-bottom: 1rem;">
+                    <a href="javascript:void(0);" class="btn btn-outline-primary" onclick="activityReportApprove();"
+                        aria-label="보고서 승인"><i class="bi bi-check2-square me-2"></i>보고서 승인</a>
+                </div>
+                <div class="d-grid" style="margin-bottom: 1rem;">
+                    <a href="javascript:void(0);" class="btn btn-outline-secondary" onclick="openGoogleDocs();"
+                        aria-label="보고서 원본 보기"><i class="bi bi-google me-2"></i>보고서 원본 보기</a>
+                </div>
+                <div class="d-grid" style="margin-bottom: 2rem;">
+                    <a href="{% url 'draftnapprove:activityreport' %}" class="btn btn-outline-secondary fade-onclick"
+                        aria-label="다른 보고서 보러 목록으로 이동하기"><i class="bi bi-list-ul me-2"></i>다른 보고서 보기</a>
+                </div>
+                <div class="d-grid" style="margin-bottom: .5rem;">
+                    <a href="javascript:void(0);" class="btn btn-outline-danger" onclick="activityReportReturn();"
+                        aria-label="보고서 반려"><i class="bi bi-slash-circle me-2"></i>보고서 반려</a>
+                </div>
+                {% else %}
+                <div class="d-grid" style="margin-bottom: 1rem;">
+                    <a href="javascript:void(0);" class="btn btn-outline-secondary" onclick="openGoogleDocs();"
+                        aria-label="보고서 원본 보기"><i class="bi bi-google me-2"></i>보고서 원본 보기</a>
+                </div>
+                <div class="d-grid">
+                    <a href="{% url 'draftnapprove:activityreport' %}" class="btn btn-outline-secondary fade-onclick"
+                        aria-label="다른 보고서 보러 목록으로 이동하기"><i class="bi bi-list-ul me-2"></i>다른 보고서 보기</a>
+                </div>
+                {% endif %}
+                {% endfor %}
+            </div>
+            <div class="card mt-4" style="border-style: dashed; border-color: rgba(0,0,0,.25)">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h5 class="card-title m-0 p-0">
+                            공유
+                        </h5>
+                        <div class="d-flex justify-content-center" style="height: 28px;">
+                            <a href="javascript:void(0);" data-bs-toggle="tooltip" data-bs-placement="left" title=""
+                                data-bs-original-title="클립보드에 URL 복사하기" style="color: #545859 !important;"
+                                onclick="copyUrl(this);" aria-label="도움말">
+                                <svg xmlns="http://www.w3.org/2000/svg" height="24" fill="currentColor"
+                                    class="bi bi-clipboard" viewBox="0 0 16 16">
+                                    <path
+                                        d="M4 1.5H3a2 2 0 0 0-2 2V14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V3.5a2 2 0 0 0-2-2h-1v1h1a1 1 0 0 1 1 1V14a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V3.5a1 1 0 0 1 1-1h1v-1z" />
+                                    <path
+                                        d="M9.5 1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-3a.5.5 0 0 1-.5-.5v-1a.5.5 0 0 1 .5-.5h3zm-3-1A1.5 1.5 0 0 0 5 1.5v1A1.5 1.5 0 0 0 6.5 4h3A1.5 1.5 0 0 0 11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3z" />
+                                </svg>
+                                <svg xmlns="http://www.w3.org/2000/svg" height="24" fill="currentColor"
+                                    class="bi bi-clipboard-check" viewBox="0 0 16 16" style="display: none;">
+                                    <path fill-rule="evenodd"
+                                        d="M10.854 7.146a.5.5 0 0 1 0 .708l-3 3a.5.5 0 0 1-.708 0l-1.5-1.5a.5.5 0 1 1 .708-.708L7.5 9.793l2.646-2.647a.5.5 0 0 1 .708 0z" />
+                                    <path
+                                        d="M4 1.5H3a2 2 0 0 0-2 2V14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V3.5a2 2 0 0 0-2-2h-1v1h1a1 1 0 0 1 1 1V14a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V3.5a1 1 0 0 1 1-1h1v-1z" />
+                                    <path
+                                        d="M9.5 1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-3a.5.5 0 0 1-.5-.5v-1a.5.5 0 0 1 .5-.5h3zm-3-1A1.5 1.5 0 0 0 5 1.5v1A1.5 1.5 0 0 0 6.5 4h3A1.5 1.5 0 0 0 11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3z" />
+                                </svg>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- form -->
+    {% for activity_report_row in activity_report_list %}
+    {% if user.email|lower in activity_report_row.approver_email and "대기" in activity_report_row.status %}
+    <form action="{% url 'draftnapprove:activityreport' %}?activity_report_id={{ activity_report_row.id }}"
+        method="POST" enctype="multipart/form-data" id="formActivityReportSubmit">
+        {% csrf_token %}
+        <input type="hidden" id="activityReportIdPost" name="activityReportIdPost" value="{{ activity_report_row.id }}"
+            readonly hidden>
+        <input type="hidden" id="cmdPost" name="cmdPost" value="" readonly hidden>
+    </form>
+    {% endif %}
+    {% endfor %}
+</div>
+
+<!--
+---- inner script for content 04 (activity report details)
+-->
+<script type="text/javascript">
+    // sticky-top
+    window.onload = function () {
+        var contents = document.querySelector("#contents");
+        contents.setAttribute("class", "px-3 pb-3 mb-3");
+    }
+    // onmouseoverParticipant & onmouseoutParticipant
+    function onmouseoverParticipant(obj) {
+        obj.setAttribute("style", "background-color: transparent; border: 1px solid #0077C8;");
+        obj.childNodes[1].childNodes[1].childNodes[0].setAttribute("class", "badge badge-bluemove bg-bluemove");
+    }
+    function onmouseoutParticipant(obj) {
+        obj.setAttribute("style", "background-color: transparent;");
+        obj.childNodes[1].childNodes[1].childNodes[0].setAttribute("class", "badge badge-bluemove bg-secondary");
+    }
+    // approve the activity report
+    function activityReportApprove() {
+        if (confirm("정말 보고서를 승인하시겠어요?")) {
+            cmdPost.value = "approve";
+            formActivityReportSubmit.submit();
+            // call 'spinner (transition)' function
+            fadeOut();
+            // call 'avoiding duplicate requests (btn disabled)' function
+            setTimeout(inProgress, 0);
+        } else {
+            return false;
+        }
+    }
+    // return the activity report
+    function activityReportReturn() {
+        if (confirm("정말 보고서를 반려하시겠어요?")) {
+            cmdPost.value = "return";
+            formActivityReportSubmit.submit();
+            // call 'spinner (transition)' function
+            fadeOut();
+            // call 'avoiding duplicate requests (btn disabled)' function
+            setTimeout(inProgress, 0);
+        } else {
+            return false;
+        }
+    }
+    // open original activity report in Google Docs
+    function openGoogleDocs() {
+        window.open("about:blank").location.href = "https://docs.google.com/document/d/" + location.search.replace("?activity_report_id=", "")
+    }
+    // copy URL to clipboard
+    function copyToClipboard(val) {
+        const t = document.createElement("textarea");
+        document.body.appendChild(t);
+        t.value = val;
+        t.select();
+        document.execCommand("copy");
+        document.body.removeChild(t);
+    }
+    function copyUrl(obj) {
+        copyToClipboard(location.protocol + "//" + location.host + location.pathname + location.search);
+        obj.firstElementChild.setAttribute("style", "display: none;");
+        obj.lastElementChild.setAttribute("style", "");
+    }
+</script>
+{% endif %}
+
+<!--
+---- inner script
+-->
+<script type="text/javascript">
+    history.pushState(null, null, location.href);
+    window.onpopstate = function () {
+        history.go(1);
+    };
+</script>
+{% if submit or approve %}
+<!-- boolean SUBMIT or APPROVE -->
+<script type="text/javascript">
+    var emoji = new Array("😀", "😁", "😃", "😄", "😉", "😊", "😎", "🙂", "🤗", "🤩", "👍", "👏", "🙌", "🙆‍♀️", "🙆‍♂️", "🙆");
+    function randomItem(e) {
+        return e[Math.floor(Math.random() * e.length)];
+    }
+    document.querySelector("#emoji").innerText = randomItem(emoji);
+</script>
+{% endif %}
+{% endblock %}

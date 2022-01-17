@@ -37,8 +37,7 @@
             <ul class="dropdown-menu text-small shadow" aria-labelledby="menuDecidenshareLarge">
                 <li><a class="dropdown-item" href="#">회의 소집</a></li>
                 <li><a class="dropdown-item" href="#">회의 출석</a></li>
-                <li><a class="dropdown-item" href="#">총회의사록</a></li>
-                <li><a class="dropdown-item" href="#">이사회의사록</a></li>
+                <li><a class="dropdown-item" href="#">의사록 작성 및 관리</a></li>
                 <li><a class="dropdown-item" href="#">데이터 외부 공유</a></li>
                 <li><a class="dropdown-item" href="#">블뭅 링크 관리</a></li>
             </ul>
@@ -49,7 +48,8 @@
                     <h6 class="dropdown-header" style="color: #545859;"><i
                             class="bi bi-arrow-return-right me-1"></i>유통대상문서</h6>
                 </li>
-                <li><a class="dropdown-item" href="#">일일활동보고서</a></li>
+                <li><a class="dropdown-item fade-onclick" href="{% url 'draftnapprove:activityreport' %}">일일활동보고서</a>
+                </li>
                 <li><a class="dropdown-item" href="#">공문</a></li>
                 <li>
                     <hr class="dropdown-divider">
@@ -198,8 +198,8 @@
                                                 소집</a></li>
                                         <li><a class="list-group-item nav-small-item no-border" href="#">회의
                                                 출석</a></li>
-                                        <li><a class="list-group-item nav-small-item no-border" href="#">총회의사록</a></li>
-                                        <li><a class="list-group-item nav-small-item no-border" href="#">이사회의사록</a></li>
+                                        <li><a class="list-group-item nav-small-item no-border" href="#">의사록 작성 및 관리</a>
+                                        </li>
                                         <li><a class="list-group-item nav-small-item no-border" href="#">데이터 외부 공유</a>
                                         </li>
                                         <li><a class="list-group-item nav-small-item no-border" href="#">블뭅
@@ -222,7 +222,8 @@
                                     <ul class="list-group list-group-flush">
                                         <li><span class="list-group-item nav-small-header no-border"><i
                                                     class="bi bi-arrow-return-right me-2"></i>유통대상문서</span></li>
-                                        <li><a class="list-group-item nav-small-item no-border" href="#">일일활동보고서</a>
+                                        <li><a class="list-group-item nav-small-item no-border fade-onclick"
+                                                href="{% url 'draftnapprove:activityreport' %}">일일활동보고서</a>
                                         </li>
                                         <li><a class="list-group-item nav-small-item no-border" href="#">공문</a></li>
                                         <li><span class="list-group-item nav-small-header top-border"><i

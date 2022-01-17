@@ -25,7 +25,6 @@ import time
 
 # Notion
 import requests, json
-from bs4 import BeautifulSoup
 
 # Slack
 from slack_sdk import WebClient
@@ -34,7 +33,10 @@ import re
 # user-agents (https://github.com/selwin/python-user-agents)
 import user_agents
 
-# application
+# Beautiful Soup (https://www.crummy.com/software/BeautifulSoup/bs4/doc/)
+from bs4 import BeautifulSoup
+
+# dateutil (https://github.com/dateutil/dateutil)
 from dateutil import parser
 
 # multiple functions
@@ -70,7 +72,7 @@ mail_service = build("gmail", "v1", credentials=credentials_delegated)
 notion_headers = {
     "Authorization": f"Bearer " + notion_token,
     "Content-Type": "application/json",
-    "Notion-Version": "2021-05-13",
+    "Notion-Version": "2021-08-16",
 }
 
 # Oopy scraping
@@ -235,12 +237,14 @@ def gmail_message(
                                                                                 <tr>
                                                                                     <td class="mcnImageContent" valign="top"
                                                                                         style="padding-right: 9px; padding-left: 9px; padding-top: 0; padding-bottom: 0;">
-                                                                                        <img align="left"
-                                                                                            src="https://mcusercontent.com/8e85249d3fe980e2482c148b1/images/681b79e3-e459-6f97-567b-928c8229a6c9.png"
-                                                                                            alt="블루무브 포털"
-                                                                                            width="110"
-                                                                                            style="max-width:1000px; padding-bottom: 0; display: inline !important; vertical-align: bottom;"
-                                                                                            class="mcnRetinaImage">
+                                                                                        <a href="https://portal.bluemove.or.kr" target="_blank">
+                                                                                            <img align="left"
+                                                                                                src="https://mcusercontent.com/8e85249d3fe980e2482c148b1/images/681b79e3-e459-6f97-567b-928c8229a6c9.png"
+                                                                                                alt="블루무브 포털"
+                                                                                                width="110"
+                                                                                                style="max-width:1000px; padding-bottom: 0; display: inline !important; vertical-align: bottom;"
+                                                                                                class="mcnRetinaImage">
+                                                                                        </a>
                                                                                     </td>
                                                                                 </tr>
                                                                             </tbody>
@@ -517,12 +521,14 @@ def gmail_message(
                                                                                 <tr>
                                                                                     <td class="mcnImageContent" valign="top"
                                                                                         style="padding-right: 9px; padding-left: 9px; padding-top: 0; padding-bottom: 0;">
-                                                                                        <img align="left"
-                                                                                            src="https://mcusercontent.com/8e85249d3fe980e2482c148b1/images/681b79e3-e459-6f97-567b-928c8229a6c9.png"
-                                                                                            alt="블루무브 포털"
-                                                                                            width="110"
-                                                                                            style="max-width:1000px; padding-bottom: 0; display: inline !important; vertical-align: bottom;"
-                                                                                            class="mcnRetinaImage">
+                                                                                        <a href="https://portal.bluemove.or.kr" target="_blank">
+                                                                                            <img align="left"
+                                                                                                src="https://mcusercontent.com/8e85249d3fe980e2482c148b1/images/681b79e3-e459-6f97-567b-928c8229a6c9.png"
+                                                                                                alt="블루무브 포털"
+                                                                                                width="110"
+                                                                                                style="max-width:1000px; padding-bottom: 0; display: inline !important; vertical-align: bottom;"
+                                                                                                class="mcnRetinaImage">
+                                                                                        </a>
                                                                                     </td>
                                                                                 </tr>
                                                                             </tbody>
@@ -758,12 +764,14 @@ def gmail_message(
                                                                                 <tr>
                                                                                     <td class="mcnImageContent" valign="top"
                                                                                         style="padding-right: 9px; padding-left: 9px; padding-top: 0; padding-bottom: 0;">
-                                                                                        <img align="left"
-                                                                                            src="https://mcusercontent.com/8e85249d3fe980e2482c148b1/images/681b79e3-e459-6f97-567b-928c8229a6c9.png"
-                                                                                            alt="블루무브 포털"
-                                                                                            width="110"
-                                                                                            style="max-width:1000px; padding-bottom: 0; display: inline !important; vertical-align: bottom;"
-                                                                                            class="mcnRetinaImage">
+                                                                                        <a href="https://portal.bluemove.or.kr" target="_blank">
+                                                                                            <img align="left"
+                                                                                                src="https://mcusercontent.com/8e85249d3fe980e2482c148b1/images/681b79e3-e459-6f97-567b-928c8229a6c9.png"
+                                                                                                alt="블루무브 포털"
+                                                                                                width="110"
+                                                                                                style="max-width:1000px; padding-bottom: 0; display: inline !important; vertical-align: bottom;"
+                                                                                                class="mcnRetinaImage">
+                                                                                        </a>
                                                                                     </td>
                                                                                 </tr>
                                                                             </tbody>
