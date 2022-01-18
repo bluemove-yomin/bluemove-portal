@@ -451,8 +451,10 @@ def slack_blocks_and_text(
     request=None,
     str_project=None,
     str_title=None,
+    str_drafter_datetime=None,
     str_drafter=None,
     str_drafter_email=None,
+    str_approver_datetime=None,
     str_approver=None,
     str_approver_email=None,
     str_activity_report_id=None,
@@ -463,6 +465,7 @@ def slack_blocks_and_text(
         request
         and str_project
         and str_title
+        and str_drafter_datetime
         and str_drafter
         and str_drafter_email
         and str_approver_email
@@ -505,8 +508,7 @@ def slack_blocks_and_text(
                 "fields": [
                     {
                         "type": "mrkdwn",
-                        "text": "*보고일시:*\n"
-                        + datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+                        "text": "*보고일시:*\n" + str_drafter_datetime,
                     },
                     {
                         "type": "mrkdwn",
@@ -538,6 +540,7 @@ def slack_blocks_and_text(
         and str_project
         and str_title
         and str_drafter_email
+        and str_approver_datetime
         and str_approver
         and str_approver_email
         and str_activity_report_id
@@ -579,8 +582,7 @@ def slack_blocks_and_text(
                 "fields": [
                     {
                         "type": "mrkdwn",
-                        "text": "*결재일시:*\n"
-                        + datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+                        "text": "*결재일시:*\n" + str_approver_datetime,
                     },
                     {
                         "type": "mrkdwn",
@@ -618,6 +620,7 @@ def slack_blocks_and_text(
     elif (
         str_project
         and str_title
+        and str_drafter_datetime
         and str_drafter
         and str_drafter_email
         and str_approver_email
@@ -661,8 +664,7 @@ def slack_blocks_and_text(
                 "fields": [
                     {
                         "type": "mrkdwn",
-                        "text": "*보고일시:*\n"
-                        + datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+                        "text": "*보고일시:*\n" + str_drafter_datetime,
                     },
                     {
                         "type": "mrkdwn",
@@ -790,6 +792,7 @@ def cron_remind_approvers_about_all_activity_reports_in_the_queue(request):
             blocks, text = slack_blocks_and_text(
                 str_project=activity_report_row[0],
                 str_title=activity_report_row[1],
+                str_drafter_datetime=activity_report_row[2],
                 str_drafter=activity_report_row[3],
                 str_drafter_email=activity_report_row[4],
                 str_approver_email=activity_report_row[7],
@@ -1109,6 +1112,7 @@ def activityreport(request):
                                 str_project=activity_report_project,
                                 str_title=activity_report_title,
                                 str_drafter_email=activity_report_drafter_email,
+                                str_approver_datetime=activity_report_approver_datetime,
                                 str_approver=activity_report_approver,
                                 str_approver_email=activity_report_approver_email,
                                 str_activity_report_id=activity_report_id,
@@ -1555,10 +1559,13 @@ def activityreport(request):
         blocks, text = slack_blocks_and_text(
             request=request,
             str_project=project,
-            str_approver_email=approver_email,
             str_title=title,
+            str_drafter_datetime=datetime.datetime.now().strftime("%Y-%m-%d")
+            + wanted_datetime_day_split(datetime.datetime.now().strftime("%w"))
+            + datetime.datetime.now().strftime(" %H:%M"),
             str_drafter=drafter,
             str_drafter_email=drafter_email,
+            str_approver_email=approver_email,
             str_activity_report_id=activity_report_id,
         )
         client.chat_postMessage(
