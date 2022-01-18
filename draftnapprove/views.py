@@ -682,7 +682,7 @@ def slack_blocks_and_text(
                             "text": "접수된 보고서 확인",
                             "emoji": True,
                         },
-                        "url": "https://portal.bluemove.or.kr/draftnapprove"
+                        "url": "https://portal.bluemove.or.kr/draftnapprove/activityreport"
                         + "?activity_report_id="
                         + str_activity_report_id,
                     }
