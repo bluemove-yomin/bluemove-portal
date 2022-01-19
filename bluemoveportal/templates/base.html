@@ -101,7 +101,13 @@
             {% block breadcrumb %}
             {% endblock %}
             <!-- contents -->
+            {% if "wanted_id=" in request.get_full_path or "activity_report_id=" in request.get_full_path %}
+            <!-- when sticky-top exists -->
+            <div id="contents" class="px-3 pb-3 mb-3">
+            {% else %}
+            <!-- when sticky-top does not exist -->
             <div id="contents" class="p-3 my-3">
+            {% endif %}
                 <div class="container-lg">
                     {% block content %}
                     override body
