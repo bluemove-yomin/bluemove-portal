@@ -457,6 +457,7 @@ def slack_blocks_and_text(
     str_approver_datetime=None,
     str_approver=None,
     str_approver_email=None,
+    str_rejection_reason=None,
     str_activity_report_id=None,
     boolean_reminder=None,
 ):
@@ -544,6 +545,7 @@ def slack_blocks_and_text(
         and str_approver
         and str_approver_email
         and str_activity_report_id
+        and not str_rejection_reason
     ):
         blocks = [
             {
@@ -616,6 +618,86 @@ def slack_blocks_and_text(
             },
         ]
         text = f"✔️ '{str_title}' 일일활동보고서 승인됨"
+        # message blocks and a text for the activity report rejection notification
+    elif (
+        request
+        and str_project
+        and str_title
+        and str_drafter_email
+        and str_approver_datetime
+        and str_approver
+        and str_approver_email
+        and str_rejection_reason
+        and str_activity_report_id
+    ):
+        blocks = [
+            {
+                "type": "header",
+                "text": {
+                    "type": "plain_text",
+                    "text": "⛔ '" + str_title + "' 일일활동보고서 반려됨",
+                },
+            },
+            {
+                "type": "section",
+                "text": {
+                    "type": "mrkdwn",
+                    "text": "<@"
+                    + str_approver_email.replace("@bluemove.or.kr", "").lower()
+                    + ">님이 <@"
+                    + str_drafter_email.replace("@bluemove.or.kr", "").lower()
+                    + ">님의 일일활동보고서를 반려했습니다.",
+                },
+            },
+            {
+                "type": "section",
+                "fields": [
+                    {
+                        "type": "mrkdwn",
+                        "text": "*프로젝트:*\n" + str_project,
+                    },
+                    {
+                        "type": "mrkdwn",
+                        "text": "*활동명:*\n" + str_title,
+                    },
+                ],
+            },
+            {
+                "type": "section",
+                "fields": [
+                    {
+                        "type": "mrkdwn",
+                        "text": "*결재일시:*\n" + str_approver_datetime,
+                    },
+                    {
+                        "type": "mrkdwn",
+                        "text": "*결재자:*\n" + str_approver,
+                    },
+                ],
+            },
+            {
+                "type": "section",
+                "text": {
+                    "type": "mrkdwn",
+                    "text": "*반려 사유:*\n" + str_rejection_reason,
+                },
+            },
+            {
+                "type": "actions",
+                "elements": [
+                    {
+                        "type": "button",
+                        "text": {
+                            "type": "plain_text",
+                            "text": "반려된 보고서 확인",
+                            "emoji": True,
+                        },
+                        "url": request.build_absolute_uri(),
+                    }
+                ],
+            },
+        ]
+        text = f"⛔ '{str_title}' 일일활동보고서 반려됨"
     # message blocks and a text for the reminder
     elif (
         str_project
@@ -843,12 +925,14 @@ def activityreport(request):
     image_two_id = request.POST.get("activityReportImageTwoId")
     image_three_id = request.POST.get("activityReportImageThreeId")
     participant = request.POST.get("activityReportParticipantAddedNameNumberEmail")
+    rejection_reason_post = request.POST.get("activityReportRejectionReasonPost")
     q = request.GET.get("q")
     project_list = []
     bluemover_list = []
     bluemover_list_self = []
     # boolean
     approve = None
+    reject = None
     trashed = None
     wrong_url = None
     submit = None
@@ -896,7 +980,7 @@ def activityreport(request):
                 )
             else:
                 activity_report_list_raw = spreadsheets_values(
-                    docs_log_id, "activityReportLog!A:R", True, False
+                    docs_log_id, "activityReportLog!A:S", True, False
                 )
                 for i, activity_report_row in enumerate(activity_report_list_raw):
                     if (
@@ -936,6 +1020,7 @@ def activityreport(request):
                                 bytes(activity_report_row[17], "utf-8")
                             ).decode("utf8")
                         )
+                        activity_report_rejection_reason = activity_report_row[18]
                         activity_report_row_index = i + 2
                         # approve the activity report
                         if cmd_post == "approve":
@@ -946,6 +1031,17 @@ def activityreport(request):
                                     documentId=activity_report_id,
                                     body={
                                         "requests": [
+                                            {
+                                                "replaceAllText": {
+                                                    "containsText": {
+                                                        "text": activity_report_approver
+                                                        + " / 대기",
+                                                        "matchCase": "true",
+                                                    },
+                                                    "replaceText": activity_report_approver
+                                                    + " / 승인",
+                                                }
+                                            },
                                             {
                                                 "replaceAllText": {
                                                     "containsText": {
@@ -1100,6 +1196,25 @@ def activityreport(request):
                                     ]
                                 },
                             ).execute()
+                            activity_report_list_raw = spreadsheets_values(
+                                docs_log_id,
+                                spreadsheets_range(
+                                    "activityReportLog",
+                                    "A",
+                                    "I",
+                                    activity_report_row_index,
+                                ),
+                                False,
+                                False,
+                            )
+                            activity_report_approver_datetime = [
+                                activity_report_row[5]
+                                for activity_report_row in activity_report_list_raw
+                            ][0]
+                            activity_report_status = [
+                                activity_report_row[8]
+                                for activity_report_row in activity_report_list_raw
+                            ][0]
                             client = WebClient(token=slack_bot_token)
                             try:
                                 client.conversations_join(
@@ -1124,12 +1239,103 @@ def activityreport(request):
                                 blocks=blocks,
                                 text=text,
                             )
+                            approve = True
+                        if cmd_post == "reject":
+                            docs_service.documents().batchUpdate(
+                                documentId=activity_report_id,
+                                body={
+                                    "requests": [
+                                        {
+                                            "replaceAllText": {
+                                                "containsText": {
+                                                    "text": activity_report_approver
+                                                    + " / 대기",
+                                                    "matchCase": "true",
+                                                },
+                                                "replaceText": activity_report_approver
+                                                + " / 반려",
+                                            }
+                                        },
+                                    ]
+                                },
+                            ).execute()
+                            drive_service.files().update(
+                                fileId=activity_report_id,
+                                addParents="1pYlB7YlAC_3nybHce38wRhOCWt-GpxdR",
+                                body={
+                                    "contentRestrictions": [
+                                        {
+                                            "readOnly": "true",
+                                            "reason": "일일활동보고서 반려",
+                                        }
+                                    ]
+                                },
+                            ).execute()
+                            sheets_service.spreadsheets().values().update(
+                                spreadsheetId=docs_log_id,
+                                range=spreadsheets_range(
+                                    "activityReportLog",
+                                    "A",
+                                    "S",
+                                    activity_report_row_index,
+                                ),
+                                valueInputOption="USER_ENTERED",
+                                body={
+                                    "values": [
+                                        [
+                                            None,
+                                            None,
+                                            None,
+                                            None,
+                                            None,
+                                            datetime.datetime.now().strftime("%Y-%m-%d")
+                                            + wanted_datetime_day_split(
+                                                datetime.datetime.now().strftime("%w")
+                                            )
+                                            + datetime.datetime.now().strftime(
+                                                " %H:%M"
+                                            ),
+                                            None,
+                                            None,
+                                            "반려",
+                                            None,
+                                            None,
+                                            None,
+                                            None,
+                                            None,
+                                            None,
+                                            None,
+                                            None,
+                                            None,
+                                            rejection_reason_post,
+                                        ]
+                                    ]
+                                },
+                            ).execute()
+                            sheets_service.spreadsheets().batchUpdate(
+                                spreadsheetId=docs_log_id,
+                                body={
+                                    "requests": [
+                                        {
+                                            "updateSpreadsheetProperties": {
+                                                "properties": {
+                                                    "title": "E01_문서대장_"
+                                                    + datetime.datetime.now().strftime(
+                                                        "%y%m%d"
+                                                    )
+                                                },
+                                                "fields": "title",
+                                            }
+                                        },
+                                    ]
+                                },
+                            ).execute()
                             activity_report_list_raw = spreadsheets_values(
                                 docs_log_id,
                                 spreadsheets_range(
                                     "activityReportLog",
                                     "A",
-                                    "I",
+                                    "S",
                                     activity_report_row_index,
                                 ),
                                 False,
@@ -1143,7 +1349,36 @@ def activityreport(request):
                                 activity_report_row[8]
                                 for activity_report_row in activity_report_list_raw
                             ][0]
-                            approve = True
+                            activity_report_rejection_reason = [
+                                activity_report_row[18]
+                                for activity_report_row in activity_report_list_raw
+                            ][0]
+                            client = WebClient(token=slack_bot_token)
+                            try:
+                                client.conversations_join(
+                                    channel=management_all_channel_id
+                                )
+                            except:
+                                pass
+                            blocks, text = slack_blocks_and_text(
+                                request=request,
+                                str_project=activity_report_project,
+                                str_title=activity_report_title,
+                                str_drafter_email=activity_report_drafter_email,
+                                str_approver_datetime=activity_report_approver_datetime,
+                                str_approver=activity_report_approver,
+                                str_approver_email=activity_report_approver_email,
+                                str_rejection_reason=rejection_reason_post,
+                                str_activity_report_id=activity_report_id,
+                            )
+                            client.chat_postMessage(
+                                channel=management_all_channel_id,
+                                link_names=True,
+                                as_user=True,
+                                blocks=blocks,
+                                text=text,
+                            )
+                            reject = True
                         activity_report_dict = {
                             "project": activity_report_project,
                             "title": activity_report_title,
@@ -1166,6 +1401,7 @@ def activityreport(request):
                             "image_two_id": activity_report_image_two_id,
                             "image_three_id": activity_report_image_three_id,
                             "participant": activity_report_participant,
+                            "rejection_reason": activity_report_rejection_reason,
                         }
                         activity_report_list.append(activity_report_dict.copy())
                 return render(
@@ -1176,6 +1412,7 @@ def activityreport(request):
                         "activity_report_list": activity_report_list,
                         # boolean
                         "approve": approve,
+                        "reject": reject,
                     },
                 )
         except:
@@ -1288,6 +1525,24 @@ def activityreport(request):
                                 "matchCase": "true",
                             },
                             "replaceText": drafter,
+                        }
+                    },
+                    {
+                        "replaceAllText": {
+                            "containsText": {
+                                "text": "{{ approver }}",
+                                "matchCase": "true",
+                            },
+                            "replaceText": approver,
+                        }
+                    },
+                    {
+                        "replaceAllText": {
+                            "containsText": {
+                                "text": "{{ status}}",
+                                "matchCase": "true",
+                            },
+                            "replaceText": "대기",
                         }
                     },
                     {
@@ -1501,7 +1756,7 @@ def activityreport(request):
         ).execute()
         sheets_service.spreadsheets().values().append(
             spreadsheetId=docs_log_id,
-            range="activityReportLog!A1:R1",
+            range="activityReportLog!A1:S1",
             valueInputOption="USER_ENTERED",
             insertDataOption="INSERT_ROWS",
             body={
@@ -1531,6 +1786,7 @@ def activityreport(request):
                         base64.urlsafe_b64encode(
                             bytes(str(participant_list), "utf-8")
                         ).decode("utf8"),
+                        "-",
                     ]
                 ]
             },
