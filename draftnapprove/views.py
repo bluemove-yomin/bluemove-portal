@@ -509,11 +509,11 @@ def slack_blocks_and_text(
                 "fields": [
                     {
                         "type": "mrkdwn",
-                        "text": "*보고일시:*\n" + str_drafter_datetime,
+                        "text": "*기안일시:*\n" + str_drafter_datetime,
                     },
                     {
                         "type": "mrkdwn",
-                        "text": "*보고자:*\n" + str_drafter,
+                        "text": "*기안자:*\n" + str_drafter,
                     },
                 ],
             },
@@ -746,11 +746,11 @@ def slack_blocks_and_text(
                 "fields": [
                     {
                         "type": "mrkdwn",
-                        "text": "*보고일시:*\n" + str_drafter_datetime,
+                        "text": "*기안일시:*\n" + str_drafter_datetime,
                     },
                     {
                         "type": "mrkdwn",
-                        "text": "*보고자:*\n" + str_drafter,
+                        "text": "*기안자:*\n" + str_drafter,
                     },
                 ],
             },
