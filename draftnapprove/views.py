@@ -1539,7 +1539,7 @@ def activityreport(request):
                     {
                         "replaceAllText": {
                             "containsText": {
-                                "text": "{{ status}}",
+                                "text": "{{ status }}",
                                 "matchCase": "true",
                             },
                             "replaceText": "대기",
