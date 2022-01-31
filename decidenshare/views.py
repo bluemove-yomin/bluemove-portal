@@ -16,6 +16,7 @@ import pytz
 # multiple functions
 import datetime
 import re
+from django.http import HttpResponse
 
 # secrets
 google_client_id = getattr(settings, "GOOGLE_CLIENT_ID", "GOOGLE_CLIENT_ID")
@@ -88,19 +89,38 @@ def datetime_with_day_kor(str_ISO_8601):
     return datetime_with_day_kor
 
 
-# def days_remaining(str_ISO_8601_or_datetime_end, str_ISO_8601_or_datetime_start):
-#     local_datetime_end = (
-#         dateutil.parser.parse(str_ISO_8601_or_datetime_end)
-#         .replace(tzinfo=pytz.utc)
-#         .astimezone(pytz.timezone("Asia/Seoul"))
-#     )
-#     local_datetime_start = (
-#         dateutil.parser.parse(str_ISO_8601_or_datetime_start)
-#         .replace(tzinfo=pytz.utc)
-#         .astimezone(pytz.timezone("Asia/Seoul"))
-#     )
-#     local_days_remaining = local_datetime_end.day - local_datetime_start.day
-#     return local_days_remaining
+####
+#### functions for incoming requests from outside
+####
+def cron_delete_all_expired_bmlinks(request):
+    bmlink_list_raw = json.loads(
+        requests.request(
+            "GET",
+            "https://api.short.io/api/links",
+            headers=short_io_headers,
+            params=short_io_querystring,
+        ).text
+    ).get("links")
+    for bmlink_row in bmlink_list_raw:
+        bmlink_id = bmlink_row.get("idString")
+        bmlink_date_end = (
+            ISO_8601_to_local_datetime(bmlink_row.get("title").split("#")[2])
+            if bmlink_row.get("title").split("#")[2] != "무기한"
+            else "무기한"
+        )
+        if (
+            bmlink_date_end != "무기한"
+            and bmlink_date_end
+            < datetime.datetime.now()
+            .replace(tzinfo=pytz.utc)
+            .astimezone(pytz.timezone("Asia/Seoul"))
+        ):
+            requests.request(
+                "DELETE",
+                "https://api.short.io/links/" + bmlink_id,
+                headers=short_io_headers,
+            )
+    return HttpResponse(status=200)
 
 
 ####
@@ -138,7 +158,16 @@ def sharebmlink(request):
             "https://api.short.io/links/" + bmlink_edit_id,
             json={
                 "domain": "link.bluemove.or.kr",
-                "title": bmlink_edit_category + "#" + bmlink_edit_title + "#" + bmlink_edit_date_end + "#" + request.user.last_name + request.user.first_name + "#" + bmlink_edit_public_or_not,
+                "title": bmlink_edit_category
+                + "#"
+                + bmlink_edit_title
+                + "#"
+                + bmlink_edit_date_end
+                + "#"
+                + request.user.last_name
+                + request.user.first_name
+                + "#"
+                + bmlink_edit_public_or_not,
                 "path": bmlink_edit_path,
                 "originalURL": bmlink_edit_original_url,
                 "allowDuplicates": False,
@@ -159,7 +188,16 @@ def sharebmlink(request):
             "https://api.short.io/links/",
             json={
                 "domain": "link.bluemove.or.kr",
-                "title": bmlink_create_category + "#" + bmlink_create_title + "#" + bmlink_create_date_end + "#" + request.user.last_name + request.user.first_name + "#" + bmlink_create_public_or_not,
+                "title": bmlink_create_category
+                + "#"
+                + bmlink_create_title
+                + "#"
+                + bmlink_create_date_end
+                + "#"
+                + request.user.last_name
+                + request.user.first_name
+                + "#"
+                + bmlink_create_public_or_not,
                 "path": bmlink_create_path,
                 "originalURL": bmlink_create_original_url,
                 "allowDuplicates": False,
@@ -187,7 +225,11 @@ def sharebmlink(request):
         bmlink_url = bmlink_row.get("shortURL")
         bmlink_original_url = bmlink_row.get("originalURL")
         bmlink_date_start = datetime_with_day_kor(bmlink_row.get("createdAt"))
-        bmlink_date_end = datetime_with_day_kor(bmlink_row.get("title").split("#")[2]) if bmlink_row.get("title").split("#")[2] != "무기한" else "무기한"
+        bmlink_date_end = (
+            datetime_with_day_kor(bmlink_row.get("title").split("#")[2])
+            if bmlink_row.get("title").split("#")[2] != "무기한"
+            else "무기한"
+        )
         bmlink_user = bmlink_row.get("title").split("#")[3]
         bmlink_public_or_not = bmlink_row.get("title").split("#")[4]
         if bmlink_path == "":
