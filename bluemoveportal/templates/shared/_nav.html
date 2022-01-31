@@ -39,7 +39,7 @@
                 <li><a class="dropdown-item" href="#">회의 출석</a></li>
                 <li><a class="dropdown-item" href="#">의사록 작성 및 관리</a></li>
                 <li><a class="dropdown-item" href="#">데이터 외부 공유</a></li>
-                <li><a class="dropdown-item" href="#">블뭅 링크 관리</a></li>
+                <li><a class="dropdown-item fade-onclick" href="{% url 'decidenshare:sharebmlink' %}">블뭅 링크</a></li>
             </ul>
             <a href="#" id="menuDraftnapproveLarge" class="a-nav-item p-nav-item" data-bs-toggle="dropdown"
                 aria-expanded="false"><i class="bi bi-briefcase me-2"></i>기안/결재</a>
@@ -202,8 +202,8 @@
                                         </li>
                                         <li><a class="list-group-item nav-small-item no-border" href="#">데이터 외부 공유</a>
                                         </li>
-                                        <li><a class="list-group-item nav-small-item no-border" href="#">블뭅
-                                                링크 관리</a></li>
+                                        <li><a class="list-group-item nav-small-item no-border fade-onclick"
+                                                href="{% url 'decidenshare:sharebmlink' %}">블뭅 링크</a></li>
                                     </ul>
                                 </div>
                             </div>

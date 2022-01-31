@@ -49,6 +49,8 @@ NOTION_TOKEN = get_secret("NOTION_TOKEN")
 
 SLACK_BOT_TOKEN = get_secret("SLACK_BOT_TOKEN")
 
+SHORT_IO_KEY = get_secret("SHORT_IO_KEY")
+
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 
@@ -75,6 +77,7 @@ INSTALLED_APPS = [
     "home.apps.HomeConfig",
     "checknissue.apps.ChecknissueConfig",
     "applynsubmit.apps.ApplynsubmitConfig",
+    "decidenshare.apps.DecidenshareConfig",
     "draftnapprove.apps.DraftnapproveConfig",
     "member.apps.MemberConfig",
 ]

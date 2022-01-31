@@ -227,6 +227,10 @@
     background-image: url('/static/images/breadcrumbApplymembership.jpg');
     background-position: center 40%;
 }
+.breadcrumb-sharebmlink {
+    background-image: url('/static/images/breadcrumbSharebmlink.jpg');
+    background-position: center 50%;
+}
 .breadcrumb-activityreport {
     background-image: url('/static/images/breadcrumbActivityreport.jpg');
     background-position: center 40%;

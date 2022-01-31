@@ -1,0 +1,926 @@
+{% extends 'base.html' %}
+
+{% load static socialaccount i18n %}
+
+{% block meta %}
+<meta property="og:url" content="{% url 'decidenshare:sharebmlink' %}">
+<meta property="og:title" content="블루무브 포털 - 블뭅 링크">
+<meta property="og:description" content="블루무브 포털 - 블뭅 링크">
+<meta name="subject" content="블루무브 포털 - 블뭅 링크">
+<meta name="description" content="블루무브 포털 - 블뭅 링크">
+<meta name="robots" content="index,follow">
+{% endblock %}
+
+{% block title %} 블루무브 포털 - 블뭅 링크 {% endblock %}
+
+{% block breadcrumb %}
+<div class="breadcrumb-screen breadcrumb-base breadcrumb-sharebmlink">
+    <div class="d-flex align-items-center breadcrumb-layer">
+        <div class="container-lg text-center">
+            <h1 class="screenLarge m-0" style="color: #FFFFFF; text-shadow: 1px 1px 5px #212529;">블뭅 링크</h1>
+            <h2 class="screenSmall m-0" style="color: #FFFFFF; text-shadow: 1px 1px 5px #212529;">블뭅 링크</h2>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block content %}
+<!--
+---- inner template 01
+-->
+<!--
+---- inner content 01 (search)
+-->
+<div class="card shadow-hover mb-4">
+    <div class="card-body" style="background-color: rgba(0,0,0,.025);">
+        <h5 class="card-title pb-1">블뭅 링크 검색</h5>
+        <form action="{% url 'decidenshare:sharebmlink' %}" method="GET" onsubmit="return validation(this)">
+            <div class="input-group">
+                <input type="text" class="form-control" id="q" name="q" placeholder="검색어를 입력하세요." aria-label="검색어 입력"
+                    value="{{ q|default_if_none:'' }}" required>
+                <button type="submit" class="btn btn-outline-secondary" aria-label="검색">
+                    <i class="bi bi-search me-2"></i>검색</button>
+                {% if '?q=' in request.get_full_path %}
+                <button type="button" class="btn btn-outline-secondary dropdown-toggle dropdown-toggle-split"
+                    data-bs-toggle="dropdown" aria-expanded="false" aria-label="검색 옵션"></button>
+                <ul class="dropdown-menu dropdown-menu-end">
+                    <li><a class="dropdown-item fade-onclick" href="{% url 'decidenshare:sharebmlink' %}">검색 초기화</a>
+                    </li>
+                </ul>
+                {% endif %}
+            </div>
+        </form>
+    </div>
+</div>
+
+<!--
+---- inner script for content 01 (search)
+-->
+<script type="text/javascript">
+    // validation
+    function validation() {
+        if (document.querySelector("#q").value.length <= 1) {
+            alert("검색어는 두 글자 이상 입력해주세요.");
+            return false;
+        };
+        // call 'spinner (transition)' function
+        fadeOut();
+        // call 'avoiding duplicate requests (btn disabled)' function
+        setTimeout(inProgress, 0);
+    };
+</script>
+
+<!--
+---- inner content 02 (Bmlink list)
+-->
+<!-- content large -->
+<table class="table screenLarge m-0">
+    <thead>
+        <tr class="text-center" style="color: #545859;">
+            <th class="pt-0" scope="col">범주</th>
+            <th class="pt-0" scope="col">제목</th>
+            <th class="pt-0" scope="col">URL</th>
+            <th class="pt-0" scope="col">유효 기간</th>
+            <th class="pt-0" scope="col">담당자</th>
+            <th class="pt-0" scope="col">공개 여부</th>
+            {% if "@bluemove.or.kr" in user.email %}
+            <th class="pt-0" scope="col">작업</th>
+            {% endif %}
+        </tr>
+    </thead>
+    <tbody>
+        {% for bmlink_row in bmlink_list %}
+        <tr class="text-center" id="large_{{ bmlink_row.id }}">
+            <th scope="row" style="color: #545859;">
+                <!-- 범주 -->
+                {{ bmlink_row.category }}
+            </th>
+            <td>
+                <!-- 제목 -->
+                {{ bmlink_row.title }}
+            </td>
+            <td>
+                <!-- URL & 클립보드 -->
+                {% if bmlink_row.public_or_not == "공개" or "@bluemove.or.kr" in user.email %}
+                {{ bmlink_row.url }}<i class="enter-key bi bi-clipboard ms-2" style="cursor: pointer; color: #545859;"
+                    onmouseover="iconColorInClipboard(this);" onmouseout="iconColorOutClipboard(this);"
+                    onfocus="iconColorInClipboard(this);" onblur="iconColorOutClipboard(this);" onclick="copyUrl(this);"
+                    tabindex="0" aria-label="클립보드에 블뭅 링크 URL 복사하기"></i>
+                {% elif bmlink_row.public_or_not == "비공개" %}
+                {{ bmlink_row.url }}
+                {% endif %}
+            </td>
+            <td>
+                <!-- 유효 기간 -->
+                {{ bmlink_row.date_start }} ~ {{ bmlink_row.date_end }}
+            </td>
+            <td>
+                <!-- 담당자 -->
+                {{ bmlink_row.user }}
+            </td>
+            <td>
+                <!-- 공개 여부 -->
+                {% if bmlink_row.public_or_not == "공개" %}
+                <span class="badge badge-bluemove bg-bluemove">{{ bmlink_row.public_or_not }}</span>
+                {% elif bmlink_row.public_or_not == "비공개" %}
+                <span class="badge badge-bluemove bg-dark">{{ bmlink_row.public_or_not }}</span>
+                {% endif %}
+            </td>
+            {% if "@bluemove.or.kr" in user.email %}
+            <td style="color: #545859;">
+                <!-- 작업 -->
+                <!-- trigger modal -->
+                <i class="enter-key bi bi-pencil" style="cursor: pointer" onmouseover="iconColorInPencil(this);"
+                    onmouseout="iconColorOutPencil(this);" onclick="bmlinkEditModal(this);"
+                    onfocus="iconColorInPencil(this);" onblur="iconColorOutPencil(this);" tabindex="0"
+                    aria-label="블뭅 링크 편집하기" data-bs-toggle="modal" data-bs-target="#bmlinkEditModal"></i><i
+                    class="enter-key bi bi-trash ms-3" style="cursor: pointer" onmouseover="iconColorInTrash(this);"
+                    onmouseout="iconColorOutTrash(this);" onfocus="iconColorInTrash(this);"
+                    onblur="iconColorOutTrash(this);" onclick="bmlinkDelete(this);" tabindex="0"
+                    aria-label="블뭅 링크 삭제하기"></i>
+                <input type="hidden"
+                    value="{{ bmlink_row.category }}#{{ bmlink_row.title }}#{{ bmlink_row.id }}#{{ bmlink_row.slug }}#{{ bmlink_row.original_url }}#{{ bmlink_row.date_end|slice:':10' }}#{{ bmlink_row.public_or_not }}"
+                    readonly hidden>
+            </td>
+            {% endif %}
+        </tr>
+        {% empty %}
+        <tr>
+            <td colspan="
+            {% if '@bluemove.or.kr' in user.email %}
+            7
+            {% else %}
+            6
+            {% endif %}
+            ">
+                <div class="text-center my-4">
+                    <h2 class="mb-2" style="color: rgba(0,0,0,.25); font-weight: bolder;"><i
+                            class="bi bi-tornado me-2"></i>휑...</h2>
+                    <p class="text-muted m-0">불러올 정보가 없습니다. 혹시 오탈자가 있나요?</p>
+                </div>
+            </td>
+        </tr>
+        {% endfor %}
+        {% if "@bluemove.or.kr" in user.email and not "?q=" in request.get_full_path %}
+        <tr>
+            <td class="p-0" colspan="
+            {% if '@bluemove.or.kr' in user.email %}
+            7
+            {% else %}
+            6
+            {% endif %}
+            " onmouseover="bgColorIn(this);" onmouseout="bgColorOut(this);">
+                <div class="text-center">
+                    <div class="card border-0" style="padding: 8px; background-color: transparent;">
+                        <p class="text-muted m-0">
+                            <a href="javascript:void(0);" class="a-dark-bluemove stretched-link" data-bs-toggle="modal"
+                                data-bs-target="#bmlinkCreateModal">
+                                <i class="bi bi-plus me-1"></i>여기를 눌러 생성하세요.
+                            </a>
+                        </p>
+                    </div>
+                </div>
+            </td>
+        </tr>
+        {% endif %}
+    </tbody>
+</table>
+<!-- content small -->
+<div class="screenSmall">
+    <ul class="list-group list-group-flush">
+        {% for bmlink_row in bmlink_list %}
+        <li class="list-group-item px-0" id="small_{{ bmlink_row.id }}">
+            <div class="d-flex justify-content-between align-items-center mb-2">
+                <!-- 범주 -->
+                <p class="m-0 vertical" style="color: #545859; font-weight: bold;">
+                    {{ bmlink_row.category }}
+                </p>
+                <!-- 공개 여부 -->
+                <small>
+                    {% if bmlink_row.public_or_not == "공개" %}
+                    <span class="badge badge-bluemove bg-bluemove">{{ bmlink_row.public_or_not }}</span>
+                    {% elif bmlink_row.public_or_not == "비공개" %}
+                    <span class="badge badge-bluemove bg-dark">{{ bmlink_row.public_or_not }}</span>
+                    {% endif %}
+                </small>
+            </div>
+            <!-- 제목 -->
+            <h5>
+                {{ bmlink_row.title }}
+            </h5>
+            <small>
+                <!-- URL -->
+                {{ bmlink_row.url }}
+                <div class="d-flex justify-content-between">
+                    <span>
+                        <!-- 생성일 및 삭제 예정일 -->
+                        {{ bmlink_row.date_start }} ~ {{ bmlink_row.date_end }}
+                    </span>
+                    <span>
+                        <!-- 담당자 -->
+                        {{ bmlink_row.user }}
+                    </span>
+                </div>
+            </small>
+            {% if "@bluemove.or.kr" in user.email %}
+            <!-- 클립보드 & 작업 -->
+            <!-- trigger modal -->
+            <h5 class="text-end" style="color: #545859; margin-top: .7rem; margin-bottom: .1rem;">
+                <i class="enter-key bi bi-clipboard" style="cursor: pointer; color: #545859;"
+                    onmouseover="iconColorInClipboard(this);" onmouseout="iconColorOutClipboard(this);"
+                    onfocus="iconColorInClipboard(this);" onblur="iconColorOutClipboard(this);" onclick="copyUrl(this);"
+                    tabindex="0" aria-label="클립보드에 블뭅 링크 URL 복사하기"></i><i class="enter-key bi bi-pencil ms-3"
+                    style="cursor: pointer" onmouseover="iconColorInPencil(this);"
+                    onmouseout="iconColorOutPencil(this);" onclick="bmlinkEditModal(this);" tabindex="0"
+                    aria-label="블뭅 링크 편집하기" data-bs-toggle="modal" data-bs-target="#bmlinkEditModal"></i><i
+                    class="enter-key bi bi-trash ms-3" style="cursor: pointer" onmouseover="iconColorInTrash(this);"
+                    onmouseout="iconColorOutTrash(this);" onclick="bmlinkDelete(this);" tabindex="0"
+                    aria-label="블뭅 링크 삭제하기"></i>
+                <input type="hidden"
+                    value="{{ bmlink_row.category }}#{{ bmlink_row.title }}#{{ bmlink_row.id }}#{{ bmlink_row.slug }}#{{ bmlink_row.original_url }}#{{ bmlink_row.date_end|slice:':10' }}#{{ bmlink_row.public_or_not }}"
+                    readonly hidden>
+            </h5>
+            {% elif bmlink_row.public_or_not == "공개" %}
+            <!-- 클립보드 -->
+            <h5 class="text-end" style="color: #545859; margin-top: .7rem; margin-bottom: .1rem;">
+                <i class="enter-key bi bi-clipboard" style="cursor: pointer; color: #545859;"
+                    onmouseover="iconColorInClipboard(this);" onmouseout="iconColorOutClipboard(this);"
+                    onfocus="iconColorInClipboard(this);" onblur="iconColorOutClipboard(this);" onclick="copyUrl(this);"
+                    tabindex="0" aria-label="클립보드에 블뭅 링크 URL 복사하기"></i>
+            </h5>
+            {% endif %}
+        </li>
+        {% empty %}
+        <li class="list-group-item text-center px-0">
+            <h2 class="mb-2" style="color: rgba(0,0,0,.25); font-weight: bolder;"><i class="bi bi-tornado me-2"></i>휑...
+            </h2>
+            <p class="text-muted m-0">불러올 정보가 없습니다.<br>혹시 오탈자가 있나요?</p>
+        </li>
+        {% endfor %}
+        {% if "@bluemove.or.kr" in user.email and not "?q=" in request.get_full_path %}
+        <li class="list-group-item text-center px-0" onmouseover="bgColorIn(this);" onmouseout="bgColorOut(this);">
+            <p class="text-muted m-0 vertical">
+                <a href="javascript:void(0);" class="a-dark-bluemove stretched-link" data-bs-toggle="modal"
+                    data-bs-target="#bmlinkCreateModal">
+                    <i class="bi bi-plus me-1"></i>여기를 눌러 생성하세요.
+                </a>
+            </p>
+        </li>
+        {% endif %}
+    </ul>
+</div>
+<!-- modal -->
+<div class="modal fade" id="bmlinkEditModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+    aria-labelledby="bmlinkEditModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="bmlinkEditModalLabel">블뭅 링크 편집</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form action="{% url 'decidenshare:sharebmlink' %}" method="POST" enctype="multipart/form-data"
+                    id="formBmlinkEdit">
+                    {% csrf_token %}
+                    <div class="row row-cols-1 g-3">
+                        <div class="col">
+                            <label for="bmlinkEditCategory" class="form-label">범주</label>
+                            <select class="form-select" id="bmlinkEditCategory" name="bmlinkEditCategory"
+                                aria-label="범주 선택" required>
+                                <option id="bmlinkEditCategoryValue" selected hidden></option>
+                                <option disabled>범주를 선택하세요.</option>
+                                {% for category_row in category_list %}
+                                <option value="{{ category_row }}">{{ category_row }}</option>
+                                {% empty %}
+                                <option disabled>공유 드라이브 목록을 불러올 수 없습니다.</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="col">
+                            <label for="bmlinkEditTitle" class="form-label">제목</label>
+                            <input type="text" class="form-control" id="bmlinkEditTitle" name="bmlinkEditTitle"
+                                placeholder="제목을 입력하세요." aria-label="블뭅 링크 제목 입력" required>
+                        </div>
+                        <input type="hidden" id="bmlinkEditId" name="bmlinkEditId" readonly hidden>
+                        <div class="col">
+                            <label for="bmlinkEditPath" class="form-label">URL</label>
+                            <div class="input-group">
+                                <span class="input-group-text"
+                                    id="bmlinkEditPathAddon">https://link.bluemove.or.kr/</span>
+                                <input type="url" class="form-control" id="bmlinkEditPath" name="bmlinkEditPath"
+                                    placeholder="슬러그를 입력하세요." aria-describedby="bmlinkEditPathAddon" aria-label="슬러그 입력"
+                                    required>
+                            </div>
+                        </div>
+                        <div class="col">
+                            <label for="bmlinkEditOriginalUrl" class="form-label">원본 URL</label>
+                            <input type="url" class="form-control" id="bmlinkEditOriginalUrl"
+                                name="bmlinkEditOriginalUrl" placeholder="원본 URL을 입력하세요." aria-label="원본 URL 입력"
+                                required>
+                        </div>
+                        <div class="col">
+                            <div class="d-flex justify-content-between">
+                                <label for="bmlinkEditDateEnd" class="form-label">만료일</label>
+                                <div class="form-check form-switch">
+                                    <label class="form-check-label" for="bmlinkEditDateEndNoLimit">무기한</label>
+                                    <input class="form-check-input" type="checkbox" id="bmlinkEditDateEndNoLimit"
+                                        value="false" onclick="bmlinkEditDateEndCheck();">
+                                </div>
+                            </div>
+                            <input type="text" class="form-control bmlinkDateEnd" id="bmlinkEditDateEnd"
+                                name="bmlinkEditDateEnd" placeholder="만료일 8자리를 입력하세요." aria-label="만료일 8자리 입력"
+                                minlength="10" maxlength="10" onkeypress="onlyNumbers(event)" required>
+                        </div>
+                        <div class="col">
+                            <label for="bmlinkEditPublicOrNot" class="form-label">공개 여부</label>
+                            <select class="form-select" id="bmlinkEditPublicOrNot" name="bmlinkEditPublicOrNot"
+                                aria-label="공개 여부 선택" required>
+                                <option id="bmlinkEditPublicOrNotValue" selected hidden></option>
+                                <option disabled>공개 여부를 선택하세요.</option>
+                                <option value="공개">공개</option>
+                                <option value="비공개">비공개</option>
+                            </select>
+                        </div>
+                        <input type="hidden" id="cmdPost" name="cmdPost" value="edit" readonly hidden>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">취소</button>
+                <a href="javascript:void(0);" class="btn btn-outline-primary" onclick="bmlinkEdit();">편집</a>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="bmlinkCreateModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+    aria-labelledby="bmlinkCreateModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="bmlinkCreateModalLabel">블뭅 링크 생성</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form action="{% url 'decidenshare:sharebmlink' %}" method="POST" enctype="multipart/form-data"
+                    id="formBmlinkCreate">
+                    {% csrf_token %}
+                    <div class="row row-cols-1 g-3">
+                        <div class="col">
+                            <label for="bmlinkCreateCategory" class="form-label">범주</label>
+                            <select class="form-select" id="bmlinkCreateCategory" name="bmlinkCreateCategory"
+                                aria-label="범주 선택" required>
+                                <option selected hidden>범주를 선택하세요.</option>
+                                <option disabled>범주를 선택하세요.</option>
+                                {% for category_row in category_list %}
+                                <option value="{{ category_row }}">{{ category_row }}</option>
+                                {% empty %}
+                                <option disabled>공유 드라이브 목록을 불러올 수 없습니다.</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="col">
+                            <label for="bmlinkCreateTitle" class="form-label">제목</label>
+                            <input type="text" class="form-control" id="bmlinkCreateTitle" name="bmlinkCreateTitle"
+                                placeholder="제목을 입력하세요." aria-label="블뭅 링크 제목 입력" required>
+                        </div>
+                        <div class="col">
+                            <label for="bmlinkCreatePath" class="form-label">URL</label>
+                            <div class="input-group">
+                                <span class="input-group-text"
+                                    id="bmlinkCreatePathAddon">https://link.bluemove.or.kr/</span>
+                                <input type="url" class="form-control" id="bmlinkCreatePath" name="bmlinkCreatePath"
+                                    placeholder="슬러그를 입력하세요." aria-describedby="bmlinkCreatePathAddon"
+                                    aria-label="슬러그 입력" required>
+                            </div>
+                        </div>
+                        <div class="col">
+                            <label for="bmlinkCreateOriginalUrl" class="form-label">원본 URL</label>
+                            <input type="url" class="form-control" id="bmlinkCreateOriginalUrl"
+                                name="bmlinkCreateOriginalUrl" placeholder="원본 URL을 입력하세요." aria-label="원본 URL 입력"
+                                required>
+                        </div>
+                        <div class="col">
+                            <div class="d-flex justify-content-between">
+                                <label for="bmlinkCreateDateEnd" class="form-label">만료일</label>
+                                <div class="form-check form-switch">
+                                    <label class="form-check-label" for="bmlinkCreateDateEndNoLimit">무기한</label>
+                                    <input class="form-check-input" type="checkbox" id="bmlinkCreateDateEndNoLimit"
+                                        value="false" onclick="bmlinkCreateDateEndCheck();">
+                                </div>
+                            </div>
+                            <input type="text" class="form-control bmlinkDateEnd" id="bmlinkCreateDateEnd"
+                                name="bmlinkCreateDateEnd" placeholder="만료일 8자리를 입력하세요." aria-label="만료일 8자리 입력"
+                                minlength="10" maxlength="10" onkeypress="onlyNumbers(event)" required>
+                        </div>
+                        <div class="col">
+                            <label for="bmlinkCreatePublicOrNot" class="form-label">공개 여부</label>
+                            <select class="form-select" id="bmlinkCreatePublicOrNot" name="bmlinkCreatePublicOrNot"
+                                aria-label="공개 여부 선택" required>
+                                <option selected hidden>공개 여부를 선택하세요.</option>
+                                <option disabled>공개 여부를 선택하세요.</option>
+                                <option value="공개">공개</option>
+                                <option value="비공개">비공개</option>
+                            </select>
+                        </div>
+                        <input type="hidden" id="cmdPost" name="cmdPost" value="create" readonly hidden>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">취소</button>
+                <a href="javascript:void(0);" class="btn btn-outline-primary" onclick="bmlinkCreate();">생성</a>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- form -->
+<form action="{% url 'decidenshare:sharebmlink' %}" method="POST" enctype="multipart/form-data" id="formBmlinkDelete">
+    {% csrf_token %}
+    <input type="hidden" id="bmlinkDeleteId" name="bmlinkDeleteId" readonly hidden>
+    <input type="hidden" id="cmdPost" name="cmdPost" value="delete" readonly hidden>
+</form>
+
+<!--
+---- inner script for content 02 (Bmlink list)
+-->
+<script type="text/javascript">
+    function onlyNumbers(e) {
+        var regInt = /[^0-9]/gi;
+        var inputKeyChar = String.fromCharCode(event.keyCode);
+        if (regInt.test(inputKeyChar)) {
+            event.returnValue = false;
+        }
+    };
+    $(".bmlinkDateEnd").keyup(function () {
+        var foo = $(this).val().replace(/[^0-9]/g, "").replace(/(^20[0-9]{2})([0-9]+)?([0-9]{2})$/, "$1-$2-$3").replace("--", "-");
+        $(this).val(foo);
+    });
+    // copy Bmlink URL to clipboard
+    function copyToClipboard(val) {
+        const t = document.createElement("textarea");
+        document.body.appendChild(t);
+        t.value = val;
+        t.select();
+        document.execCommand("copy");
+        document.body.removeChild(t);
+    }
+    function copyUrl(obj) {
+        if (obj.parentElement.parentElement.parentElement.parentElement.className.indexOf("screenLarge") !== -1) {
+            copyToClipboard(obj.previousSibling.textContent.replace(/(\r\n|\n|\r| )/gm, ""));
+            obj.setAttribute("class", "bi bi-clipboard-check ms-2");
+        } else if (obj.parentElement.parentElement.parentElement.parentElement.className.indexOf("screenSmall") !== -1) {
+            copyToClipboard(obj.parentElement.previousElementSibling.childNodes[2].textContent.replace(/(\r\n|\n|\r| )/gm, ""));
+            obj.setAttribute("class", "bi bi-clipboard-check");
+        }
+        obj.setAttribute("style", "cursor: pointer; color: #0077C8;");
+        setTimeout(function () {
+            if (obj.parentElement.parentElement.parentElement.parentElement.className.indexOf("screenLarge") !== -1) {
+                obj.setAttribute("class", "bi bi-clipboard ms-2");
+            } else if (obj.parentElement.parentElement.parentElement.parentElement.className.indexOf("screenSmall") !== -1) {
+                obj.setAttribute("class", "bi bi-clipboard");
+            }
+            obj.setAttribute("style", "cursor: pointer; color: #545859;");
+        }, 3000);
+    }
+    function iconColorInClipboard(obj) {
+        if (obj.parentElement.parentElement.parentElement.parentElement.className.indexOf("screenLarge") !== -1) {
+            obj.setAttribute("class", "bi bi-clipboard-plus ms-2");
+        } else if (obj.parentElement.parentElement.parentElement.parentElement.className.indexOf("screenSmall") !== -1) {
+            obj.setAttribute("class", "bi bi-clipboard-plus");
+        }
+        obj.setAttribute("style", "cursor: pointer; color: #0077C8;");
+    }
+    function iconColorOutClipboard(obj) {
+        if (obj.className.indexOf("bi bi-clipboard-check") == -1) {
+            if (obj.parentElement.parentElement.parentElement.parentElement.className.indexOf("screenLarge") !== -1) {
+                obj.setAttribute("class", "bi bi-clipboard ms-2");
+            } else if (obj.parentElement.parentElement.parentElement.parentElement.className.indexOf("screenSmall") !== -1) {
+                obj.setAttribute("class", "bi bi-clipboard");
+            }
+            obj.setAttribute("style", "cursor: pointer; color: #545859;");
+        }
+    }
+    // edit Bmlink
+    function iconColorInPencil(obj) {
+        if (obj.parentElement.parentElement.parentElement.parentElement.className.indexOf("screenLarge") !== -1) {
+            obj.setAttribute("class", "bi bi-pencil-fill");
+        } else if (obj.parentElement.parentElement.parentElement.parentElement.className.indexOf("screenSmall") !== -1) {
+            obj.setAttribute("class", "bi bi-pencil-fill ms-3");
+        }
+    }
+    function iconColorOutPencil(obj) {
+        if (obj.parentElement.parentElement.parentElement.parentElement.className.indexOf("screenLarge") !== -1) {
+            obj.setAttribute("class", "bi bi-pencil");
+        } else if (obj.parentElement.parentElement.parentElement.parentElement.className.indexOf("screenSmall") !== -1) {
+            obj.setAttribute("class", "bi bi-pencil ms-3");
+        }
+    }
+    function bmlinkEditModal(obj) {
+        var bmlinkData = obj.nextElementSibling.nextElementSibling.value.split("#");
+        bmlinkEditCategoryValue.value = bmlinkData[0];
+        bmlinkEditCategoryValue.text = bmlinkData[0];
+        bmlinkEditTitle.value = bmlinkData[1];
+        bmlinkEditId.value = bmlinkData[2];
+        bmlinkEditPath.value = bmlinkData[3];
+        bmlinkEditOriginalUrl.value = bmlinkData[4];
+        if (bmlinkData[5] == "무기한") {
+            bmlinkEditDateEndNoLimit.value = "true";
+            bmlinkEditDateEndNoLimit.checked = true;
+            bmlinkEditDateEnd.setAttribute("readonly", "");
+        } else {
+            bmlinkEditDateEndNoLimit.value = "false";
+            bmlinkEditDateEndNoLimit.checked = false;
+            bmlinkEditDateEnd.removeAttribute("readonly");
+        }
+        bmlinkEditDateEnd.value = bmlinkData[5];
+        bmlinkEditPublicOrNotValue.value = bmlinkData[6];
+        bmlinkEditPublicOrNotValue.text = bmlinkData[6];
+    }
+    function bmlinkEditDateEndCheck() {
+        if (bmlinkEditDateEndNoLimit.value == "false") {
+            bmlinkEditDateEndNoLimit.value = "true";
+            bmlinkEditDateEndNoLimit.checked = true;
+            bmlinkEditDateEnd.value = "무기한";
+            bmlinkEditDateEnd.setAttribute("readonly", "");
+        } else {
+            bmlinkEditDateEndNoLimit.value = "false";
+            bmlinkEditDateEndNoLimit.checked = false;
+            bmlinkEditDateEnd.value = "";
+            bmlinkEditDateEnd.removeAttribute("readonly");
+        }
+    }
+    function bmlinkEdit() {
+        var patternNum = /[0-9]/;
+        if (bmlinkEditCategory.value == "") {
+            alert("범주를 선택해주세요.");
+            return false;
+        }
+        if (bmlinkEditTitle.value == "") {
+            alert("제목을 입력해주세요.");
+            return false;
+        }
+        if (bmlinkEditTitle.value.length < 5) {
+            alert("제목은 다섯 글자 이상 입력해주세요.");
+            return false;
+        }
+        if (bmlinkEditTitle.value.indexOf("#") !== -1) {
+            alert("제목에 '#' 기호를 포함할 수 없습니다.");
+            return false;
+        }
+        if (bmlinkEditPath.value == "") {
+            alert("URL을 입력해주세요.");
+            return false;
+        }
+        if (bmlinkEditOriginalUrl.value == "") {
+            alert("원본 URL을 입력해주세요.");
+            return false;
+        }
+        if (!(bmlinkEditDateEndNoLimit.value == "true" && bmlinkEditDateEndNoLimit.checked == true && bmlinkEditDateEnd.value == "무기한" && bmlinkEditDateEnd.hasAttribute("readonly"))) {
+            if (bmlinkEditDateEnd.value == "") {
+                alert("만료일을 입력해주세요.");
+                return false;
+            }
+            if (!patternNum.test(bmlinkEditDateEnd.value)) {
+                alert("만료일은 숫자만 입력해주세요.");
+                return false;
+            }
+            if (bmlinkEditDateEnd.value.length !== 10) {
+                alert("올바른 만료일을 입력해주세요.");
+                return false;
+            }
+            if (bmlinkEditDateEnd.value.indexOf("20") !== 0) {
+                alert("올바른 만료일을 입력해주세요.");
+                return false;
+            }
+            if (bmlinkEditDateEnd.value.indexOf("-") !== 4 &&
+                bmlinkEditDateEnd.value.lastIndexOf("-") !== 7) {
+                alert("올바른 만료일을 입력해주세요.");
+                return false;
+            }
+            if (Number(bmlinkEditDateEnd.value.slice(5, 7)) == 0 ||
+                Number(bmlinkEditDateEnd.value.slice(5, 7)) > 12 ||
+                Number(bmlinkEditDateEnd.value.slice(8, 10)) == 0 ||
+                Number(bmlinkEditDateEnd.value.slice(8, 10)) > 31) {
+                alert("올바른 만료일을 입력해주세요.");
+                return false;
+            }
+            if (bmlinkEditDateEnd.value.slice(5, 10) == "02-30" ||
+                bmlinkEditDateEnd.value.slice(5, 10) == "02-31" ||
+                bmlinkEditDateEnd.value.slice(5, 10) == "04-31" ||
+                bmlinkEditDateEnd.value.slice(5, 10) == "06-31" ||
+                bmlinkEditDateEnd.value.slice(5, 10) == "09-31" ||
+                bmlinkEditDateEnd.value.slice(5, 10) == "11-31") {
+                alert("올바른 만료일을 입력해주세요.");
+                return false;
+            }
+            if (new Date(bmlinkEditDateEnd.value).setHours(0, 0, 0, 0) < new Date().setHours(0, 0, 0, 0)) {
+                alert("만료일은 현재 또는 미래의 날짜로 입력해주세요.");
+                return false;
+            }
+        }
+        if (bmlinkEditPublicOrNot.value == "") {
+            alert("공개 여부를 선택해주세요.");
+            return false;
+        }
+        formBmlinkEdit.submit();
+        document.querySelector(".modal-backdrop").setAttribute("class", "modal-backdrop fade hide");
+        // call 'spinner (transition)' function
+        fadeOut();
+        // call 'avoiding duplicate requests (btn disabled)' function
+        setTimeout(inProgress, 0);
+    }
+    // delete Bmlink
+    function iconColorInTrash(obj) {
+        obj.setAttribute("style", "cursor: pointer; color: #DC3545;");
+        obj.setAttribute("class", "bi bi-trash-fill ms-3");
+    }
+    function iconColorOutTrash(obj) {
+        obj.setAttribute("style", "cursor: pointer;");
+        obj.setAttribute("class", "bi bi-trash ms-3");
+    }
+    function bmlinkDelete(obj) {
+        var bmlinkData = obj.nextElementSibling.value.split("#");
+        bmlinkDeleteId.value = bmlinkData[2];
+        if (confirm("정말 블뭅 링크를 삭제하시겠어요?")) {
+            formBmlinkDelete.submit();
+            // call 'spinner (transition)' function
+            fadeOut();
+            // call 'avoiding duplicate requests (btn disabled)' function
+            setTimeout(inProgress, 0);
+        }
+    }
+    // create Bmlink
+    function bgColorIn(obj) {
+        obj.setAttribute("style", "padding: 8px; background-color: rgba(0,0,0,.025);");
+    }
+    function bgColorOut(obj) {
+        obj.setAttribute("style", "padding: 8px; background-color: transparent;");
+    }
+    function bmlinkCreateDateEndCheck() {
+        if (bmlinkCreateDateEndNoLimit.value == "false") {
+            bmlinkCreateDateEndNoLimit.value = "true";
+            bmlinkCreateDateEndNoLimit.checked = true;
+            bmlinkCreateDateEnd.value = "무기한";
+            bmlinkCreateDateEnd.setAttribute("readonly", "");
+        } else {
+            bmlinkCreateDateEndNoLimit.value = "false";
+            bmlinkCreateDateEndNoLimit.checked = false;
+            bmlinkCreateDateEnd.value = "";
+            bmlinkCreateDateEnd.removeAttribute("readonly");
+        }
+    }
+    function bmlinkCreate() {
+        var patternNum = /[0-9]/;
+        if (bmlinkCreateCategory.value == "범주를 선택하세요.") {
+            alert("범주를 선택해주세요.");
+            return false;
+        }
+        if (bmlinkCreateTitle.value == "") {
+            alert("제목을 입력해주세요.");
+            return false;
+        }
+        if (bmlinkCreateTitle.value.length < 5) {
+            alert("제목은 다섯 글자 이상 입력해주세요.");
+            return false;
+        }
+        if (bmlinkCreateTitle.value.indexOf("#") !== -1) {
+            alert("제목에 '#' 기호를 포함할 수 없습니다.");
+            return false;
+        }
+        if (bmlinkCreatePath.value == "") {
+            alert("URL을 입력해주세요.");
+            return false;
+        }
+        if (bmlinkCreateOriginalUrl.value == "") {
+            alert("원본 URL을 입력해주세요.");
+            return false;
+        }
+        if (!(bmlinkCreateDateEndNoLimit.value == "true" && bmlinkCreateDateEndNoLimit.checked == true && bmlinkCreateDateEnd.value == "무기한" && bmlinkCreateDateEnd.hasAttribute("readonly"))) {
+            if (bmlinkCreateDateEnd.value == "") {
+                alert("만료일을 입력해주세요.");
+                return false;
+            }
+            if (!patternNum.test(bmlinkCreateDateEnd.value)) {
+                alert("만료일은 숫자만 입력해주세요.");
+                return false;
+            }
+            if (bmlinkCreateDateEnd.value.length !== 10) {
+                alert("올바른 만료일을 입력해주세요.");
+                return false;
+            }
+            if (bmlinkCreateDateEnd.value.indexOf("20") !== 0) {
+                alert("올바른 만료일을 입력해주세요.");
+                return false;
+            }
+            if (bmlinkCreateDateEnd.value.indexOf("-") !== 4 &&
+                bmlinkCreateDateEnd.value.lastIndexOf("-") !== 7) {
+                alert("올바른 만료일을 입력해주세요.");
+                return false;
+            }
+            if (Number(bmlinkCreateDateEnd.value.slice(5, 7)) == 0 ||
+                Number(bmlinkCreateDateEnd.value.slice(5, 7)) > 12 ||
+                Number(bmlinkCreateDateEnd.value.slice(8, 10)) == 0 ||
+                Number(bmlinkCreateDateEnd.value.slice(8, 10)) > 31) {
+                alert("올바른 만료일을 입력해주세요.");
+                return false;
+            }
+            if (bmlinkCreateDateEnd.value.slice(5, 10) == "02-30" ||
+                bmlinkCreateDateEnd.value.slice(5, 10) == "02-31" ||
+                bmlinkCreateDateEnd.value.slice(5, 10) == "04-31" ||
+                bmlinkCreateDateEnd.value.slice(5, 10) == "06-31" ||
+                bmlinkCreateDateEnd.value.slice(5, 10) == "09-31" ||
+                bmlinkCreateDateEnd.value.slice(5, 10) == "11-31") {
+                alert("올바른 만료일을 입력해주세요.");
+                return false;
+            }
+            if (new Date(bmlinkCreateDateEnd.value).setHours(0, 0, 0, 0) < new Date().setHours(0, 0, 0, 0)) {
+                alert("만료일은 현재 또는 미래의 날짜로 입력해주세요.");
+                return false;
+            }
+        }
+        if (bmlinkCreatePublicOrNot.value == "공개 여부를 선택하세요.") {
+            alert("공개 여부를 선택해주세요.");
+            return false;
+        }
+        formBmlinkCreate.submit();
+        document.querySelector(".modal-backdrop").setAttribute("class", "modal-backdrop fade hide");
+        // call 'spinner (transition)' function
+        fadeOut();
+        // call 'avoiding duplicate requests (btn disabled)' function
+        setTimeout(inProgress, 0);
+    }
+    function activityReportWrite() {
+        for (var i = 0; i < document.querySelectorAll(".formActivityReportWrite").length; i++) {
+            document.querySelectorAll(".formActivityReportWrite")[i].submit();
+            // call 'spinner (transition)' function
+            fadeOut();
+            // call 'avoiding duplicate requests (btn disabled)' function
+            setTimeout(inProgress, 0);
+        }
+    }
+    // for keyboard accessibility
+    $(".enter-key").on("keyup", function (key) {
+        if (key.keyCode == 13) {
+            this.click();
+        }
+    });
+    $("#formBmlinkEdit").on("keyup", function (key) {
+        if (key.keyCode == 13) {
+            bmlinkEdit();
+        }
+    });
+    $("#formBmlinkCreate").on("keyup", function (key) {
+        if (key.keyCode == 13) {
+            bmlinkCreate();
+        }
+    });
+</script>
+{% if edited_bmlink_id %}
+<script type="text/javascript">
+    // scroll down to edited Bmlink
+    if (window.screen.width >= 768) {
+        var scrollDownHere = document.getElementById("large_{{ edited_bmlink_id }}");
+    } else if (window.screen.width < 768) {
+        var scrollDownHere = document.getElementById("small_{{ edited_bmlink_id }}");
+    }
+    scrollDownHere.scrollIntoView({ behavior: "smooth", block: "start", inline: "start" });
+</script>
+{% endif %}
+
+<!--
+---- inner content 03 (paginator)
+-->
+{% if '?q=' in request.get_full_path %}
+{% if bluemover_list.has_other_pages %}
+<!-- when searching -->
+<div class="mt-4 p-0">
+    <nav aria-label="페이지 내비게이터" style="background-color: transparent;">
+        <!-- content large -->
+        <div class="screenLarge">
+            <ul class="pagination justify-content-center m-0">
+                {% if bluemover_list.has_previous %}
+                <li class="page-item">
+                    <a class="page-link fade-onclick" href="{{ request.path }}?q={{ q }}&page=1">맨 앞</a>
+                </li>
+                {% endif %}
+                {% for i in bluemover_list.paginator.page_range %}
+                {% if bluemover_list.number == i %}
+                <li class="page-item active" aria-current="page">
+                    <span class="page-link">{{ i }}</span>
+                </li>
+                {% elif i > bluemover_list.number|add:'-7' and bluemover_list.number|add:'7' > i %}
+                <li class="page-item">
+                    <a class="page-link fade-onclick" href="{{ request.path }}?q={{ q }}&page={{ i }}">{{ i }}</a>
+                </li>
+                {% endif %}
+                {% endfor %}
+                {% if bluemover_list.has_next %}
+                <li class="page-item">
+                    <a class="page-link fade-onclick"
+                        href="{{ request.path }}?q={{ q }}&page={{ bluemover_list.paginator.num_pages }}">맨 뒤</a>
+                </li>
+                {% endif %}
+            </ul>
+        </div>
+        <!-- content small -->
+        <div class="screenSmall">
+            <ul class="pagination justify-content-center m-0">
+                {% if bluemover_list.has_previous %}
+                <li class="page-item">
+                    <a class="page-link fade-onclick" href="{{ request.path }}?q={{ q }}&page=1">맨 앞</a>
+                </li>
+                {% endif %}
+                {% for i in bluemover_list.paginator.page_range %}
+                {% if bluemover_list.number == i %}
+                <li class="page-item active" aria-current="page">
+                    <span class="page-link">{{ i }}</span>
+                </li>
+                {% elif i > bluemover_list.number|add:'-3' and bluemover_list.number|add:'3' > i %}
+                <li class="page-item">
+                    <a class="page-link fade-onclick" href="{{ request.path }}?q={{ q }}&page={{ i }}">{{ i }}</a>
+                </li>
+                {% endif %}
+                {% endfor %}
+                {% if bluemover_list.has_next %}
+                <li class="page-item">
+                    <a class="page-link fade-onclick"
+                        href="{{ request.path }}?q={{ q }}&page={{ bluemover_list.paginator.num_pages }}">맨 뒤</a>
+                </li>
+                {% endif %}
+            </ul>
+        </div>
+    </nav>
+</div>
+{% endif %}
+{% else %}
+{% if bluemover_list.has_other_pages %}
+<!-- when not searching (default) -->
+<div class="mt-4 p-0">
+    <nav aria-label="페이지 내비게이터" style="background-color: transparent;">
+        <!-- content large -->
+        <div class="screenLarge">
+            <ul class="pagination justify-content-center m-0">
+                {% if bluemover_list.has_previous %}
+                <li class="page-item">
+                    <a class="page-link fade-onclick" href="?page=1">맨 앞</a>
+                </li>
+                {% endif %}
+                {% for i in bluemover_list.paginator.page_range %}
+                {% if bluemover_list.number == i %}
+                <li class="page-item active" aria-current="page">
+                    <span class="page-link">{{ i }}</span>
+                </li>
+                {% elif i > bluemover_list.number|add:'-7' and bluemover_list.number|add:'7' > i %}
+                <li class="page-item">
+                    <a class="page-link fade-onclick" href="?page={{ i }}">{{ i }}</a>
+                </li>
+                {% endif %}
+                {% endfor %}
+                {% if bluemover_list.has_next %}
+                <li class="page-item">
+                    <a class="page-link fade-onclick" href="?page={{ bluemover_list.paginator.num_pages }}">맨 뒤</a>
+                </li>
+                {% endif %}
+            </ul>
+        </div>
+        <!-- content small -->
+        <div class="screenSmall">
+            <ul class="pagination justify-content-center m-0">
+                {% if bluemover_list.has_previous %}
+                <li class="page-item">
+                    <a class="page-link fade-onclick" href="?page=1">맨 앞</a>
+                </li>
+                {% endif %}
+                {% for i in bluemover_list.paginator.page_range %}
+                {% if bluemover_list.number == i %}
+                <li class="page-item active" aria-current="page">
+                    <span class="page-link">{{ i }}</span>
+                </li>
+                {% elif i > bluemover_list.number|add:'-3' and bluemover_list.number|add:'3' > i %}
+                <li class="page-item">
+                    <a class="page-link fade-onclick" href="?page={{ i }}">{{ i }}</a>
+                </li>
+                {% endif %}
+                {% endfor %}
+                {% if bluemover_list.has_next %}
+                <li class="page-item">
+                    <a class="page-link fade-onclick" href="?page={{ bluemover_list.paginator.num_pages }}">맨 뒤</a>
+                </li>
+                {% endif %}
+            </ul>
+        </div>
+    </nav>
+</div>
+{% endif %}
+{% endif %}
+
+<!--
+---- inner script
+-->
+<script type="text/javascript">
+    history.pushState(null, null, location.href);
+    window.onpopstate = function () {
+        history.go(1);
+    };
+</script>
+{% endblock %}
