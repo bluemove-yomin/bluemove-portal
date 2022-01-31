@@ -112,6 +112,7 @@ def cron_delete_all_expired_bmlinks(request):
             bmlink_date_end != "무기한"
             and bmlink_date_end
             < datetime.datetime.now()
+            .replace(hour=0, minute=0, second=0, microsecond=0)
             .replace(tzinfo=pytz.utc)
             .astimezone(pytz.timezone("Asia/Seoul"))
         ):
