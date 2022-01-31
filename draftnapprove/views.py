@@ -38,6 +38,7 @@ from googleapiclient.http import MediaIoBaseDownload
 import datetime
 from django.http import HttpResponse
 import ast
+import re
 
 # secrets
 google_client_id = getattr(settings, "GOOGLE_CLIENT_ID", "GOOGLE_CLIENT_ID")
@@ -122,20 +123,20 @@ def image_object_id(str_activity_report_id):
     return image_object_id_list
 
 
-def wanted_datetime_day_split(int_datetime_day_num):
-    if int_datetime_day_num == "1":
+def datetime_day_split(str_datetime_day_num):
+    if str_datetime_day_num == "1":
         return "(월)"
-    elif int_datetime_day_num == "2":
+    elif str_datetime_day_num == "2":
         return "(화)"
-    elif int_datetime_day_num == "3":
+    elif str_datetime_day_num == "3":
         return "(수)"
-    elif int_datetime_day_num == "4":
+    elif str_datetime_day_num == "4":
         return "(목)"
-    elif int_datetime_day_num == "5":
+    elif str_datetime_day_num == "5":
         return "(금)"
-    elif int_datetime_day_num == "6":
+    elif str_datetime_day_num == "6":
         return "(토)"
-    elif int_datetime_day_num == "0":
+    elif str_datetime_day_num == "0":
         return "(일)"
     else:
         return ""
@@ -1165,7 +1166,7 @@ def activityreport(request):
                                             None,
                                             None,
                                             datetime.datetime.now().strftime("%Y-%m-%d")
-                                            + wanted_datetime_day_split(
+                                            + datetime_day_split(
                                                 datetime.datetime.now().strftime("%w")
                                             )
                                             + datetime.datetime.now().strftime(
@@ -1289,7 +1290,7 @@ def activityreport(request):
                                             None,
                                             None,
                                             datetime.datetime.now().strftime("%Y-%m-%d")
-                                            + wanted_datetime_day_split(
+                                            + datetime_day_split(
                                                 datetime.datetime.now().strftime("%w")
                                             )
                                             + datetime.datetime.now().strftime(
@@ -1765,7 +1766,7 @@ def activityreport(request):
                         project,
                         title,
                         datetime.datetime.now().strftime("%Y-%m-%d")
-                        + wanted_datetime_day_split(
+                        + datetime_day_split(
                             datetime.datetime.now().strftime("%w")
                         )
                         + datetime.datetime.now().strftime(" %H:%M"),
@@ -1817,7 +1818,7 @@ def activityreport(request):
             str_project=project,
             str_title=title,
             str_drafter_datetime=datetime.datetime.now().strftime("%Y-%m-%d")
-            + wanted_datetime_day_split(datetime.datetime.now().strftime("%w"))
+            + datetime_day_split(datetime.datetime.now().strftime("%w"))
             + datetime.datetime.now().strftime(" %H:%M"),
             str_drafter=drafter,
             str_drafter_email=drafter_email,
@@ -1844,24 +1845,24 @@ def activityreport(request):
                     + '"} }, "sorts": [ {"property": "완료", "direction": "ascending"}, {"property": "종료일", "direction": "ascending"} ] }'
                 ).encode("utf-8"),
             ).text
-        )
-        for i in range(len(project_list_pre.get("results"))):
+        ).get("results")
+        for i in range(len(project_list_pre)):
             project_title = (
-                project_list_pre.get("results")[i]
+                project_list_pre[i]
                 .get("properties")
                 .get("프로젝트")
                 .get("title")[0]
                 .get("plain_text")
             )
             project_approver = (
-                project_list_pre.get("results")[i]
+                project_list_pre[i]
                 .get("properties")
                 .get("프로젝트 담당자")
                 .get("people")[0]
                 .get("name")
             )
             project_approver_email = (
-                project_list_pre.get("results")[i]
+                project_list_pre[i]
                 .get("properties")
                 .get("프로젝트 담당자")
                 .get("people")[0]
@@ -1869,12 +1870,12 @@ def activityreport(request):
                 .get("email")
             )
             project_folder_url = (
-                project_list_pre.get("results")[i]
+                project_list_pre[i]
                 .get("properties")
                 .get("프로젝트 폴더 주소")
                 .get("url")
             )
-            project_url = project_list_pre.get("results")[i].get("url")
+            project_url = project_list_pre[i].get("url")
             project_list.append(
                 [
                     project_title,
@@ -1935,16 +1936,50 @@ def activityreport(request):
     #### template 01
     ####
     # get the activity report log
-    activity_report_list = spreadsheets_values(
-        docs_log_id, "activityReportLog!A:L", True, True
+    activity_report_list_raw = spreadsheets_values(
+        docs_log_id, "activityReportLog!A:J", True, True
     )
+    for activity_report_row in activity_report_list_raw:
+        activity_report_project = activity_report_row[0]
+        activity_report_title = activity_report_row[1]
+        activity_report_drafter_datetime = activity_report_row[2]
+        activity_report_drafter = activity_report_row[3]
+        activity_report_drafter_email = activity_report_row[4]
+        activity_report_approver_datetime = activity_report_row[5]
+        activity_report_approver = activity_report_row[6]
+        activity_report_approver_email = activity_report_row[7]
+        activity_report_status = activity_report_row[8]
+        activity_report_id = activity_report_row[9].replace(
+            "https://docs.google.com/document/d/", ""
+        )
+        if request.user.is_authenticated and "@bluemove.or.kr" in request.user.email:
+            pass
+        else:
+            activity_report_drafter_datetime = activity_report_drafter_datetime[:8] + re.sub("[^-() :]", "*", activity_report_drafter_datetime[8:])
+            activity_report_drafter = activity_report_drafter[0] + re.sub("[\S]", "*", activity_report_drafter[1:])
+            if not activity_report_approver_datetime == "-":
+                activity_report_approver_datetime = activity_report_approver_datetime[:8] + re.sub("[^-() :]", "*", activity_report_approver_datetime[8:])
+            activity_report_approver = activity_report_approver[0] + re.sub("[\S]", "*", activity_report_approver[1:])
+        activity_report_dict = {
+            "project": activity_report_project,
+            "title": activity_report_title,
+            "drafter_datetime": activity_report_drafter_datetime,
+            "drafter": activity_report_drafter,
+            "drafter_email": activity_report_drafter_email,
+            "approver_datetime": activity_report_approver_datetime,
+            "approver": activity_report_approver,
+            "approver_email": activity_report_approver_email,
+            "status": activity_report_status,
+            "id": activity_report_id,
+        }
+        activity_report_list.append(activity_report_dict.copy())
     # search
     try:
         if len(q) > 1:
             activity_report_list_pre = [
                 activity_report_row
                 for activity_report_row in activity_report_list
-                for activity_report_str in activity_report_row
+                for activity_report_str in activity_report_row.values()
                 if q in activity_report_str
             ]
             activity_report_list = []
