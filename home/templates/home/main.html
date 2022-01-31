@@ -92,15 +92,28 @@
             d="m9.97 4.88.953 3.811C10.159 8.878 9.14 9 8 9c-1.14 0-2.158-.122-2.923-.309L6.03 4.88C6.635 4.957 7.3 5 8 5s1.365-.043 1.97-.12zm-.245-.978L8.97.88C8.718-.13 7.282-.13 7.03.88L6.275 3.9C6.8 3.965 7.382 4 8 4c.618 0 1.2-.036 1.725-.098zm4.396 8.613a.5.5 0 0 1 .037.96l-6 2a.5.5 0 0 1-.316 0l-6-2a.5.5 0 0 1 .037-.96l2.391-.598.565-2.257c.862.212 1.964.339 3.165.339s2.303-.127 3.165-.339l.565 2.257 2.391.598z" />
     </svg>
     <div class="vertical">
-        현재 <a href="{% url 'checknissue:checklist' %}" class="a-bluemove"
-            onclick="fadeOut(); setTimeout(inProgress, 0);">블루무버 명단 조회</a>, <a href="{% url 'checknissue:checkcert' %}"
-            class="a-bluemove" onclick="fadeOut(); setTimeout(inProgress, 0);">활동증명서 진위 확인</a>, <a
-            href="{% url 'checknissue:issuecert' %}" class="a-bluemove"
-            onclick="fadeOut(); setTimeout(inProgress, 0);">활동증명서 발급</a>, <a
-            href="{% url 'applynsubmit:applymembership' %}" class="a-bluemove"
-            onclick="fadeOut(); setTimeout(inProgress, 0);">블루무브 가입 지원</a>, <a
-            href="{% url 'draftnapprove:activityreport' %}" class="a-bluemove"
-            onclick="fadeOut(); setTimeout(inProgress, 0);">일일활동보고서</a> 서비스만 이용하실 수 있습니다.
+        <p class="m-0 mb-1">현재는 다음 서비스만 이용하실 수 있습니다.</p>
+        <small>
+            <span class="badge badge-bluemove bg-secondary me-1">조회/발급</span>
+            <a href="{% url 'checknissue:checklist' %}" class="a-bluemove vertical"
+                onclick="fadeOut(); setTimeout(inProgress, 0);">블루무버 명단 조회</a>,
+            <a href="{% url 'checknissue:checkcert' %}" class="a-bluemove vertical"
+                onclick="fadeOut(); setTimeout(inProgress, 0);">활동증명서 진위 확인</a>,
+            <a href="{% url 'checknissue:issuecert' %}" class="a-bluemove vertical"
+                onclick="fadeOut(); setTimeout(inProgress, 0);">활동증명서 발급</a>
+            <br>
+            <span class="badge badge-bluemove bg-secondary me-1">신청/제출</span>
+            <a href="{% url 'applynsubmit:applymembership' %}" class="a-bluemove vertical"
+                onclick="fadeOut(); setTimeout(inProgress, 0);">블루무브 가입 지원</a>
+            <br>
+            <span class="badge badge-bluemove bg-secondary me-1">의결/공유</span>
+            <a href="{% url 'decidenshare:sharebmlink' %}" class="a-bluemove vertical"
+                onclick="fadeOut(); setTimeout(inProgress, 0);">블뭅 링크</a>
+            <br>
+            <span class="badge badge-bluemove bg-secondary me-1">기안/결재</span>
+            <a href="{% url 'draftnapprove:activityreport' %}" class="a-bluemove vertical"
+                onclick="fadeOut(); setTimeout(inProgress, 0);">일일활동보고서</a>
+        </small>
     </div>
 </div>
 <div class="alert alert-secondary d-flex align-items-center mb-0" role="alert">

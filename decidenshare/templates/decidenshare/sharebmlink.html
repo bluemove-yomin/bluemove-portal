@@ -571,6 +571,10 @@
             alert("URL을 입력해주세요.");
             return false;
         }
+        if (bmlinkEditPath.value.indexOf(" ") !== -1) {
+            alert("URL은 공백 없이 입력해주세요.");
+            return false;
+        }
         if (bmlinkEditOriginalUrl.value == "") {
             alert("원본 URL을 입력해주세요.");
             return false;
@@ -689,6 +693,10 @@
         }
         if (bmlinkCreatePath.value == "") {
             alert("URL을 입력해주세요.");
+            return false;
+        }
+        if (bmlinkCreatePath.value.indexOf(" ") !== -1) {
+            alert("URL은 공백 없이 입력해주세요.");
             return false;
         }
         if (bmlinkCreateOriginalUrl.value == "") {
