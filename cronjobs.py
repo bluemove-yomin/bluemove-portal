@@ -6,6 +6,10 @@ requests.get(
     "https://portal.bluemove.or.kr/applynsubmit/applymembership/cron-delete-all-expired-recruiting-data"
 )
 
+requests.get(
+    "https://portal.bluemove.or.kr/applynsubmit/applymembershipwithdrawal/cron-delete-delete-queued-alumni-data"
+)
+
 # decidenshare
 requests.get(
     "https://portal.bluemove.or.kr/decidenshare/sharebmlink/cron-delete-all-expired-bmlinks"

@@ -2505,7 +2505,7 @@ def cron_delete_delete_queued_alumni_data(request):
             ).execute()
             client = WebClient(token=slack_bot_token)
             try:
-                client.conversations_join(channel=management_dev_channel_id)
+                client.conversations_join(channel=management_all_channel_id)
             except:
                 pass
             blocks, text = slack_blocks_and_text(
@@ -2513,7 +2513,7 @@ def cron_delete_delete_queued_alumni_data(request):
                 obj_queued_alumni=queued_alumni,
             )
             client.chat_update(
-                channel=management_dev_channel_id,
+                channel=management_all_channel_id,
                 link_names=True,
                 as_user=True,
                 ts=queued_alumni.slack_ts,
@@ -2526,14 +2526,14 @@ def cron_delete_delete_queued_alumni_data(request):
     if queued_alumni_count > 0:
         client = WebClient(token=slack_bot_token)
         try:
-            client.conversations_join(channel=management_dev_channel_id)
+            client.conversations_join(channel=management_all_channel_id)
         except:
             pass
         blocks, text = slack_blocks_and_text(
             str_queued_alumni_count=str(queued_alumni_count),
         )
         client.chat_postMessage(
-            channel=management_dev_channel_id,
+            channel=management_all_channel_id,
             link_names=True,
             as_user=True,
             blocks=blocks,
@@ -3105,7 +3105,7 @@ def applymembershipwithdrawal(request):
         ).execute()
         client = WebClient(token=slack_bot_token)
         try:
-            client.conversations_join(channel=management_dev_channel_id)
+            client.conversations_join(channel=management_all_channel_id)
         except:
             pass
         blocks, text = slack_blocks_and_text(
@@ -3113,7 +3113,7 @@ def applymembershipwithdrawal(request):
             obj_queued_alumni=queued_alumni,
         )
         client.chat_update(
-            channel=management_dev_channel_id,
+            channel=management_all_channel_id,
             link_names=True,
             as_user=True,
             ts=queued_alumni.slack_ts,
@@ -3124,7 +3124,7 @@ def applymembershipwithdrawal(request):
             signal_removed_from_queue=True, obj_queued_alumni=queued_alumni
         )
         client.chat_postMessage(
-            channel=management_dev_channel_id,
+            channel=management_all_channel_id,
             link_names=True,
             as_user=True,
             blocks=blocks,
@@ -3180,12 +3180,12 @@ def applymembershipwithdrawal(request):
         ).execute()
         client = WebClient(token=slack_bot_token)
         try:
-            client.conversations_join(channel=management_dev_channel_id)
+            client.conversations_join(channel=management_all_channel_id)
         except:
             pass
         blocks, text = slack_blocks_and_text(obj_queued_alumni=queued_alumni)
         slack = client.chat_postMessage(
-            channel=management_dev_channel_id,
+            channel=management_all_channel_id,
             link_names=True,
             as_user=True,
             blocks=blocks,
