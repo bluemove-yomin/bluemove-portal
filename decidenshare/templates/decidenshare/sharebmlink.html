@@ -519,6 +519,7 @@
         var bmlinkData = obj.nextElementSibling.nextElementSibling.value.split("#");
         bmlinkEditCategoryValue.value = bmlinkData[0];
         bmlinkEditCategoryValue.text = bmlinkData[0];
+        bmlinkEditCategoryValue.selected = true;
         bmlinkEditTitle.value = bmlinkData[1];
         bmlinkEditId.value = bmlinkData[2];
         bmlinkEditPath.value = bmlinkData[3];
@@ -535,6 +536,7 @@
         bmlinkEditDateEnd.value = bmlinkData[5];
         bmlinkEditPublicOrNotValue.value = bmlinkData[6];
         bmlinkEditPublicOrNotValue.text = bmlinkData[6];
+        bmlinkEditPublicOrNotValue.selected = true;
     }
     function bmlinkEditDateEndCheck() {
         if (bmlinkEditDateEndNoLimit.value == "false") {

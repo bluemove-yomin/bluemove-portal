@@ -2,8 +2,8 @@ from django.contrib import admin
 from .models import *
 
 
-@admin.register(Checklist)
-class ChecklistAdmin(admin.ModelAdmin):
+@admin.register(Issuecert)
+class IssuecertAdmin(admin.ModelAdmin):
     list_display = (
         "code",
         "birthday",

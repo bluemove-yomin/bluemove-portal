@@ -721,7 +721,7 @@ def issuecert(request):
     old_cert_exists = None
     # initialize verification
     if cmd_get == "init":
-        v_code_obj = Checklist.objects.filter(
+        v_code_obj = Issuecert.objects.filter(
             birthday=request.GET.get("bd"),
             phone_last=request.GET.get("pl"),
             email_host=request.GET.get("eh"),
@@ -999,7 +999,7 @@ def issuecert(request):
             issued = True
     # verification code validation
     elif request.method == "POST" and v_code_input:
-        v_code_obj = Checklist.objects.filter(
+        v_code_obj = Issuecert.objects.filter(
             birthday=alumni_birth[5:7] + alumni_birth[8:10],
             phone_last=alumni_phone[-4:],
             email_host=alumni_email.split("@")[1],
@@ -1022,7 +1022,7 @@ def issuecert(request):
             ):
                 v_code = ""
                 try:
-                    v_code_obj = Checklist.objects.filter(
+                    v_code_obj = Issuecert.objects.filter(
                         birthday=alumni_birth[5:7] + alumni_birth[8:10],
                         phone_last=alumni_phone[-4:],
                         email_host=alumni_email.split("@")[1],
@@ -1031,8 +1031,8 @@ def issuecert(request):
                 except:
                     pass
                 for i in range(10):
-                    v_code += random.choice(string.ascii_letters + string.digits)
-                Checklist.objects.create(
+                    v_code += random.choice(string.ascii_uppercase + string.digits)
+                Issuecert.objects.create(
                     birthday=alumni_birth[5:7] + alumni_birth[8:10],
                     phone_last=alumni_phone[-4:],
                     email_host=alumni_email.split("@")[1],

@@ -1,7 +1,7 @@
 from django.db import models
 
 
-class Checklist(models.Model):
+class Issuecert(models.Model):
     birthday = models.CharField(max_length=4)
     phone_last = models.CharField(max_length=4)
     email_host = models.CharField(max_length=20)

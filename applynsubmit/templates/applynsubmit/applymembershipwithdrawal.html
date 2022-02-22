@@ -3,22 +3,22 @@
 {% load static %}
 
 {% block meta %}
-<meta property="og:url" content="{% url 'checknissue:issuecert' %}">
-<meta property="og:title" content="블루무브 포털 - 활동증명서 발급">
-<meta property="og:description" content="블루무브 포털 - 활동증명서 발급">
-<meta name="subject" content="블루무브 포털 - 활동증명서 발급">
-<meta name="description" content="블루무브 포털 - 활동증명서 발급">
+<meta property="og:url" content="{% url 'applynsubmit:applymembershipwithdrawal' %}">
+<meta property="og:title" content="블루무브 포털 - 블루무브 탈퇴 신청">
+<meta property="og:description" content="블루무브 포털 - 블루무브 탈퇴 신청">
+<meta name="subject" content="블루무브 포털 - 블루무브 탈퇴 신청">
+<meta name="description" content="블루무브 포털 - 블루무브 탈퇴 신청">
 <meta name="robots" content="index,follow">
 {% endblock %}
 
-{% block title %} 블루무브 포털 - 활동증명서 발급 {% endblock %}
+{% block title %} 블루무브 포털 - 블루무브 탈퇴 신청 {% endblock %}
 
 {% block breadcrumb %}
-<div class="breadcrumb-screen breadcrumb-base breadcrumb-issuecert">
+<div class="breadcrumb-screen breadcrumb-base breadcrumb-applymembershipwithdrawal">
     <div class="d-flex align-items-center breadcrumb-layer">
         <div class="container-lg text-center">
-            <h1 class="screenLarge m-0" style="color: #FFFFFF; text-shadow: 1px 1px 5px #212529;">활동증명서 발급</h1>
-            <h2 class="screenSmall m-0" style="color: #FFFFFF; text-shadow: 1px 1px 5px #212529;">활동증명서 발급</h2>
+            <h1 class="screenLarge m-0" style="color: #FFFFFF; text-shadow: 1px 1px 5px #212529;">블루무브 탈퇴 신청</h1>
+            <h2 class="screenSmall m-0" style="color: #FFFFFF; text-shadow: 1px 1px 5px #212529;">블루무브 탈퇴 신청</h2>
         </div>
     </div>
 </div>
@@ -30,9 +30,9 @@
 -->
 <div class="card shadow-hover mb-4">
     <div class="card-body" style="background-color: rgba(0,0,0,.025);">
-        <h5 class="card-title pb-1">인증 및 발급
+        <h5 class="card-title pb-1">인증 및 신청
             <a href="#none" class="ms-1" data-bs-toggle="tooltip" data-bs-placement="right" title=""
-                data-bs-original-title="얼럼나이 인증 후 발급 가능합니다." style="color: #545859 !important;" aria-label="도움말">
+                data-bs-original-title="얼럼나이 인증 후 신청 가능합니다." style="color: #545859 !important;" aria-label="도움말">
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
                     class="bi bi-question-circle" viewBox="0 0 16 16" style="margin-bottom: .2rem;">
                     <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z" />
@@ -42,57 +42,31 @@
             </a>
         </h5>
         <!-- alert -->
-        {% if old_cert_exists %}
-        <!-- boolean OLD_CERT_EXISTS -->
-        <div class="alert alert-secondary alert-dismissible fade show d-flex align-items-center" role="alert">
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor"
-                class="bi bi-info-circle flex-shrink-0 me-2" viewBox="0 0 16 16">
-                <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z" />
-                <path
-                    d="m8.93 6.588-2.29.287-.082.38.45.083c.294.07.352.176.288.469l-.738 3.468c-.194.897.105 1.319.808 1.319.545 0 1.178-.252 1.465-.598l.088-.416c-.2.176-.492.246-.686.246-.275 0-.375-.193-.304-.533L8.93 6.588zM9 4.5a1 1 0 1 1-2 0 1 1 0 0 1 2 0z" />
-            </svg>
-            <div class="vertical">
-                지난 {{ old_cert_datetime }}에 발급된 활동증명서는 무효화되었습니다.
-            </div>
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="안내창 닫기"></button>
-        </div>
+        {% if removed_from_queue %}
+        <!-- boolean REMOVED_FROM_QUEUE -->
         <div class="alert alert-primary d-flex align-items-center mb-0" role="alert">
             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor"
-                class="bi bi-file-earmark-check flex-shrink-0 me-2" viewBox="0 0 16 16">
-                <path
-                    d="M10.854 7.854a.5.5 0 0 0-.708-.708L7.5 9.793 6.354 8.646a.5.5 0 1 0-.708.708l1.5 1.5a.5.5 0 0 0 .708 0l3-3z" />
-                <path
-                    d="M14 14V4.5L9.5 0H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2zM9.5 3A1.5 1.5 0 0 0 11 4.5h2V14a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1h5.5v2z" />
-            </svg>
-            <div class="vertical">
-                {{ alumni_name }} 블루무버님의 활동증명서가 이메일로 발급되었습니다.
-            </div>
-        </div>
-        {% elif issued %}
-        <!-- boolean ISSUED -->
-        <div class="alert alert-primary d-flex align-items-center mb-0" role="alert">
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor"
-                class="bi bi-file-earmark-check flex-shrink-0 me-2" viewBox="0 0 16 16">
-                <path
-                    d="M10.854 7.854a.5.5 0 0 0-.708-.708L7.5 9.793 6.354 8.646a.5.5 0 1 0-.708.708l1.5 1.5a.5.5 0 0 0 .708 0l3-3z" />
-                <path
-                    d="M14 14V4.5L9.5 0H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2zM9.5 3A1.5 1.5 0 0 0 11 4.5h2V14a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1h5.5v2z" />
-            </svg>
-            <div class="vertical">
-                {{ alumni_name }} 블루무버님의 활동증명서가 이메일로 발급되었습니다.
-            </div>
-        </div>
-        {% elif init_required %}
-        <!-- boolean INIT_REQUIRED -->
-        <div class="alert alert-secondary d-flex align-items-center mb-0" role="alert">
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor"
-                class="bi bi-emoji-neutral flex-shrink-0 me-2" viewBox="0 0 16 16">
+                class="bi bi-emoji-smile flex-shrink-0 me-2" viewBox="0 0 16 16">
                 <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z" />
                 <path
-                    d="M4 10.5a.5.5 0 0 0 .5.5h7a.5.5 0 0 0 0-1h-7a.5.5 0 0 0-.5.5zm3-4C7 5.672 6.552 5 6 5s-1 .672-1 1.5S5.448 8 6 8s1-.672 1-1.5zm4 0c0-.828-.448-1.5-1-1.5s-1 .672-1 1.5S9.448 8 10 8s1-.672 1-1.5z" />
+                    d="M4.285 9.567a.5.5 0 0 1 .683.183A3.498 3.498 0 0 0 8 11.5a3.498 3.498 0 0 0 3.032-1.75.5.5 0 1 1 .866.5A4.498 4.498 0 0 1 8 12.5a4.498 4.498 0 0 1-3.898-2.25.5.5 0 0 1 .183-.683zM7 6.5C7 7.328 6.552 8 6 8s-1-.672-1-1.5S5.448 5 6 5s1 .672 1 1.5zm4 0c0 .828-.448 1.5-1 1.5s-1-.672-1-1.5S9.448 5 10 5s1 .672 1 1.5z" />
             </svg>
             <div class="vertical">
-                인증이 유효하지 않습니다. 초기화 후 다시 시도해주세요.
+                {{ alumni_name }} 블루무버님의 블루무브 탈퇴 신청이 취소되었습니다.
+            </div>
+        </div>
+        {% elif added_to_queue %}
+        <!-- boolean ADDED_TO_QUEUE -->
+        <div class="alert alert-primary d-flex align-items-center mb-0" role="alert">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor"
+                class="bi bi-send-check flex-shrink-0 me-2" viewBox="0 0 16 16">
+                <path
+                    d="M15.964.686a.5.5 0 0 0-.65-.65L.767 5.855a.75.75 0 0 0-.124 1.329l4.995 3.178 1.531 2.406a.5.5 0 0 0 .844-.536L6.637 10.07l7.494-7.494-1.895 4.738a.5.5 0 1 0 .928.372l2.8-7Zm-2.54 1.183L5.93 9.363 1.591 6.602l11.833-4.733Z" />
+                <path
+                    d="M16 12.5a3.5 3.5 0 1 1-7 0 3.5 3.5 0 0 1 7 0Zm-1.993-1.679a.5.5 0 0 0-.686.172l-1.17 1.95-.547-.547a.5.5 0 0 0-.708.708l.774.773a.75.75 0 0 0 1.174-.144l1.335-2.226a.5.5 0 0 0-.172-.686Z" />
+            </svg>
+            <div class="vertical">
+                {{ alumni_name }} 블루무버님의 블루무브 탈퇴 신청이 완료되었습니다.
             </div>
         </div>
         {% elif verified %}
@@ -157,7 +131,21 @@
                     d="M4 10.5a.5.5 0 0 0 .5.5h7a.5.5 0 0 0 0-1h-7a.5.5 0 0 0-.5.5zm3-4C7 5.672 6.552 5 6 5s-1 .672-1 1.5S5.448 8 6 8s1-.672 1-1.5zm4 0c0-.828-.448-1.5-1-1.5s-1 .672-1 1.5S9.448 8 10 8s1-.672 1-1.5z" />
             </svg>
             <div class="vertical">
-                신입 회원은 활동증명서 발급이 불가합니다.
+                신입 회원은 블루무브 탈퇴 신청이 불가합니다. 사무국에 문의해주세요.
+            </div>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="안내창 닫기"></button>
+        </div>
+        {% elif active_alumni %}
+        <!-- boolean ACTIVE_ALUMNI -->
+        <div class="alert alert-secondary alert-dismissible fade show d-flex align-items-center" role="alert">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor"
+                class="bi bi-emoji-neutral flex-shrink-0 me-2" viewBox="0 0 16 16">
+                <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z" />
+                <path
+                    d="M4 10.5a.5.5 0 0 0 .5.5h7a.5.5 0 0 0 0-1h-7a.5.5 0 0 0-.5.5zm3-4C7 5.672 6.552 5 6 5s-1 .672-1 1.5S5.448 8 6 8s1-.672 1-1.5zm4 0c0-.828-.448-1.5-1-1.5s-1 .672-1 1.5S9.448 8 10 8s1-.672 1-1.5z" />
+            </svg>
+            <div class="vertical">
+                활동 중인 얼럼나이는 블루무브 탈퇴 신청이 불가합니다. 사무국에 문의해주세요.
             </div>
             <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="안내창 닫기"></button>
         </div>
@@ -177,11 +165,11 @@
         </div>
         {% endif %}
         <!-- form -->
-        <form action="{% url 'checknissue:issuecert' %}" method="POST" enctype="multipart/form-data"
-            id="formIssuecertReal" onsubmit="return validation()">
+        <form action="{% url 'applynsubmit:applymembershipwithdrawal' %}" method="POST" enctype="multipart/form-data"
+            id="formApplymembershipwithdrawalReal" onsubmit="return validation()">
             {% csrf_token %}
             <input type="hidden" id="cmdPost" name="cmdPost" value="" readonly hidden>
-            <div id="formIssuecert">
+            <div id="formApplymembershipwithdrawal">
                 <div class="row row-cols-1 row-cols-md-2 g-3">
                     <div class="col">
                         <label for="alumniName" class="form-label">성명</label>
@@ -213,17 +201,121 @@
                         <i class="bi bi-envelope me-2"></i>인증 코드 전송</button>
                 </div>
             </div>
-            {% if issued or init_required or old_cert_exists %}
-            <!-- boolean ISSUED or INIT_REQUIRED or OLD_CERT_EXISTS -->
+            <!-- terms -->
+            {% if added_to_queue %}
+            <!-- boolean ADDED_TO_QUEUE -->
+            <div class="alert alert-secondary mt-3 mb-0" role="alert">
+                <h5>데이터 삭제·보존 동의</h5>
+                <p>본인은 파란물결 블루무브가 본인의 단체 탈퇴와 관련하여 아래와 같이 데이터를 삭제 및 보존하는 것에 동의합니다.</p>
+                <ol style="padding-left: 18px;">
+                    <li>탈퇴 후 삭제되는 데이터</li>
+                    <ul style="padding-left: 20px;">
+                        <li>명부 내 개인정보: 성명, 생년월일, 성별, 휴대전화 번호, 이메일 주소, 거주지 주소</li>
+                        <li>명부 내 블루무버 정보: 회번, 기간, 소속 및 역할, 가입일, 활동 종료일, 활동 내용</li>
+                        <li>뉴스레터 구독자 목록 내 개인정보: 성명, 생일, 이메일 주소</li>
+                        <li>활동증명서 유효성: 블루무브 포털을 통해 발급한 활동증명서의 유효성</li>
+                    </ul>
+                    <li>탈퇴 후 보존되는 데이터</li>
+                    <ul style="padding-left: 20px;">
+                        <li>일일활동보고서 내 개인정보 및 블루무버 정보: 성명, 연도가 별표로 마스킹된 생년월일, 뒷자리 번호가 별표로 마스킹된 휴대전화 번호, 회번</li>
+                        <li>활동 간 생산 데이터: 블루무버 활동 간 직접 생산하여 공유 드라이브에 업로드한 데이터, 활동 모습이 촬영되어 공유 드라이브에 업로드된 사진 및 영상</li>
+                        <li>1365 자원봉사활동확인서 유효성: 1365 자원봉사포털을 통해 발급한 활동확인서의 유효성</li>
+                    </ul>
+                    <li>데이터 삭제·보존에 대한 안내 사항</li>
+                    <ul style="padding-left: 20px;">
+                        <li>블루무브 탈퇴 후 삭제된 데이터는 복구되지 않습니다.</li>
+                        <li>블루무브 탈퇴 후 명부 내 개인정보 및 블루무버 정보가 삭제되므로 일일활동보고서 내 개인정보 및 블루무버 정보의 마스킹된 값을 확인할 수 없습니다.</li>
+                        <li>블루무브 탈퇴 후 본인 여부를 확인할 수 있는 방법이 없으므로 사무국은 활동증명서 발급, 1365 자원봉사활동확인서 관련 문제 해결을 지원해드릴 수 없습니다.
+                        </li>
+                        <li>블루무브 탈퇴 신청은 블루무브 포털 계정 삭제와 무관합니다.</li>
+                    </ul>
+                    <li>동의 거부 시 불이익</li>
+                    <ul style="padding-left: 20px;">
+                        <li>본인은 상기 데이터 삭제 및 보존에 거부할 권리를 보유하고 있으며, 동의를 거부할 경우 블루무브 탈퇴 신청이 불가함을 인지하고 있습니다.</li>
+                    </ul>
+                </ol>
+                <div class="d-flex justify-content-end">
+                    <div class="form-check d-flex align-items-center">
+                        <input class="form-check-input" type="checkbox" id="agreementCheckbox" checked disabled>
+                        <label class="form-check-label ms-2" for="agreementCheckbox">위 내용에 동의합니다.</label>
+                    </div>
+                </div>
+            </div>
+            {% elif verified %}
+            <!-- boolean VERIFIED -->
+            <div class="alert alert-secondary mt-3 mb-0" role="alert">
+                <h5>데이터 삭제·보존 동의</h5>
+                <p>본인은 파란물결 블루무브가 본인의 단체 탈퇴와 관련하여 아래와 같이 데이터를 삭제 및 보존하는 것에 동의합니다.</p>
+                <ol style="padding-left: 18px;">
+                    <li>탈퇴 후 삭제되는 데이터</li>
+                    <ul style="padding-left: 20px;">
+                        <li>명부 내 개인정보: 성명, 생년월일, 성별, 휴대전화 번호, 이메일 주소, 거주지 주소</li>
+                        <li>명부 내 블루무버 정보: 회번, 기간, 소속 및 역할, 가입일, 활동 종료일, 활동 내용</li>
+                        <li>뉴스레터 구독자 목록 내 개인정보: 성명, 생일, 이메일 주소</li>
+                        <li>활동증명서 유효성: 블루무브 포털을 통해 발급한 활동증명서의 유효성</li>
+                    </ul>
+                    <li>탈퇴 후 보존되는 데이터</li>
+                    <ul style="padding-left: 20px;">
+                        <li>일일활동보고서 내 개인정보 및 블루무버 정보: 성명, 연도가 별표로 마스킹된 생년월일, 뒷자리 번호가 별표로 마스킹된 휴대전화 번호, 회번</li>
+                        <li>활동 간 생산 데이터: 블루무버 활동 간 직접 생산하여 공유 드라이브에 업로드한 데이터, 활동 모습이 촬영되어 공유 드라이브에 업로드된 사진 및 영상</li>
+                        <li>1365 자원봉사활동확인서 유효성: 1365 자원봉사포털을 통해 발급한 활동확인서의 유효성</li>
+                    </ul>
+                    <li>데이터 삭제·보존에 대한 안내 사항</li>
+                    <ul style="padding-left: 20px;">
+                        <li>블루무브 탈퇴 후 삭제된 데이터는 복구되지 않습니다.</li>
+                        <li>블루무브 탈퇴 후 명부 내 개인정보 및 블루무버 정보가 삭제되므로 일일활동보고서 내 개인정보 및 블루무버 정보의 마스킹된 값을 확인할 수 없습니다.</li>
+                        <li>블루무브 탈퇴 후 본인 여부를 확인할 수 있는 방법이 없으므로 사무국은 활동증명서 발급, 1365 자원봉사활동확인서 관련 문제 해결을 지원해드릴 수 없습니다.
+                        </li>
+                        <li>블루무브 탈퇴 신청은 블루무브 포털 계정 삭제와 무관합니다.</li>
+                    </ul>
+                    <li>동의 거부 시 불이익</li>
+                    <ul style="padding-left: 20px;">
+                        <li>본인은 상기 데이터 삭제 및 보존에 거부할 권리를 보유하고 있으며, 동의를 거부할 경우 블루무브 탈퇴 신청이 불가함을 인지하고 있습니다.</li>
+                    </ul>
+                </ol>
+                <div class="d-flex justify-content-end">
+                    <div class="form-check d-flex align-items-center">
+                        <input class="form-check-input" type="checkbox" value="unchecked" id="agreementCheckbox"
+                            name="agreementCheckbox" onclick="agreementCheck(this)" required>
+                        <label class="form-check-label ms-2" for="agreementCheckbox">위 내용에 동의합니다.</label>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+            <!-- reason and button -->
+            {% if removed_from_queue %}
+            <!-- boolean REMOVED_FROM_QUEUE -->
             <div style="display: none;">
                 <input type="hidden" id="vCode" name="vCode" value="{{ v_code_input|default_if_none:'' }}" readonly
                     hidden>
             </div>
+            <div class="d-grid" style="padding-top: 1.25rem !important;">
+                <button type="button" class="btn btn-outline-secondary" aria-label="인증 초기화" onclick="initVCode(this)">
+                    <i class="bi bi-bootstrap-reboot me-2"></i>인증 초기화</button>
+            </div>
+            {% elif added_to_queue %}
+            <!-- boolean ADDED_TO_QUEUE -->
+            <div style="display: none;">
+                <input type="hidden" id="vCode" name="vCode" value="{{ v_code_input|default_if_none:'' }}" readonly
+                    hidden>
+            </div>
+            <div style="margin-top: 1rem;">
+                <label for="reason" class="form-label">탈퇴 신청 사유</label>
+                <input type="text" class="form-control" id="reason" name="reason" value="{{ queued_alumni.reason }}"
+                    aria-label="탈퇴 신청 사유" disabled>
+            </div>
             <div class="row g-3" style="padding-top: 1.25rem !important;">
-                <div class="col-md-9 col-lg-10">
+                <div class="col-md-6 col-lg-8">
                     <div class="d-grid">
-                        <button type="button" class="btn btn-outline-secondary" aria-label="활동증명서 발급" disabled>
-                            <i class="bi bi-file-earmark-pdf me-2"></i>활동증명서 발급</button>
+                        <button type="button" class="btn btn-outline-secondary" aria-label="탈퇴 신청" disabled>
+                            <i class="bi bi-person-dash me-2"></i>탈퇴 신청</button>
+                    </div>
+                </div>
+                <div class="col-md-3 col-lg-2">
+                    <div class="d-grid">
+                        <button type="submit" class="btn btn-outline-secondary" id="btnRemoveFromQueue"
+                            aria-label="신청 취소" onclick="cmdPostRemoveFromQueue();">
+                            <i class="bi bi-backspace me-2"></i>신청 취소</button>
                     </div>
                 </div>
                 <div class="col-md-3 col-lg-2">
@@ -240,12 +332,29 @@
                 <input type="hidden" id="vCode" name="vCode" value="{{ v_code_input|default_if_none:'' }}" readonly
                     hidden>
             </div>
+            <div style="margin-top: 1rem;">
+                <label for="reason" class="form-label">탈퇴 신청 사유
+                    <a href="#none" class="ms-1" data-bs-toggle="tooltip" data-bs-placement="right" title=""
+                        data-bs-original-title="공백 포함 50자까지 입력 가능합니다." style="color: #545859 !important;"
+                        aria-label="도움말">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                            class="bi bi-question-circle" viewBox="0 0 16 16" style="margin-bottom: .2rem;">
+                            <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z" />
+                            <path
+                                d="M5.255 5.786a.237.237 0 0 0 .241.247h.825c.138 0 .248-.113.266-.25.09-.656.54-1.134 1.342-1.134.686 0 1.314.343 1.314 1.168 0 .635-.374.927-.965 1.371-.673.489-1.206 1.06-1.168 1.987l.003.217a.25.25 0 0 0 .25.246h.811a.25.25 0 0 0 .25-.25v-.105c0-.718.273-.927 1.01-1.486.609-.463 1.244-.977 1.244-2.056 0-1.511-1.276-2.241-2.673-2.241-1.267 0-2.655.59-2.75 2.286zm1.557 5.763c0 .533.425.927 1.01.927.609 0 1.028-.394 1.028-.927 0-.552-.42-.94-1.029-.94-.584 0-1.009.388-1.009.94z" />
+                        </svg>
+                    </a>
+                </label>
+                <input type="text" class="form-control" id="reason" name="reason" placeholder="탈퇴 신청 사유를 입력하세요."
+                    aria-label="탈퇴 신청 사유 입력" onkeyup="if(event.keyCode==13) cmdPostAddToQueue();" maxlength="50"
+                    minlength="5" required>
+            </div>
             <div class="row g-3" style="padding-top: 1.25rem !important;">
                 <div class="col-md-9 col-lg-10">
                     <div class="d-grid">
-                        <button type="submit" class="btn btn-outline-secondary" aria-label="활동증명서 발급"
-                            onclick="cmdPostIssue(this)">
-                            <i class="bi bi-file-earmark-pdf me-2"></i>활동증명서 발급</button>
+                        <button type="submit" class="btn btn-outline-secondary" id="btnAddToQueue" aria-label="탈퇴 신청"
+                            onclick="cmdPostAddToQueue()">
+                            <i class="bi bi-person-dash me-2"></i>탈퇴 신청</button>
                     </div>
                 </div>
                 <div class="col-md-3 col-lg-2">
@@ -329,7 +438,7 @@
         var patternEng = /[a-zA-Z]/; // alphabet
         var patternKor = /[ㄱ-ㅎ|ㅏ-ㅣ|가-힣]/; // Hangul
         var patternEml = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/ // email
-        var formIssuecertReal = document.querySelector("#formIssuecertReal");
+        var formApplymembershipwithdrawalReal = document.querySelector("#formApplymembershipwithdrawalReal");
         var alumniName = document.querySelector("#alumniName");
         var alumniBirth = document.querySelector("#alumniBirth");
         var alumniPhone = document.querySelector("#alumniPhone");
@@ -406,6 +515,33 @@
                 return false;
             };
         };
+        if (document.querySelector("#btnRemoveFromQueue")) {
+            if (!confirm("정말 블루무브 탈퇴 신청을 취소하시겠어요?")) {
+                return false;
+            }
+        } else {
+            if (document.querySelector("#agreementCheckbox")) {
+                if (document.querySelector("#agreementCheckbox").value !== "checked") {
+                    alert("데이터 삭제·보존에 동의해주세요.");
+                    return false;
+                };
+            }
+            if (document.querySelector("#reason")) {
+                if (document.querySelector("#reason").value == "") {
+                    alert("탈퇴 신청 사유를 입력해주세요.");
+                    return false;
+                };
+                if (document.querySelector("#reason").value.length < 5) {
+                    alert("탈퇴 신청 사유는 다섯 글자 이상 입력해주세요.");
+                    return false;
+                };
+            }
+            if (document.querySelector("#btnAddToQueue")) {
+                if (!confirm("정말 블루무브 탈퇴를 신청하시겠어요?\n탈퇴 처리는 신청일시로부터 약 24시간 후 진행되며 그 전까지 현재 페이지에서 신청을 취소하실 수 있습니다.")) {
+                    return false;
+                }
+            }
+        }
         if (!patternNum.test(alumniName.value) &&
             !patternSpc.test(alumniName.value) &&
             !patternEng.test(alumniName.value) &&
@@ -427,9 +563,20 @@
             return false;
         };
     };
+    // confirmation of consent to the data deletion and retention
+    function agreementCheck() {
+        var agreementCheckbox = document.querySelector("#agreementCheckbox");
+        if (agreementCheckbox.value == "unchecked") {
+            agreementCheckbox.value = "checked";
+            agreementCheckbox.setAttribute("checked", "");
+        } else {
+            agreementCheckbox.value = "unchecked";
+            agreementCheckbox.removeAttribute("checked");
+        }
+    }
 </script>
-{% if alumni or wrong_v_code or verified or issued or init_required %}
-<!-- boolean ALUMNI or WROND_V_CODE or VERIFIED or ISSUED or INIT_REQUIRED -->
+{% if alumni or wrong_v_code or verified or added_to_queue or removed_from_queue %}
+<!-- boolean ALUMNI or WROND_V_CODE or VERIFIED or ADDED_TO_QUEUE or REMOVED_FROM_QUEUE-->
 <script type="text/javascript">
     // hide some of the form
     var btnSendCode = document.querySelector("#btnSendCode")
@@ -447,7 +594,7 @@
         alumniEmail.readOnly = true;
         alumniEmail.hidden = true;
         btnSendCode.hidden = true;
-        document.querySelector("#formIssuecert").setAttribute("style", "display: none;");
+        document.querySelector("#formApplymembershipwithdrawal").setAttribute("style", "display: none;");
     };
     // initialize verification
     function initVCode() {
@@ -466,105 +613,127 @@
     };
 </script>
 {% endif %}
-{% if verified or issued or init_required or old_cert_exists %}
-<!-- boolean VERIFIED or ISSUED or INIT_REQUIRED or OLD_CERT_EXISTS -->
+{% if verified or added_to_queue %}
+<!-- boolean VERIFIED or ADDED_TO_QUEUE -->
 <script type="text/javascript">
-    function cmdPostIssue() {
-        document.querySelector("#cmdPost").value = "issue";
-    };
+    function cmdPostAddToQueue() {
+        document.querySelector("#cmdPost").value = "add to queue";
+    }
+    function cmdPostRemoveFromQueue() {
+        document.querySelector("#cmdPost").value = "remove from queue";
+    }
 </script>
 {% endif %}
 
 <!--
----- inner content 02 (activity history)
+---- inner content 02 (request details for withdrawal)
 -->
-{% if verified or issued or init_required or old_cert_exists %}
-<!-- boolean VERIFIED or ISSUED or INIT_REQUIRED or OLD_CERT_EXISTS -->
-<div class="card shadow-hover-strong linear border-0">
-    <div class="card-body">
-        <h5 class="card-title pb-1" style="color: white; text-shadow: 1px 1px 2.5px rgba(0,0,0,.3);">
-            블루무버 활동 내역
-        </h5>
-        {% for alumni_row in alumni_list %}
-        <div class="px-4 pt-3 pb-4" style="background-color: rgba(255,255,255,.4); border-radius: .25rem;">
-            <div class="d-flex justify-content-between border-bottom pb-1 mb-4"
-                style="border-bottom-color: rgba(255,255,255,.3) !important;">
-                <div class="vertical pb-1">
-                    <span style="color: #545859; font-size: 2rem; font-weight: bolder;">{{ alumni_row.2 }}</span><span
-                        style="color: #545859; font-size: 1.25rem;" class="ms-2">{{ alumni_row.1 }}</span>
-                </div>
-                <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1"
-                    id="Layer_1" x="0px" y="0px" viewBox="0 0 265.6 265.59"
-                    style="enable-background:new 0 0 265.6 265.59;" xml:space="preserve" width="30" height="30"
-                    class="flex-shrink-0 align-self-center" fill="rgba(255,255,255,.5)">
-                    <g>
-                        <g>
-                            <path
-                                d="M133.81,0C59.91,0,0,59.45,0,132.8c0,73.34,59.91,132.79,133.81,132.79c40.08,0,76.02-17.51,100.54-45.23    c0.29-0.31,0.29-0.78,0-1.1c-0.27-0.32-0.75-0.38-1.1-0.14c-10.21,6.85-21.98,11.86-34.65,14.9v-0.13l-4.69,0.33    c-1.46,0.11-2.91,0.22-4.41,0.22c-44.03,0-79.85-35.56-79.85-79.26c0-26.68,13.42-51.19,35.86-65.92    c1.2,6.68-0.05,13.65-2.91,18.92c-0.08,0.15-0.07,0.34,0.04,0.47c0.11,0.13,0.29,0.19,0.45,0.14c11-2.98,21.08,0.09,26.34,6.36    c4.81,5.7,6.4,13.36,3,22.26c-0.22,0.57-0.44,1.13-0.65,1.65c-1.59,3.92-4.09,7.35-7.3,10.11c-2.17,1.85-3.53,4.59-3.53,7.65    c0,5.6,4.58,10.14,10.23,10.14c5.11,0,9.63-3.82,10.12-9.1c0.04-0.39,0.15-0.77,0.2-1.16c0.68-10.37,9.29-18.6,19.91-18.6    c8.13,0,15.08,4.84,18.2,11.77c0.15,0.33,0.29,0.72,0.42,1.12c0.04,0.09,0.14,0.15,0.23,0.12c0.09-0.02,0.15-0.11,0.15-0.2    c-0.05-0.39-0.08-0.77-0.08-1.35c-0.04-9.87,8.48-19.47,20.05-19.47c10.3,0,18.74,7.74,19.84,17.68c0.01,0.15,0.14,0.27,0.29,0.29    c0.15,0.02,0.3-0.07,0.35-0.21C282.73,91.13,226.99,0,133.81,0z M102.68,155.19c0,37.9,24.8,70.1,59.13,81.61    c-27.47-2.48-51.73-14.65-68.4-32.7c-55.01-59.58-6.44-141.85,33.68-133.92c3.24,0.64,6.41,1.94,9.44,4.17    c3.08,2.27,5.28,5.01,6.81,7.98l-0.49,0.31C117.7,98.56,102.68,125.68,102.68,155.19z">
-                            </path>
-                        </g>
-                    </g>
-                </svg>
+{% if added_to_queue %}
+<!-- boolean ADDED_TO_QUEUE -->
+<div class="card shadow-hover">
+    <div class="card-body" style="background-color: rgba(0,0,0,.025);">
+        <div class="screenLarge">
+            <div class="d-flex justify-content-between">
+                <h5 class="card-title pb-1">신청 내역</h5>
+                <small style="margin-top: .25rem;">
+                    <i class="bi bi-clock me-1"></i>{{ queued_alumni.added_at|date:"Y-m-d H:i:s" }} 신청
+                </small>
             </div>
+        </div>
+        <div class="screenSmall">
+            <h5 class="card-title pb-1">신청 내역</h5>
+            <small class="d-flex justify-content-center border border-secondary rounded-1"
+                style="border-color: rgba(0,0,0,.3) !important;">
+                <i class="bi bi-clock me-1"></i>{{ queued_alumni.added_at|date:"Y-m-d H:i:s" }} 신청
+            </small>
+        </div>
+        <div class="pt-3" style="border-radius: .25rem;">
             <div class="row row-cols-1 row-cols-sm-2 g-4">
                 <div class="col">
                     <div class="card border-0" style="background-color: transparent;">
                         <div class="card-body p-0">
-                            <h5 class="card-title" style="font-weight: bolder;"><span class="badge text-dark"
-                                    style="background-color: rgba(255,255,255,.6);">회번</span></h5>
-                            <p class="card-text">{{ alumni_row.0 }}번</p>
+                            <p class="card-title" style="margin-top: .1rem;"><span
+                                    class="badge badge-bluemove bg-secondary">회번</span></p>
+                            <p class="card-text">{{ queued_alumni.number }}</p>
                         </div>
                     </div>
                 </div>
                 <div class="col">
                     <div class="card border-0" style="background-color: transparent;">
                         <div class="card-body p-0">
-                            <h5 class="card-title" style="font-weight: bolder;"><span class="badge text-dark"
-                                    style="background-color: rgba(255,255,255,.6);">소속 및 역할</span></h5>
-                            <p class="card-text">{{ alumni_row.3 }}</p>
+                            <p class="card-title" style="margin-top: .1rem;"><span
+                                    class="badge badge-bluemove bg-secondary">기간</span></p>
+                            <p class="card-text">{{ queued_alumni.period }}</p>
                         </div>
                     </div>
                 </div>
                 <div class="col">
                     <div class="card border-0" style="background-color: transparent;">
                         <div class="card-body p-0">
-                            <h5 class="card-title" style="font-weight: bolder;"><span class="badge text-dark"
-                                    style="background-color: rgba(255,255,255,.6);">활동 내용</span></h5>
-                            <p class="card-text">{{ alumni_row.8 }}</p>
+                            <p class="card-title" style="margin-top: .1rem;"><span
+                                    class="badge badge-bluemove bg-secondary">성명</span></p>
+                            <p class="card-text">{{ queued_alumni.name }}</p>
                         </div>
                     </div>
                 </div>
                 <div class="col">
                     <div class="card border-0" style="background-color: transparent;">
                         <div class="card-body p-0">
-                            <h5 class="card-title" style="font-weight: bolder;"><span class="badge text-dark"
-                                    style="background-color: rgba(255,255,255,.6);">활동 기간</span></h5>
-                            {% if alumni_row.6 == "현재" %}
-                            <p class="card-text">{{ alumni_row.4|slice:":4" }}년 {{ alumni_row.4|slice:"5:7" }}월
-                                {{alumni_row.4|slice:"8:" }}일 ~ {{ alumni_row.6 }}</p>
-                            {% else %}
-                            <p class="card-text">{{ alumni_row.4|slice:":4" }}년 {{ alumni_row.4|slice:"5:7" }}월
-                                {{alumni_row.4|slice:"8:" }}일 ~ {{ alumni_row.6|slice:":4" }}년
-                                {{alumni_row.6|slice:"5:7" }}월 {{ alumni_row.6|slice:"8:" }}일</p>
-                            {% endif %}
+                            <p class="card-title" style="margin-top: .1rem;"><span
+                                    class="badge badge-bluemove bg-secondary">소속 및 역할</span></p>
+                            <p class="card-text">{{ queued_alumni.role }}</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col">
+                    <div class="card border-0" style="background-color: transparent;">
+                        <div class="card-body p-0">
+                            <p class="card-title" style="margin-top: .1rem;"><span
+                                    class="badge badge-bluemove bg-secondary">활동 내용</span></p>
+                            <p class="card-text">{{ queued_alumni.activities }}</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col">
+                    <div class="card border-0" style="background-color: transparent;">
+                        <div class="card-body p-0">
+                            <p class="card-title" style="margin-top: .1rem;"><span
+                                    class="badge badge-bluemove bg-secondary">탈퇴 예정일시</span></p>
+                            <p class="card-text">{{ queued_alumni.will_be_deleted_at|date:"Y-m-d H:i:s" }}</p>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-        {% endfor %}
-        <div class="text-end mt-2" style="color: rgba(255,255,255,.5);">
-            <small>{% now "Y-m-d" %} 기준</small>
+    </div>
+</div>
+{% elif verified %}
+<!-- boolean VERIFIED -->
+<div class="card" style="border-style: dashed; border-color: rgba(0,0,0,.25)">
+    <div class="card-body">
+        <h5 class="card-title pb-1">신청 내역</h5>
+        <div class="text-center my-4">
+            <h2 style="color: rgba(0,0,0,.25); font-weight: bolder;"><i class="bi bi-tornado me-2"></i>휑...</h2>
+            <p class="text-muted m-0">신청 내역이 없습니다.</p>
+        </div>
+    </div>
+</div>
+{% elif removed_from_queue %}
+<!-- boolean REMOVED_FROM_QUEUE -->
+<div class="card" style="border-style: dashed; border-color: rgba(0,0,0,.25)">
+    <div class="card-body">
+        <h5 class="card-title pb-1">신청 내역</h5>
+        <div class="text-center my-4">
+            <h2 style="color: rgba(0,0,0,.25); font-weight: bolder;"><i class="bi bi-hand-thumbs-up me-2"></i>웰컴 백!</h2>
+            <p class="text-muted m-0">돌아와주셔서 감사해요! 🥰</p>
         </div>
     </div>
 </div>
 {% else %}
-<!-- boolean WRONG_V_CODE or ALUMNI or NEW_MEMBER or UNABLE_TO_VERIFY (default) -->
+<!-- boolean WRONG_V_CODE or ALUMNI or NEW_MEMBER or ACTIVE_ALUMNI or UNABLE_TO_VERIFY (default) -->
 <div class="card" style="border-style: dashed; border-color: rgba(0,0,0,.25)">
     <div class="card-body">
-        <h5 class="card-title pb-1">
-            블루무버 활동 내역
-        </h5>
+        <h5 class="card-title pb-1">신청 내역</h5>
         <div class="text-center my-4">
             <h2 style="color: rgba(0,0,0,.25); font-weight: bolder;"><i class="bi bi-hand-index-thumb me-2"></i>위쪽 먼저!
             </h2>

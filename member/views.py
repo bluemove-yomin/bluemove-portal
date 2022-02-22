@@ -27,8 +27,10 @@ management_dev_channel_id = "C01L8PETS5S"
 #### utils
 ####
 def privacy_masking(obj_user):
-    masked_name = obj_user.last_name + obj_user.first_name.replace(
-        obj_user.first_name[0], "*"
+    masked_name = (
+        obj_user.last_name
+        + re.sub("[\S]", "*", obj_user.first_name[:-1])
+        + obj_user.first_name[-1:]
     )
     masked_phone = (
         obj_user.profile.phone.split("-")[0]
@@ -36,12 +38,13 @@ def privacy_masking(obj_user):
         + obj_user.profile.phone.split("-")[1]
         + "-****"
     )
-    masked_email_pre = (
-        re.sub(r"[A-Za-z0-9._%+-]", "*", obj_user.email.split("@")[0])
+    masked_email = (
+        obj_user.email.split("@")[0][0]
+        + re.sub("[\S]", "*", obj_user.email.split("@")[0][1:])
         + "@"
-        + obj_user.email.split("@")[1]
+        + obj_user.email.split("@")[1][0]
+        + re.sub("[^.]", "*", obj_user.email.split("@")[1][1:])
     )
-    masked_email = obj_user.email[:2] + masked_email_pre[2:]
     return masked_name, masked_phone, masked_email
 
 

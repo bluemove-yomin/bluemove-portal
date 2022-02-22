@@ -67,3 +67,51 @@ class ApplymembershipnotiAdmin(admin.ModelAdmin):
         "updated_at",
         "will_be_deleted_at",
     )
+
+
+@admin.register(Applymembershipwithdrawal)
+class ApplymembershipwithdrawalAdmin(admin.ModelAdmin):
+    list_display = (
+        "code",
+        "birthday",
+        "email_host",
+        "created_at",
+    )
+    search_fields = (
+        "code",
+        "birthday",
+        "email_host",
+        "created_at",
+    )
+
+
+@admin.register(ApplymembershipwithdrawalQueue)
+class ApplymembershipwithdrawalQueueAdmin(admin.ModelAdmin):
+    list_display = (
+        "number",
+        "period",
+        "name",
+        "email",
+        "role",
+        "activities",
+        "data_boolean",
+        "reason",
+        "row_idx",
+        "slack_ts",
+        "added_at",
+        "will_be_deleted_at",
+    )
+    search_fields = (
+        "number",
+        "period",
+        "name",
+        "email",
+        "role",
+        "activities",
+        "data_boolean",
+        "reason",
+        "row_idx",
+        "slack_ts",
+        "added_at",
+        "will_be_deleted_at",
+    )

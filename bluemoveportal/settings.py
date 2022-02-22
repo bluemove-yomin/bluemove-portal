@@ -49,6 +49,8 @@ NOTION_TOKEN = get_secret("NOTION_TOKEN")
 
 SLACK_BOT_TOKEN = get_secret("SLACK_BOT_TOKEN")
 
+MAILCHIMP_KEY = get_secret("MAILCHIMP_KEY")
+
 SHORT_IO_KEY = get_secret("SHORT_IO_KEY")
 
 # SECURITY WARNING: don't run with debug turned on in production!

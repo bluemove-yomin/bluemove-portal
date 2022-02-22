@@ -57,3 +57,34 @@ class ApplymembershipNoti(models.Model):
     class Meta:
         verbose_name = "통보 메일"
         verbose_name_plural = "통보 메일(들)"
+
+
+class Applymembershipwithdrawal(models.Model):
+    birthday = models.CharField(max_length=4)
+    phone_last = models.CharField(max_length=4)
+    email_host = models.CharField(max_length=20)
+    code = models.CharField(max_length=10)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        verbose_name = "인증 코드"
+        verbose_name_plural = "인증 코드(들)"
+
+
+class ApplymembershipwithdrawalQueue(models.Model):
+    number = models.CharField(max_length=50)
+    period = models.CharField(max_length=100)
+    name = models.CharField(max_length=50)
+    email = models.CharField(max_length=100)
+    role = models.CharField(max_length=100)
+    activities = models.CharField(max_length=300)
+    data_boolean = models.BooleanField(default=False)
+    reason = models.CharField(max_length=50)
+    row_idx = models.CharField(max_length=10)
+    slack_ts = models.CharField(max_length=100)
+    added_at = models.DateTimeField(null=True, blank=True)
+    will_be_deleted_at = models.DateTimeField(null=True, blank=True)
+
+    class Meta:
+        verbose_name = "탈퇴 신청자"
+        verbose_name_plural = "탈퇴 신청자(들)"

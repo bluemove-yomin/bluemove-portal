@@ -26,7 +26,8 @@
             <ul class="dropdown-menu text-small shadow" aria-labelledby="menuApplynsubmitLarge">
                 <li><a class="dropdown-item fade-onclick" href="{% url 'applynsubmit:applymembership' %}">블루무브 가입 지원</a>
                 </li>
-                <li><a class="dropdown-item" href="#">블루무브 탈퇴 신청</a></li>
+                <li><a class="dropdown-item fade-onclick" href="{% url 'applynsubmit:applymembershipwithdrawal' %}">블루무브 탈퇴
+                        신청</a></li>
                 <li><a class="dropdown-item" href="#">총회의결권위임장 제출</a></li>
                 <li><a class="dropdown-item" href="#">임시총회소집요구서 제출</a></li>
                 <li><a class="dropdown-item" href="#">임시이사회소집요구서 제출</a></li>
@@ -166,8 +167,8 @@
                                     <ul class="list-group list-group-flush">
                                         <li><a class="list-group-item nav-small-item no-border fade-onclick"
                                                 href="{% url 'applynsubmit:applymembership' %}">블루무브 가입 지원</a></li>
-                                        <li><a class="list-group-item nav-small-item no-border" href="#">
-                                                블루무브 탈퇴 신청</a></li>
+                                        <li><a class="list-group-item nav-small-item no-border fade-onclick"
+                                                href="{% url 'applynsubmit:applymembershipwithdrawal' %}">블루무브 탈퇴 신청</a></li>
                                         <li><a class="list-group-item nav-small-item no-border" href="#">총회의결권위임장 제출</a>
                                         </li>
                                         <li><a class="list-group-item nav-small-item no-border" href="#">임시총회소집요구서
