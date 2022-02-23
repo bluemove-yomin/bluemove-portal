@@ -230,11 +230,11 @@
             holdOn.innerText = "음... 다시 한 번 시도해주세요. 😭"
             holdOnLink.hidden = false;
         }
-        var stx2 = setTimeout(holdOnX2, 8000);
-        var stx3 = setTimeout(holdOnX3, 16000);
-        var stx4 = setTimeout(holdOnX4, 24000);
-        var stx5 = setTimeout(holdOnX5, 32000);
-        var stx6 = setTimeout(holdOnX6, 40000);
+        var stx2 = null;
+        var stx3 = null;
+        var stx4 = null;
+        var stx5 = null;
+        var stx6 = null;
         function fadeOut() {
             var innerBody = document.getElementById("innerBody");
             var alertBody = document.getElementById("alertBody");
@@ -245,11 +245,11 @@
             alertBody.hidden = false;
             alertBody.classList.add("fade-in");
             alertBody.setAttribute("style", "position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);");
-            stx2;
-            stx3;
-            stx4;
-            stx5;
-            stx6;
+            stx2 = setTimeout(holdOnX2, 8000);
+            stx3 = setTimeout(holdOnX3, 16000);
+            stx4 = setTimeout(holdOnX4, 24000);
+            stx5 = setTimeout(holdOnX5, 32000);
+            stx6 = setTimeout(holdOnX6, 40000);
         }
         document.querySelectorAll(".fade-onclick").forEach(item => {
             item.addEventListener("click", event => {
@@ -275,11 +275,6 @@
             clearTimeout(stx4);
             clearTimeout(stx5);
             clearTimeout(stx6);
-            stx2 = setTimeout(holdOnX2, 8000);
-            stx3 = setTimeout(holdOnX3, 16000);
-            stx4 = setTimeout(holdOnX4, 24000);
-            stx5 = setTimeout(holdOnX5, 32000);
-            stx6 = setTimeout(holdOnX6, 40000);
         }
         window.onpageshow = function (event) {
             if ((event.persisted || (window.performance && window.performance.navigation.type == 2)) && innerBody.classList.contains("fade-out")) {
