@@ -104,16 +104,16 @@
             {% if "wanted_id=" in request.get_full_path or "activity_report_id=" in request.get_full_path %}
             <!-- when sticky-top exists -->
             <div id="contents" class="px-3 pb-3 mb-3">
-            {% else %}
-            <!-- when sticky-top does not exist -->
-            <div id="contents" class="p-3 my-3">
-            {% endif %}
-                <div class="container-lg">
-                    {% block content %}
-                    override body
-                    {% endblock %}
+                {% else %}
+                <!-- when sticky-top does not exist -->
+                <div id="contents" class="p-3 my-3">
+                    {% endif %}
+                    <div class="container-lg">
+                        {% block content %}
+                        override body
+                        {% endblock %}
+                    </div>
                 </div>
-            </div>
         </main>
         <!-- footer -->
         <footer>
@@ -132,7 +132,7 @@
         </div>
         <p id="holdOn" class="mb-0" style="font-weight: bolder;">잠시만 기다려주세요.</p>
         <p id="holdOnLink" class="mt-2 mb-0" hidden>
-            <a href="{% url 'home:main' %}" style="font-weight: bolder; color: #0077C8;">메인 페이지로 이동</a>
+            <a href="#" onclick="resetEffects();" style="font-weight: bolder; color: #0077C8;">돌아가기</a>
         </p>
     </div>
 
@@ -214,6 +214,27 @@
             }
         }
         // spinner (transition)
+        function holdOnX2() {
+            holdOn.innerText = "조금만 더 기다려주세요. 😉"
+        }
+        function holdOnX3() {
+            holdOn.innerText = "열심히 작업 중이에요! 🏃‍♀️"
+        }
+        function holdOnX4() {
+            holdOn.innerText = "빨리 끝나라! 헛둘헛둘! 🚲"
+        }
+        function holdOnX5() {
+            holdOn.innerText = "이제 다 된 것 같아요! 🚗"
+        }
+        function holdOnX6() {
+            holdOn.innerText = "음... 다시 한 번 시도해주세요. 😭"
+            holdOnLink.hidden = false;
+        }
+        var stx2 = setTimeout(holdOnX2, 8000);
+        var stx3 = setTimeout(holdOnX3, 16000);
+        var stx4 = setTimeout(holdOnX4, 24000);
+        var stx5 = setTimeout(holdOnX5, 32000);
+        var stx6 = setTimeout(holdOnX6, 40000);
         function fadeOut() {
             var innerBody = document.getElementById("innerBody");
             var alertBody = document.getElementById("alertBody");
@@ -224,33 +245,47 @@
             alertBody.hidden = false;
             alertBody.classList.add("fade-in");
             alertBody.setAttribute("style", "position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);");
-            function holdOnX2() {
-                holdOn.innerText = "조금만 더 기다려주세요. 😉"
-            }
-            setTimeout(holdOnX2, 8000);
-            function holdOnX3() {
-                holdOn.innerText = "열심히 작업 중이에요! 🏃‍♀️"
-            }
-            setTimeout(holdOnX3, 16000);
-            function holdOnX4() {
-                holdOn.innerText = "빨리 끝나라! 헛둘헛둘! 🚲"
-            }
-            setTimeout(holdOnX4, 24000);
-            function holdOnX5() {
-                holdOn.innerText = "이제 다 된 것 같아요! 🚗"
-            }
-            setTimeout(holdOnX5, 32000);
-            function holdOnX6() {
-                holdOn.innerText = "음... 1분이 지나도 안 된다면 사무국에 문의해주세요. 😭"
-                holdOnLink.hidden = false;
-            }
-            setTimeout(holdOnX6, 40000);
+            stx2;
+            stx3;
+            stx4;
+            stx5;
+            stx6;
         }
         document.querySelectorAll(".fade-onclick").forEach(item => {
             item.addEventListener("click", event => {
                 fadeOut();
             })
         })
+        // reset 'btn disabled' and 'transition' effects on 'go back'
+        function resetEffects() {
+            for (var i = 0; i < document.querySelectorAll(".btn").length; i++) {
+                document.querySelectorAll(".btn")[i].disabled = false;
+                var btnStyle = document.querySelectorAll(".btn")[i].getAttribute("style")
+                document.querySelectorAll(".btn")[i].setAttribute("style", btnStyle + "pointer-events: auto;");
+            }
+            innerBody.setAttribute("class", "fade-in");
+            innerBody.setAttribute("style", "min-height: 100vh; margin: 0; display: grid; grid-template-rows: auto 1fr auto; pointer-events: auto; touch-action: auto;");
+            alertBody.hidden = true;
+            alertBody.classList.remove("fade-in");
+            alertBody.setAttribute("style", "");
+            holdOn.innerText = "잠시만 기다려주세요.";
+            holdOnLink.hidden = true;
+            clearTimeout(stx2);
+            clearTimeout(stx3);
+            clearTimeout(stx4);
+            clearTimeout(stx5);
+            clearTimeout(stx6);
+            stx2 = setTimeout(holdOnX2, 8000);
+            stx3 = setTimeout(holdOnX3, 16000);
+            stx4 = setTimeout(holdOnX4, 24000);
+            stx5 = setTimeout(holdOnX5, 32000);
+            stx6 = setTimeout(holdOnX6, 40000);
+        }
+        window.onpageshow = function (event) {
+            if ((event.persisted || (window.performance && window.performance.navigation.type == 2)) && innerBody.classList.contains("fade-out")) {
+                resetEffects();
+            }
+        }
     </script>
     <script type="text/javascript">
             // Internet Explorer unsupported guide
