@@ -47,7 +47,7 @@ short_io_headers = {
     "content-type": "application/json",
     "authorization": short_io_key,
 }
-short_io_querystring = {"domain_id": "85227", "limit": "150", "offset": "0"}
+short_io_querystring = {"domain_id": "364373", "limit": "150", "offset": "0"}
 
 
 ####
@@ -158,7 +158,7 @@ def sharebmlink(request):
             "POST",
             "https://api.short.io/links/" + bmlink_edit_id,
             json={
-                "domain": "link.bluemove.or.kr",
+                "domain": "bluemove.link",
                 "title": bmlink_edit_category
                 + "#"
                 + bmlink_edit_title
@@ -188,7 +188,7 @@ def sharebmlink(request):
             "POST",
             "https://api.short.io/links/",
             json={
-                "domain": "link.bluemove.or.kr",
+                "domain": "bluemove.link",
                 "title": bmlink_create_category
                 + "#"
                 + bmlink_create_title
