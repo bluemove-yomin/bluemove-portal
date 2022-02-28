@@ -4,21 +4,21 @@
 
 {% block meta %}
 <meta property="og:url" content="{% url 'decidenshare:sharebmlink' %}">
-<meta property="og:title" content="블루무브 포털 - 블뭅 링크">
-<meta property="og:description" content="블루무브 포털 - 블뭅 링크">
-<meta name="subject" content="블루무브 포털 - 블뭅 링크">
-<meta name="description" content="블루무브 포털 - 블뭅 링크">
+<meta property="og:title" content="블루무브 포털 - 블뭅링크 공유">
+<meta property="og:description" content="블루무브 포털 - 블뭅링크 공유">
+<meta name="subject" content="블루무브 포털 - 블뭅링크 공유">
+<meta name="description" content="블루무브 포털 - 블뭅링크 공유">
 <meta name="robots" content="index,follow">
 {% endblock %}
 
-{% block title %} 블루무브 포털 - 블뭅 링크 {% endblock %}
+{% block title %} 블루무브 포털 - 블뭅링크 공유 {% endblock %}
 
 {% block breadcrumb %}
 <div class="breadcrumb-screen breadcrumb-base breadcrumb-sharebmlink">
     <div class="d-flex align-items-center breadcrumb-layer">
         <div class="container-lg text-center">
-            <h1 class="screenLarge m-0" style="color: #FFFFFF; text-shadow: 1px 1px 5px #212529;">블뭅 링크</h1>
-            <h2 class="screenSmall m-0" style="color: #FFFFFF; text-shadow: 1px 1px 5px #212529;">블뭅 링크</h2>
+            <h1 class="screenLarge m-0" style="color: #FFFFFF; text-shadow: 1px 1px 5px #212529;">블뭅링크 공유</h1>
+            <h2 class="screenSmall m-0" style="color: #FFFFFF; text-shadow: 1px 1px 5px #212529;">블뭅링크 공유</h2>
         </div>
     </div>
 </div>
@@ -33,7 +33,7 @@
 -->
 <div class="card shadow-hover mb-4">
     <div class="card-body" style="background-color: rgba(0,0,0,.025);">
-        <h5 class="card-title pb-1">블뭅 링크 검색</h5>
+        <h5 class="card-title pb-1">블뭅링크 검색</h5>
         <form action="{% url 'decidenshare:sharebmlink' %}" method="GET" onsubmit="return validation(this)">
             <div class="input-group">
                 <input type="text" class="form-control" id="q" name="q" placeholder="검색어를 입력하세요." aria-label="검색어 입력"
@@ -105,7 +105,7 @@
                 {{ bmlink_row.url }}<i class="enter-key bi bi-clipboard ms-2" style="cursor: pointer; color: #545859;"
                     onmouseover="iconColorInClipboard(this);" onmouseout="iconColorOutClipboard(this);"
                     onfocus="iconColorInClipboard(this);" onblur="iconColorOutClipboard(this);" onclick="copyUrl(this);"
-                    tabindex="0" aria-label="클립보드에 블뭅 링크 URL 복사하기"></i>
+                    tabindex="0" aria-label="클립보드에 블뭅링크 URL 복사하기"></i>
                 {% elif bmlink_row.public_or_not == "비공개" %}
                 {{ bmlink_row.url }}
                 {% endif %}
@@ -133,11 +133,11 @@
                 <i class="enter-key bi bi-pencil" style="cursor: pointer" onmouseover="iconColorInPencil(this);"
                     onmouseout="iconColorOutPencil(this);" onclick="bmlinkEditModal(this);"
                     onfocus="iconColorInPencil(this);" onblur="iconColorOutPencil(this);" tabindex="0"
-                    aria-label="블뭅 링크 편집하기" data-bs-toggle="modal" data-bs-target="#bmlinkEditModal"></i><i
+                    aria-label="블뭅링크 편집하기" data-bs-toggle="modal" data-bs-target="#bmlinkEditModal"></i><i
                     class="enter-key bi bi-trash ms-3" style="cursor: pointer" onmouseover="iconColorInTrash(this);"
                     onmouseout="iconColorOutTrash(this);" onfocus="iconColorInTrash(this);"
                     onblur="iconColorOutTrash(this);" onclick="bmlinkDelete(this);" tabindex="0"
-                    aria-label="블뭅 링크 삭제하기"></i>
+                    aria-label="블뭅링크 삭제하기"></i>
                 <input type="hidden"
                     value="{{ bmlink_row.category }}#{{ bmlink_row.title }}#{{ bmlink_row.id }}#{{ bmlink_row.slug }}#{{ bmlink_row.original_url }}#{{ bmlink_row.date_end|slice:':10' }}#{{ bmlink_row.public_or_not }}"
                     readonly hidden>
@@ -229,13 +229,13 @@
                 <i class="enter-key bi bi-clipboard" style="cursor: pointer; color: #545859;"
                     onmouseover="iconColorInClipboard(this);" onmouseout="iconColorOutClipboard(this);"
                     onfocus="iconColorInClipboard(this);" onblur="iconColorOutClipboard(this);" onclick="copyUrl(this);"
-                    tabindex="0" aria-label="클립보드에 블뭅 링크 URL 복사하기"></i><i class="enter-key bi bi-pencil ms-3"
+                    tabindex="0" aria-label="클립보드에 블뭅링크 URL 복사하기"></i><i class="enter-key bi bi-pencil ms-3"
                     style="cursor: pointer" onmouseover="iconColorInPencil(this);"
                     onmouseout="iconColorOutPencil(this);" onclick="bmlinkEditModal(this);" tabindex="0"
-                    aria-label="블뭅 링크 편집하기" data-bs-toggle="modal" data-bs-target="#bmlinkEditModal"></i><i
+                    aria-label="블뭅링크 편집하기" data-bs-toggle="modal" data-bs-target="#bmlinkEditModal"></i><i
                     class="enter-key bi bi-trash ms-3" style="cursor: pointer" onmouseover="iconColorInTrash(this);"
                     onmouseout="iconColorOutTrash(this);" onclick="bmlinkDelete(this);" tabindex="0"
-                    aria-label="블뭅 링크 삭제하기"></i>
+                    aria-label="블뭅링크 삭제하기"></i>
                 <input type="hidden"
                     value="{{ bmlink_row.category }}#{{ bmlink_row.title }}#{{ bmlink_row.id }}#{{ bmlink_row.slug }}#{{ bmlink_row.original_url }}#{{ bmlink_row.date_end|slice:':10' }}#{{ bmlink_row.public_or_not }}"
                     readonly hidden>
@@ -246,7 +246,7 @@
                 <i class="enter-key bi bi-clipboard" style="cursor: pointer; color: #545859;"
                     onmouseover="iconColorInClipboard(this);" onmouseout="iconColorOutClipboard(this);"
                     onfocus="iconColorInClipboard(this);" onblur="iconColorOutClipboard(this);" onclick="copyUrl(this);"
-                    tabindex="0" aria-label="클립보드에 블뭅 링크 URL 복사하기"></i>
+                    tabindex="0" aria-label="클립보드에 블뭅링크 URL 복사하기"></i>
             </h5>
             {% endif %}
         </li>
@@ -275,7 +275,7 @@
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="bmlinkEditModalLabel">블뭅 링크 편집</h5>
+                <h5 class="modal-title" id="bmlinkEditModalLabel">블뭅링크 편집</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
@@ -299,7 +299,7 @@
                         <div class="col">
                             <label for="bmlinkEditTitle" class="form-label">제목</label>
                             <input type="text" class="form-control" id="bmlinkEditTitle" name="bmlinkEditTitle"
-                                placeholder="제목을 입력하세요." aria-label="블뭅 링크 제목 입력" required>
+                                placeholder="제목을 입력하세요." aria-label="블뭅링크 제목 입력" required>
                         </div>
                         <input type="hidden" id="bmlinkEditId" name="bmlinkEditId" readonly hidden>
                         <div class="col">
@@ -357,7 +357,7 @@
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="bmlinkCreateModalLabel">블뭅 링크 생성</h5>
+                <h5 class="modal-title" id="bmlinkCreateModalLabel">블뭅링크 생성</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
@@ -381,7 +381,7 @@
                         <div class="col">
                             <label for="bmlinkCreateTitle" class="form-label">제목</label>
                             <input type="text" class="form-control" id="bmlinkCreateTitle" name="bmlinkCreateTitle"
-                                placeholder="제목을 입력하세요." aria-label="블뭅 링크 제목 입력" required>
+                                placeholder="제목을 입력하세요." aria-label="블뭅링크 제목 입력" required>
                         </div>
                         <div class="col">
                             <label for="bmlinkCreatePath" class="form-label">URL</label>
@@ -647,7 +647,7 @@
     function bmlinkDelete(obj) {
         var bmlinkData = obj.nextElementSibling.value.split("#");
         bmlinkDeleteId.value = bmlinkData[2];
-        if (confirm("정말 블뭅 링크를 삭제하시겠어요?")) {
+        if (confirm("정말 블뭅링크를 삭제하시겠어요?")) {
             formBmlinkDelete.submit();
             // call 'spinner (transition)' function
             fadeOut();
