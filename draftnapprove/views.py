@@ -96,7 +96,7 @@ admin_service = build("admin", "directory_v1", credentials=credentials_delegated
 notion_headers = {
     "Authorization": f"Bearer " + notion_token,
     "Content-Type": "application/json",
-    "Notion-Version": "2021-08-16",
+    "Notion-Version": "2022-02-22",
 }
 
 # Bluemove data
@@ -104,6 +104,7 @@ activity_report_temp_id = "1r9kcAI83dIxXLJ-I1an_OhDZU2Ii-Pf9_-sybJT6Um0"
 activity_report_folder_id = "1MrXJipz1swpDpBUkl4TlTk9ot3Kl6nqS"
 register_id = "1HkfnZ-2udmQAgE3u8o54rj6ek6IpcDFPjsgX4ycFATs"
 project_db_id = "d17acacd-fb64-4e0d-9f75-462424c7cb81"
+task_db_id = "45e43f3f-dfb3-4d34-8b02-1c95a745719d"
 docs_log_id = "10-ROxf9XjSRIN7R71EIiAQCstre8jqOwrfxbEC_uRX4"
 management_all_channel_id = "CV3THBHJB"
 management_dev_channel_id = "C01L8PETS5S"
@@ -461,6 +462,7 @@ def slack_blocks_and_text(
     str_rejection_reason=None,
     str_activity_report_id=None,
     boolean_reminder=None,
+    lst_unfinished_task_list=None,
 ):
     # message blocks and a text for the activity report receipt notification
     if (
@@ -845,6 +847,57 @@ def slack_blocks_and_text(
             },
         ]
         text = f"⚠ '일일활동보고서' 페이지 오류 발생"
+    # message blocks and a text for the notification about tasks to be done
+    elif lst_unfinished_task_list:
+        unfinished_task_list = []
+        for task in lst_unfinished_task_list:
+            unfinished_task_list.append(
+                "• <"
+                + task[2]
+                + "|"
+                + task[0]
+                + "> (<@"
+                + task[1].replace("@bluemove.or.kr", "").lower()
+                + ">)"
+            )
+        blocks = [
+            {
+                "type": "header",
+                "text": {
+                    "type": "plain_text",
+                    "text": "📋 오늘 완료되어야 할 태스크가 "
+                    + str(len(lst_unfinished_task_list))
+                    + "개 있음",
+                },
+            },
+            {
+                "type": "section",
+                "text": {
+                    "type": "mrkdwn",
+                    "text": "마감일이 오늘("
+                    + datetime.datetime.now().strftime("%Y-%m-%d")
+                    + ")로 설정된 태스크가 "
+                    + str(len(lst_unfinished_task_list))
+                    + "개 있습니다.",
+                },
+            },
+            {
+                "type": "section",
+                "text": {
+                    "type": "mrkdwn",
+                    "text": "*해당 태스크:*\n" + "\n".join(unfinished_task_list),
+                },
+            },
+            {
+                "type": "section",
+                "text": {
+                    "type": "mrkdwn",
+                    "text": "*확인일시:*\n"
+                    + datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+                },
+            },
+        ]
+        text = "📋 오늘 완료되어야 할 태스크가 " + str(len(lst_unfinished_task_list)) + "개 있음"
     return blocks, text
 
 
@@ -886,6 +939,63 @@ def cron_remind_approvers_about_all_activity_reports_in_the_queue(request):
             )
             client.chat_postMessage(
                 channel=management_all_channel_id,
+                link_names=True,
+                as_user=True,
+                blocks=blocks,
+                text=text,
+            )
+    return HttpResponse(status=200)
+
+
+def cron_notify_about_tasks_to_be_done(request):
+    if "05:59" < datetime.datetime.now().strftime("%H:%M") < "06:01":
+        unfinished_task_list = []
+        unfinished_task_list_pre = json.loads(
+            requests.post(
+                "https://api.notion.com/v1/databases/" + task_db_id + "/query",
+                headers=notion_headers,
+                data=(
+                    '{ "filter": { "and": [ {"property": "마감일", "date": {"equals": "'
+                    + str(datetime.datetime.now().isoformat())[:10]
+                    + '"} }, {"property": "완료", "checkbox": {"equals": false} } ] } }'
+                ).encode("utf-8"),
+            ).text
+        ).get("results")
+        for i in range(len(unfinished_task_list_pre)):
+            task_title = (
+                unfinished_task_list_pre[i]
+                .get("properties")
+                .get("태스크")
+                .get("title")[0]
+                .get("plain_text")
+            )
+            task_responsibility_email = (
+                unfinished_task_list_pre[i]
+                .get("properties")
+                .get("태스크 담당자")
+                .get("people")[0]
+                .get("person")
+                .get("email")
+            )
+            task_url = unfinished_task_list_pre[i].get("url")
+            unfinished_task_list.append(
+                [
+                    task_title,
+                    task_responsibility_email,
+                    task_url,
+                ]
+            )
+        if len(unfinished_task_list) > 0:
+            client = WebClient(token=slack_bot_token)
+            try:
+                client.conversations_join(channel=management_dev_channel_id)
+            except:
+                pass
+            blocks, text = slack_blocks_and_text(
+                lst_unfinished_task_list=unfinished_task_list,
+            )
+            client.chat_postMessage(
+                channel=management_dev_channel_id,
                 link_names=True,
                 as_user=True,
                 blocks=blocks,
@@ -1766,9 +1876,7 @@ def activityreport(request):
                         project,
                         title,
                         datetime.datetime.now().strftime("%Y-%m-%d")
-                        + datetime_day_split(
-                            datetime.datetime.now().strftime("%w")
-                        )
+                        + datetime_day_split(datetime.datetime.now().strftime("%w"))
                         + datetime.datetime.now().strftime(" %H:%M"),
                         drafter,
                         drafter_email,
@@ -1870,10 +1978,7 @@ def activityreport(request):
                 .get("email")
             )
             project_folder_url = (
-                project_list_pre[i]
-                .get("properties")
-                .get("프로젝트 폴더 주소")
-                .get("url")
+                project_list_pre[i].get("properties").get("프로젝트 폴더 주소").get("url")
             )
             project_url = project_list_pre[i].get("url")
             project_list.append(
@@ -1955,11 +2060,19 @@ def activityreport(request):
         if request.user.is_authenticated and "@bluemove.or.kr" in request.user.email:
             pass
         else:
-            activity_report_drafter_datetime = activity_report_drafter_datetime[:8] + re.sub("[^-() :]", "*", activity_report_drafter_datetime[8:])
-            activity_report_drafter = activity_report_drafter[0] + re.sub("[\S]", "*", activity_report_drafter[1:])
+            activity_report_drafter_datetime = activity_report_drafter_datetime[
+                :8
+            ] + re.sub("[^-() :]", "*", activity_report_drafter_datetime[8:])
+            activity_report_drafter = activity_report_drafter[0] + re.sub(
+                "[\S]", "*", activity_report_drafter[1:]
+            )
             if not activity_report_approver_datetime == "-":
-                activity_report_approver_datetime = activity_report_approver_datetime[:8] + re.sub("[^-() :]", "*", activity_report_approver_datetime[8:])
-            activity_report_approver = activity_report_approver[0] + re.sub("[\S]", "*", activity_report_approver[1:])
+                activity_report_approver_datetime = activity_report_approver_datetime[
+                    :8
+                ] + re.sub("[^-() :]", "*", activity_report_approver_datetime[8:])
+            activity_report_approver = activity_report_approver[0] + re.sub(
+                "[\S]", "*", activity_report_approver[1:]
+            )
         activity_report_dict = {
             "project": activity_report_project,
             "title": activity_report_title,

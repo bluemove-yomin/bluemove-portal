@@ -128,7 +128,7 @@
         </div>
         {% endif %}
         <!-- form -->
-        <form action="{% url 'draftnapprove:activityreport' %}" method="GET" onsubmit="return validation(this)">
+        <form action="{% url 'draftnapprove:activityreport' %}" method="GET" onsubmit="validation(this)">
             <div class="input-group">
                 <input type="text" class="form-control" id="q" name="q" placeholder="검색어를 입력하세요." aria-label="검색어 입력"
                     value="{{ q|default_if_none:'' }}" required>
@@ -510,7 +510,7 @@
         <h5 class="card-title pb-1">일일활동보고서 작성</h5>
         <!-- form -->
         <form action="{% url 'draftnapprove:activityreport' %}" method="POST" enctype="multipart/form-data"
-            id="formActivityReport" onsubmit="return activityReportSubmit()">
+            id="formActivityReport" onsubmit="activityReportSubmit()">
             {% csrf_token %}
             <input type="hidden" id="cmdPost" name="cmdPost" value="" readonly hidden>
             <div id="formActivityReportCreate">

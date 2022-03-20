@@ -116,7 +116,7 @@
         </div>
         {% endif %}
         <!-- form -->
-        <form action="{% url 'applynsubmit:applymembership' %}" method="GET" onsubmit="return validation();">
+        <form action="{% url 'applynsubmit:applymembership' %}" method="GET" onsubmit="validation();">
             <div class="input-group">
                 <input type="text" class="form-control" id="q" name="q" placeholder="검색어를 입력하세요." aria-label="검색어 입력"
                     value="{{ q|default_if_none:'' }}">
@@ -791,7 +791,7 @@
         {% endif %}
         <!-- form -->
         <form action="{% url 'applynsubmit:applymembership' %}?wanted_id={{ wanted_id }}" method="POST"
-            enctype="multipart/form-data" id="formApp" onsubmit="return appSave();">
+            enctype="multipart/form-data" id="formApp" onsubmit="appSave();">
             {% csrf_token %}
             <input type="hidden" id="wantedIdPost" name="wantedIdPost" value="{{ wanted_id }}" readonly hidden>
             <input type="hidden" id="cmdPost" name="cmdPost" value="save" readonly hidden>
@@ -861,7 +861,7 @@
                 <div class="col">
                     <label for="appPortfolio" class="form-label">(선택) 참고 자료 URL
                         <a href="#none" class="ms-1" data-bs-toggle="tooltip" data-bs-placement="right" title=""
-                            data-bs-original-title="인스타그램, 노션, 유튜브 등 무엇이든 좋아요! 🙌" style="color: #545859 !important;"
+                            data-bs-original-title="링크트리, 인스타그램, 노션, 유튜브 등 뭐든 좋아요! 🙌" style="color: #545859 !important;"
                             aria-label="도움말">
                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
                                 class="bi bi-question-circle" viewBox="0 0 16 16" style="margin-bottom: .2rem;">
@@ -1030,7 +1030,7 @@
             <div class="col">
                 <label for="appPortfolio" class="form-label">(선택) 참고 자료 URL
                     <a href="#none" class="ms-1" data-bs-toggle="tooltip" data-bs-placement="right" title=""
-                        data-bs-original-title="인스타그램, 노션, 유튜브 등 무엇이든 좋아요! 🙌" style="color: #545859 !important;"
+                        data-bs-original-title="링크트리, 인스타그램, 노션, 유튜브 등 뭐든 좋아요! 🙌" style="color: #545859 !important;"
                         aria-label="도움말">
                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
                             class="bi bi-question-circle" viewBox="0 0 16 16" style="margin-bottom: .2rem;">

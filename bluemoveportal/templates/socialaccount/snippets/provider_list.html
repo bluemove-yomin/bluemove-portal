@@ -10,18 +10,5 @@
     <img class="me-3" src="{% static 'images/google.svg' %}" height="18">
     <span class="vertical" style="font-weight: bolder; color: rgba(0,0,0,.54);">{{ provider.name }} 계정으로 로그인</span>
 </a>
-{% else %}
-{% if provider.id == "openid" %}
-{% for brand in provider.get_brands %}
-<li>
-    <a title="{{brand.name}}" class="socialaccount_provider {{provider.id}} {{brand.id}}"
-        href="{% provider_login_url provider.id openid=brand.openid_url process=process %}">{{brand.name}}</a>
-</li>
-{% endfor %}
-{% endif %}
-<li>
-    <a title="{{provider.name}}" class="socialaccount_provider {{provider.id}}"
-        href="{% provider_login_url provider.id process=process scope=scope auth_params=auth_params %}">{{provider.name}}</a>
-</li>
 {% endif %}
 {% endfor %}

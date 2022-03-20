@@ -63,7 +63,7 @@
         {% endif %}
         <!-- form -->
         <form action="{% url 'checknissue:checkcert' %}" method="POST" enctype="multipart/form-data" id="formCheckcert"
-            onsubmit="return validation(this)">
+            onsubmit="validation(this)">
             {% csrf_token %}
             <div class="row row-cols-1 row-cols-md-2 g-3">
                 <div class="col">

@@ -100,6 +100,7 @@ management_dev_channel_id = "C01L8PETS5S"
 register_id = "1HkfnZ-2udmQAgE3u8o54rj6ek6IpcDFPjsgX4ycFATs"
 register_sheet_id = "2123333259"
 mailchimp_bluemover_list_id = "275e141904"
+cert_log_id = "1RsjxAgPdd87m3ztfc6AHFZvRntNuUc5uu_4lalrY17I"
 
 
 ####
@@ -1395,7 +1396,7 @@ def gmail_message(
                                                                 <tr>
                                                                     <td width="100%" valign="top" align="center" class="mcnButtonBlockInner"
                                                                         style="min-width:100%; padding-top:9px; padding-right:18px; padding-bottom:9px; padding-left:18px;">
-                                                                        <a class="mcnButton" title="블루무브 탈퇴 신청 페이지" href='"""
+                                                                        <a class="mcnButton" title="신청 취소 및 내역 조회" href='"""
             + request.build_absolute_uri()
             + """' target="_blank"
                                                                             style="font-weight: bold;letter-spacing: normal;line-height: 100%;text-align: center;text-decoration: none;color: #FFFFFF;">
@@ -1406,8 +1407,8 @@ def gmail_message(
                                                                                     <tr>
                                                                                         <td align="center"
                                                                                             valign="middle" class="mcnButtonContent"
-                                                                                            style="font-size: 16px; padding: 12px;">
-                                                                                            블루무브 탈퇴 신청 페이지
+                                                                                            style="font-size: 16px; padding: 12px; color: #FFFFFF;">
+                                                                                            신청 취소 및 내역 조회
                                                                                         </td>
                                                                                     </tr>
                                                                                 </tbody>
@@ -2455,7 +2456,7 @@ def cron_delete_all_expired_recruiting_data(request):
     return HttpResponse(status=200)
 
 
-def cron_delete_delete_queued_alumni_data(request):
+def cron_delete_queued_alumni_data(request):
     all_queued_alumni = ApplymembershipwithdrawalQueue.objects.all()
     all_queued_alumni_list = []
     for queued_alumni in all_queued_alumni:
@@ -2470,6 +2471,42 @@ def cron_delete_delete_queued_alumni_data(request):
             mailchimp.lists.delete_list_member_permanent(
                 mailchimp_bluemover_list_id, member_email_hash
             )
+            # cert log (Google Sheets)
+            try:
+                cert_list = (
+                    sheets_service.spreadsheets()
+                    .values()
+                    .get(
+                        spreadsheetId=cert_log_id,
+                        range="certLog!B:F",
+                        majorDimension="ROWS",
+                    )
+                    .execute()
+                ).get("values")
+                del cert_list[0]
+                d_code = [
+                    cert_row
+                    for cert_row in cert_list
+                    if queued_alumni.number in cert_row
+                    and queued_alumni.name in cert_row
+                    and not "INVALID" in cert_row
+                ][0][4]
+                sheets_service.spreadsheets().batchUpdate(
+                    spreadsheetId=cert_log_id,
+                    body={
+                        "requests": [
+                            {
+                                "findReplace": {
+                                    "find": d_code,
+                                    "replacement": "INVALID",
+                                    "allSheets": True,
+                                }
+                            },
+                        ]
+                    },
+                ).execute()
+            except:
+                pass
             # register (Google Sheets)
             sheets_service.spreadsheets().batchUpdate(
                 spreadsheetId=register_id,

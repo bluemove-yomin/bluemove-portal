@@ -178,7 +178,7 @@
         {% endif %}
         <!-- form -->
         <form action="{% url 'checknissue:issuecert' %}" method="POST" enctype="multipart/form-data"
-            id="formIssuecertReal" onsubmit="return validation()">
+            id="formIssuecertReal" onsubmit="validation()">
             {% csrf_token %}
             <input type="hidden" id="cmdPost" name="cmdPost" value="" readonly hidden>
             <div id="formIssuecert">

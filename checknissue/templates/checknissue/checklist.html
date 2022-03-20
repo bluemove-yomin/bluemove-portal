@@ -31,7 +31,7 @@
 <div class="card shadow-hover mb-4">
     <div class="card-body" style="background-color: rgba(0,0,0,.025);">
         <h5 class="card-title pb-1">명단 검색</h5>
-        <form action="{% url 'checknissue:checklist' %}" method="GET" onsubmit="return validation(this)">
+        <form action="{% url 'checknissue:checklist' %}" method="GET" onsubmit="validation(this)">
             <div class="input-group">
                 <input type="text" class="form-control" id="q" name="q" placeholder="검색어를 입력하세요." aria-label="검색어 입력"
                     value="{{ q|default_if_none:'' }}" required>

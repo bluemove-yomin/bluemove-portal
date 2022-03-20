@@ -7,7 +7,7 @@ requests.get(
 )
 
 requests.get(
-    "https://portal.bluemove.or.kr/applynsubmit/applymembershipwithdrawal/cron-delete-delete-queued-alumni-data"
+    "https://portal.bluemove.or.kr/applynsubmit/applymembershipwithdrawal/cron-delete-queued-alumni-data"
 )
 
 # decidenshare
@@ -18,6 +18,10 @@ requests.get(
 # draftnapprove
 requests.get(
     "https://portal.bluemove.or.kr/draftnapprove/activityreport/cron-remind-approvers-about-all-activity-reports-in-the-queue"
+)
+
+requests.get(
+    "https://portal.bluemove.or.kr/draftnapprove/activityreport/cron-notify-about-tasks-to-be-done"
 )
 
 # member
