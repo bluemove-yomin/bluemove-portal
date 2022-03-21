@@ -34,7 +34,7 @@
 <div class="card shadow-hover mb-4">
     <div class="card-body" style="background-color: rgba(0,0,0,.025);">
         <h5 class="card-title pb-1">블뭅링크 검색</h5>
-        <form action="{% url 'decidenshare:sharebmlink' %}" method="GET" onsubmit="return validation(this)">
+        <form action="{% url 'decidenshare:sharebmlink' %}" method="GET" onsubmit="validation(this)">
             <div class="input-group">
                 <input type="text" class="form-control" id="q" name="q" placeholder="검색어를 입력하세요." aria-label="검색어 입력"
                     value="{{ q|default_if_none:'' }}" required>
@@ -102,12 +102,12 @@
             <td>
                 <!-- URL & 클립보드 -->
                 {% if bmlink_row.public_or_not == "공개" or "@bluemove.or.kr" in user.email %}
-                {{ bmlink_row.url }}<i class="enter-key bi bi-clipboard ms-2" style="cursor: pointer; color: #545859;"
+                https://bluemove.link/{{ bmlink_row.slug }}<i class="enter-key bi bi-clipboard ms-2" style="cursor: pointer; color: #545859;"
                     onmouseover="iconColorInClipboard(this);" onmouseout="iconColorOutClipboard(this);"
                     onfocus="iconColorInClipboard(this);" onblur="iconColorOutClipboard(this);" onclick="copyUrl(this);"
                     tabindex="0" aria-label="클립보드에 블뭅링크 URL 복사하기"></i>
                 {% elif bmlink_row.public_or_not == "비공개" %}
-                {{ bmlink_row.url }}
+                https://bluemove.link/{{ bmlink_row.slug }}
                 {% endif %}
             </td>
             <td>
@@ -210,7 +210,7 @@
             </h5>
             <small>
                 <!-- URL -->
-                {{ bmlink_row.url }}
+                https://bluemove.link/{{ bmlink_row.slug }}
                 <div class="d-flex justify-content-between">
                     <span>
                         <!-- 생성일 및 삭제 예정일 -->
