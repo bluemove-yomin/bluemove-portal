@@ -180,6 +180,46 @@ def spreadsheets_range(
     )
 
 
+def get_tasks_to_be_done(datetime_value):
+    unfinished_task_list = []
+    unfinished_task_list_pre = json.loads(
+        requests.post(
+            "https://api.notion.com/v1/databases/" + task_db_id + "/query",
+            headers=notion_headers,
+            data=(
+                '{ "filter": { "and": [ {"property": "마감일", "date": {"equals": "'
+                + str(datetime_value.isoformat())[:10]
+                + '"} }, {"property": "완료", "checkbox": {"equals": false} } ] } }'
+            ).encode("utf-8"),
+        ).text
+    ).get("results")
+    for i in range(len(unfinished_task_list_pre)):
+        task_title = (
+            unfinished_task_list_pre[i]
+            .get("properties")
+            .get("태스크")
+            .get("title")[0]
+            .get("plain_text")
+        )
+        task_responsibility_email = (
+            unfinished_task_list_pre[i]
+            .get("properties")
+            .get("태스크 담당자")
+            .get("people")[0]
+            .get("person")
+            .get("email")
+        )
+        task_url = unfinished_task_list_pre[i].get("url")
+        unfinished_task_list.append(
+            [
+                task_title,
+                task_responsibility_email,
+                task_url,
+            ]
+        )
+    return unfinished_task_list
+
+
 def gmail_message(
     str_activity_report_name,
     str_activity_report_title,
@@ -462,7 +502,8 @@ def slack_blocks_and_text(
     str_rejection_reason=None,
     str_activity_report_id=None,
     boolean_reminder=None,
-    lst_unfinished_task_list=None,
+    lst_unfinished_task_list_today=None,
+    lst_unfinished_task_list_tomorrow=None,
 ):
     # message blocks and a text for the activity report receipt notification
     if (
@@ -847,10 +888,10 @@ def slack_blocks_and_text(
             },
         ]
         text = f"⚠ '일일활동보고서' 페이지 오류 발생"
-    # message blocks and a text for the notification about tasks to be done
-    elif lst_unfinished_task_list:
+    # message blocks and a text for the notification about tasks to be done by today
+    elif lst_unfinished_task_list_today:
         unfinished_task_list = []
-        for task in lst_unfinished_task_list:
+        for task in lst_unfinished_task_list_today:
             unfinished_task_list.append(
                 "• <"
                 + task[2]
@@ -866,7 +907,7 @@ def slack_blocks_and_text(
                 "text": {
                     "type": "plain_text",
                     "text": "📋 오늘 완료되어야 할 태스크가 "
-                    + str(len(lst_unfinished_task_list))
+                    + str(len(lst_unfinished_task_list_today))
                     + "개 있음",
                 },
             },
@@ -877,7 +918,7 @@ def slack_blocks_and_text(
                     "text": "마감일이 오늘("
                     + datetime.datetime.now().strftime("%Y-%m-%d")
                     + ")로 설정된 태스크가 "
-                    + str(len(lst_unfinished_task_list))
+                    + str(len(lst_unfinished_task_list_today))
                     + "개 있습니다.",
                 },
             },
@@ -897,7 +938,62 @@ def slack_blocks_and_text(
                 },
             },
         ]
-        text = "📋 오늘 완료되어야 할 태스크가 " + str(len(lst_unfinished_task_list)) + "개 있음"
+        text = "📋 오늘 완료되어야 할 태스크가 " + str(len(lst_unfinished_task_list_today)) + "개 있음"
+    # message blocks and a text for the notification about tasks to be done by tomorrow
+    elif lst_unfinished_task_list_tomorrow:
+        unfinished_task_list = []
+        for task in lst_unfinished_task_list_tomorrow:
+            unfinished_task_list.append(
+                "• <"
+                + task[2]
+                + "|"
+                + task[0]
+                + "> (<@"
+                + task[1].replace("@bluemove.or.kr", "").lower()
+                + ">)"
+            )
+        blocks = [
+            {
+                "type": "header",
+                "text": {
+                    "type": "plain_text",
+                    "text": "📋 내일 완료되어야 할 태스크가 "
+                    + str(len(lst_unfinished_task_list_tomorrow))
+                    + "개 있음",
+                },
+            },
+            {
+                "type": "section",
+                "text": {
+                    "type": "mrkdwn",
+                    "text": "마감일이 내일("
+                    + (datetime.datetime.now() + datetime.timedelta(days=1)).strftime(
+                        "%Y-%m-%d"
+                    )
+                    + ")로 설정된 태스크가 "
+                    + str(len(lst_unfinished_task_list_tomorrow))
+                    + "개 있습니다.",
+                },
+            },
+            {
+                "type": "section",
+                "text": {
+                    "type": "mrkdwn",
+                    "text": "*해당 태스크:*\n" + "\n".join(unfinished_task_list),
+                },
+            },
+            {
+                "type": "section",
+                "text": {
+                    "type": "mrkdwn",
+                    "text": "*확인일시:*\n"
+                    + datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+                },
+            },
+        ]
+        text = (
+            "📋 내일 완료되어야 할 태스크가 " + str(len(lst_unfinished_task_list_tomorrow)) + "개 있음"
+        )
     return blocks, text
 
 
@@ -948,51 +1044,37 @@ def cron_remind_approvers_about_all_activity_reports_in_the_queue(request):
 
 
 def cron_notify_about_tasks_to_be_done(request):
-    if "05:59" < datetime.datetime.now().strftime("%H:%M") < "06:01":
-        unfinished_task_list = []
-        unfinished_task_list_pre = json.loads(
-            requests.post(
-                "https://api.notion.com/v1/databases/" + task_db_id + "/query",
-                headers=notion_headers,
-                data=(
-                    '{ "filter": { "and": [ {"property": "마감일", "date": {"equals": "'
-                    + str(datetime.datetime.now().isoformat())[:10]
-                    + '"} }, {"property": "완료", "checkbox": {"equals": false} } ] } }'
-                ).encode("utf-8"),
-            ).text
-        ).get("results")
-        for i in range(len(unfinished_task_list_pre)):
-            task_title = (
-                unfinished_task_list_pre[i]
-                .get("properties")
-                .get("태스크")
-                .get("title")[0]
-                .get("plain_text")
-            )
-            task_responsibility_email = (
-                unfinished_task_list_pre[i]
-                .get("properties")
-                .get("태스크 담당자")
-                .get("people")[0]
-                .get("person")
-                .get("email")
-            )
-            task_url = unfinished_task_list_pre[i].get("url")
-            unfinished_task_list.append(
-                [
-                    task_title,
-                    task_responsibility_email,
-                    task_url,
-                ]
-            )
-        if len(unfinished_task_list) > 0:
+    today = datetime.datetime.now()
+    tomorrow = datetime.datetime.now() + datetime.timedelta(days=1)
+    if "07:59" < today.strftime("%H:%M") < "08:01":
+        # today
+        unfinished_task_list_today = get_tasks_to_be_done(today)
+        if len(unfinished_task_list_today) > 0:
             client = WebClient(token=slack_bot_token)
             try:
                 client.conversations_join(channel=management_all_channel_id)
             except:
                 pass
             blocks, text = slack_blocks_and_text(
-                lst_unfinished_task_list=unfinished_task_list,
+                lst_unfinished_task_list_today=unfinished_task_list_today,
+            )
+            client.chat_postMessage(
+                channel=management_all_channel_id,
+                link_names=True,
+                as_user=True,
+                blocks=blocks,
+                text=text,
+            )
+        # tomorrow
+        unfinished_task_list_tomorrow = get_tasks_to_be_done(tomorrow)
+        if len(unfinished_task_list_tomorrow) > 0:
+            client = WebClient(token=slack_bot_token)
+            try:
+                client.conversations_join(channel=management_all_channel_id)
+            except:
+                pass
+            blocks, text = slack_blocks_and_text(
+                lst_unfinished_task_list_tomorrow=unfinished_task_list_tomorrow,
             )
             client.chat_postMessage(
                 channel=management_all_channel_id,
