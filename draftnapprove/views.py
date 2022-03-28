@@ -1047,7 +1047,7 @@ def cron_notify_about_tasks_to_be_done(request):
     yesterday = datetime.date.today() - datetime.timedelta(days=1)
     today = datetime.date.today()
     tomorrow = datetime.date.today() + datetime.timedelta(days=1)
-    if "00:00" < datetime.datetime.now().strftime("%H:%M") < "08:01":
+    if "07:59" < datetime.datetime.now().strftime("%H:%M") < "08:01":
         for datetime_value in [tomorrow, today, yesterday]:
             unfinished_task_status, unfinished_task_list = get_tasks_to_be_done(
                 datetime_value
@@ -1055,7 +1055,7 @@ def cron_notify_about_tasks_to_be_done(request):
             if len(unfinished_task_list) > 0:
                 client = WebClient(token=slack_bot_token)
                 try:
-                    client.conversations_join(channel=management_dev_channel_id)
+                    client.conversations_join(channel=management_all_channel_id)
                 except:
                     pass
                 blocks, text = slack_blocks_and_text(
@@ -1063,7 +1063,7 @@ def cron_notify_about_tasks_to_be_done(request):
                     lst_unfinished_task_list=unfinished_task_list,
                 )
                 client.chat_postMessage(
-                    channel=management_dev_channel_id,
+                    channel=management_all_channel_id,
                     link_names=True,
                     as_user=True,
                     blocks=blocks,
