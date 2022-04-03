@@ -1047,7 +1047,9 @@ def cron_notify_about_tasks_to_be_done(request):
     yesterday = datetime.date.today() - datetime.timedelta(days=1)
     today = datetime.date.today()
     tomorrow = datetime.date.today() + datetime.timedelta(days=1)
-    if "07:59" < datetime.datetime.now().strftime("%H:%M") < "08:01":
+    if ("07:59" < datetime.datetime.now().strftime("%H:%M") < "08:01") or (
+        "17:59" < datetime.datetime.now().strftime("%H:%M") < "18:01"
+    ):
         for datetime_value in [tomorrow, today, yesterday]:
             unfinished_task_status, unfinished_task_list = get_tasks_to_be_done(
                 datetime_value
