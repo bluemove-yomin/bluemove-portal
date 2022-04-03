@@ -22,7 +22,10 @@ from allauth.socialaccount.models import SocialToken
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 from email.mime.application import MIMEApplication
-import base64
+
+# NCP SENS
+import hmac, hashlib
+import time, requests, json
 
 # verification
 import random, string, datetime
@@ -30,6 +33,9 @@ import random, string, datetime
 # cert
 import io, os
 from googleapiclient.http import MediaIoBaseDownload
+
+# multiple functions
+import base64
 
 # secrets
 google_client_id = getattr(settings, "GOOGLE_CLIENT_ID", "GOOGLE_CLIENT_ID")
@@ -39,6 +45,9 @@ google_sa_creds = "googleSACreds.json"
 google_delegated_email = getattr(
     settings, "GOOGLE_DELEGATED_EMAIL", "GOOGLE_DELEGATED_EMAIL"
 )
+ncp_sens_id = getattr(settings, "NCP_SENS_ID", "NCP_SENS_ID")
+ncp_key_id = getattr(settings, "NCP_KEY_ID", "NCP_KEY_ID")
+ncp_secret = getattr(settings, "NCP_SECRET", "NCP_SECRET")
 
 # Google API (User)
 ## Google Sheets
@@ -581,6 +590,42 @@ def gmail_message(
     return message
 
 
+def ncp_sens_message(str_to=None, str_vcode=None):
+    sid = ncp_sens_id
+    sms_uri = f"/sms/v2/services/{sid}/messages"
+    sms_url = f"https://sens.apigw.ntruss.com{sms_uri}"
+    acc_key_id = ncp_key_id
+    acc_sec_key = bytes(ncp_secret, "utf-8")
+    stime = int(float(time.time()) * 1000)
+    hash_str = f"POST {sms_uri}\n{stime}\n{acc_key_id}"
+    digest = hmac.new(
+        acc_sec_key, msg=hash_str.encode("utf-8"), digestmod=hashlib.sha256
+    ).digest()
+    d_hash = base64.b64encode(digest).decode()
+    from_no = "0232960613"
+    to_no = str_to
+    message = f"[블루무브] 인증 코드는 {str_vcode} 입니다."
+    msg_data = {
+        "type": "SMS",
+        "countryCode": "82",
+        "from": f"{from_no}",
+        "contentType": "COMM",
+        "content": f"{message}",
+        "messages": [{"to": f"{to_no}"}],
+    }
+    response = requests.post(
+        sms_url,
+        data=json.dumps(msg_data),
+        headers={
+            "Content-Type": "application/json; charset=utf-8",
+            "x-ncp-apigw-timestamp": str(stime),
+            "x-ncp-iam-access-key": acc_key_id,
+            "x-ncp-apigw-signature-v2": d_hash,
+        },
+    )
+    return response.text
+
+
 ####
 #### views
 ####
@@ -631,6 +676,10 @@ def checklist(request):
         "checknissue/checklist.html",
         {"bluemover_list": bluemover_list, "q": q},
     )
+
+
+def issueaccount(request):
+    return render(request, "checknissue/issueaccount.html", {})
 
 
 def checkcert(request):
@@ -979,7 +1028,7 @@ def issuecert(request):
                         {
                             "updateSpreadsheetProperties": {
                                 "properties": {
-                                    "title": "E03_활동증명서발급내역_"
+                                    "title": "E01_활동증명서발급내역_"
                                     + datetime.datetime.now().strftime("%y%m%d")
                                 },
                                 "fields": "title",

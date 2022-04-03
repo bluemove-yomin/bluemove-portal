@@ -2525,7 +2525,7 @@ def cron_delete_queued_alumni_data(request):
                         {
                             "updateSpreadsheetProperties": {
                                 "properties": {
-                                    "title": "E03_명부_"
+                                    "title": "E01_명부_"
                                     + datetime.datetime.now().strftime("%y%m%d")
                                 },
                                 "fields": "title",
