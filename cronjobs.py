@@ -24,6 +24,10 @@ requests.get(
     "https://portal.bluemove.or.kr/draftnapprove/activityreport/cron-notify-about-tasks-to-be-done"
 )
 
+requests.get(
+    "https://portal.bluemove.or.kr/draftnapprove/activityreport/cron-notify-about-msg"
+)
+
 # member
 requests.get(
     "https://portal.bluemove.or.kr/member/cron-delete-all-inactive-users"

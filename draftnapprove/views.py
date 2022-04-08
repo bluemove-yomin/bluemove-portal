@@ -251,6 +251,16 @@ def get_tasks_to_be_done(datetime_value):
     return unfinished_task_status, unfinished_task_list
 
 
+def get_notion_user_info(str_notion_user_id):
+    user_info = json.loads(
+        requests.get(
+            "https://api.notion.com/v1/users/" + str_notion_user_id,
+            headers=notion_headers,
+        ).text
+    )
+    return user_info
+
+
 def gmail_message(
     str_activity_report_name,
     str_activity_report_title,
@@ -534,6 +544,7 @@ def slack_blocks_and_text(
     str_activity_report_id=None,
     str_unfinished_task_status=None,
     lst_unfinished_task_list=None,
+    lst_msg_item_list=None,
     boolean_reminder=None,
 ):
     # message blocks and a text for the activity report receipt notification
@@ -994,6 +1005,129 @@ def slack_blocks_and_text(
             },
         ]
         text = title
+    elif lst_msg_item_list:
+        msg_project_list = []
+        msg_task_list = []
+        for item in lst_msg_item_list:
+            item_responsibility_email = item[4] if item[4] != None else item[2]
+            inner_item = (
+                "• <"
+                + item[5]
+                + "|"
+                + item[3].replace("<", "").replace(">", "")
+                + "> ("
+                + item[1]
+                + " <@"
+                + item_responsibility_email.replace("@bluemove.or.kr", "").lower()
+                + ">)"
+            )
+            if item[0] == "프로젝트":
+                msg_project_list.append(inner_item)
+            if item[0] == "태스크":
+                msg_task_list.append(inner_item)
+        category = (
+            "프로젝트"
+            if len(msg_project_list) > 0 and len(msg_task_list) == 0
+            else "태스크"
+            if len(msg_project_list) == 0 and len(msg_task_list) > 0
+            else "프로젝트 및 태스크"
+            if len(msg_project_list) > 0 and len(msg_task_list) > 0
+            else None
+        )
+        title = "⛔ 조치가 필요한 " + category + "가 " + str(len(lst_msg_item_list)) + "개 있음"
+        contents = (
+            "유효하지 않은 "
+            + category
+            + " "
+            + str(len(lst_msg_item_list))
+            + "개에 대해 서둘러 조치해주시기 바랍니다."
+        )
+        if category == "프로젝트":
+            blocks = [
+                {
+                    "type": "header",
+                    "text": {"type": "plain_text", "text": title},
+                },
+                {
+                    "type": "section",
+                    "text": {"type": "mrkdwn", "text": contents},
+                },
+                {
+                    "type": "section",
+                    "text": {
+                        "type": "mrkdwn",
+                        "text": "*해당 프로젝트:*\n" + "\n".join(msg_project_list),
+                    },
+                },
+                {
+                    "type": "section",
+                    "text": {
+                        "type": "mrkdwn",
+                        "text": "*확인일시:*\n"
+                        + datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+                    },
+                },
+            ]
+        elif category == "태스크":
+            blocks = [
+                {
+                    "type": "header",
+                    "text": {"type": "plain_text", "text": title},
+                },
+                {
+                    "type": "section",
+                    "text": {"type": "mrkdwn", "text": contents},
+                },
+                {
+                    "type": "section",
+                    "text": {
+                        "type": "mrkdwn",
+                        "text": "*해당 태스크:*\n" + "\n".join(msg_task_list),
+                    },
+                },
+                {
+                    "type": "section",
+                    "text": {
+                        "type": "mrkdwn",
+                        "text": "*확인일시:*\n"
+                        + datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+                    },
+                },
+            ]
+        elif category == "프로젝트 및 태스크":
+            blocks = [
+                {
+                    "type": "header",
+                    "text": {"type": "plain_text", "text": title},
+                },
+                {
+                    "type": "section",
+                    "text": {"type": "mrkdwn", "text": contents},
+                },
+                {
+                    "type": "section",
+                    "text": {
+                        "type": "mrkdwn",
+                        "text": "*해당 프로젝트:*\n" + "\n".join(msg_project_list),
+                    },
+                },
+                {
+                    "type": "section",
+                    "text": {
+                        "type": "mrkdwn",
+                        "text": "*해당 태스크:*\n" + "\n".join(msg_task_list),
+                    },
+                },
+                {
+                    "type": "section",
+                    "text": {
+                        "type": "mrkdwn",
+                        "text": "*확인일시:*\n"
+                        + datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+                    },
+                },
+            ]
+        text = title
     return blocks, text
 
 
@@ -1071,6 +1205,88 @@ def cron_notify_about_tasks_to_be_done(request):
                     blocks=blocks,
                     text=text,
                 )
+    return HttpResponse(status=200)
+
+
+def cron_notify_about_msg(request):
+    msg_item_list = []
+    for db_id, item_category in [(project_db_id, "프로젝트"), (task_db_id, "태스크")]:
+        msg_item_list_pre = json.loads(
+            requests.post(
+                "https://api.notion.com/v1/databases/" + db_id + "/query",
+                headers=notion_headers,
+                data=(
+                    '{ "filter": { "property": "상태", "formula": { "string": { "contains": "⛔ MSG" } } } }'
+                ).encode("utf-8"),
+            ).text
+        ).get("results")
+        msg_project = (
+            True if item_category == "프로젝트" and msg_item_list_pre != [] else False
+        )
+        msg_task = True if item_category == "태스크" and msg_item_list_pre != [] else False
+        for i in range(len(msg_item_list_pre)):
+            item_status = (
+                msg_item_list_pre[i]
+                .get("properties")
+                .get("상태")
+                .get("formula")
+                .get("string")
+                .replace("⛔ MSG: ", "")
+            )
+            item_created_by_email_pre = msg_item_list_pre[i].get("created_by").get("id")
+            item_created_by_email = (
+                get_notion_user_info(item_created_by_email_pre)
+                .get("person")
+                .get("email")
+            )
+            try:
+                item_title = (
+                    msg_item_list_pre[i]
+                    .get("properties")
+                    .get(item_category)
+                    .get("title")[0]
+                    .get("plain_text")
+                )
+            except:
+                item_title = "제목 없는 " + item_category
+            try:
+                item_responsibility_email = (
+                    msg_item_list_pre[i]
+                    .get("properties")
+                    .get(item_category + " 담당자")
+                    .get("people")[0]
+                    .get("person")
+                    .get("email")
+                )
+            except:
+                item_responsibility_email = None
+            item_url = msg_item_list_pre[i].get("url")
+            msg_item_list.append(
+                [
+                    item_category,
+                    item_status,
+                    item_created_by_email,
+                    item_title,
+                    item_responsibility_email,
+                    item_url,
+                ]
+            )
+    if len(msg_item_list) > 0:
+        client = WebClient(token=slack_bot_token)
+        try:
+            client.conversations_join(channel=management_dev_channel_id)
+        except:
+            pass
+        blocks, text = slack_blocks_and_text(
+            lst_msg_item_list=msg_item_list,
+        )
+        client.chat_postMessage(
+            channel=management_dev_channel_id,
+            link_names=True,
+            as_user=True,
+            blocks=blocks,
+            text=text,
+        )
     return HttpResponse(status=200)
 
 
