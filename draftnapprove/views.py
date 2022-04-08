@@ -1274,14 +1274,14 @@ def cron_notify_about_msg(request):
     if len(msg_item_list) > 0:
         client = WebClient(token=slack_bot_token)
         try:
-            client.conversations_join(channel=management_dev_channel_id)
+            client.conversations_join(channel=management_all_channel_id)
         except:
             pass
         blocks, text = slack_blocks_and_text(
             lst_msg_item_list=msg_item_list,
         )
         client.chat_postMessage(
-            channel=management_dev_channel_id,
+            channel=management_all_channel_id,
             link_names=True,
             as_user=True,
             blocks=blocks,
