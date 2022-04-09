@@ -1015,11 +1015,11 @@ def slack_blocks_and_text(
                 + item[5]
                 + "|"
                 + item[3].replace("<", "").replace(">", "")
-                + "> ("
-                + item[1]
-                + " <@"
+                + "> (<@"
                 + item_responsibility_email.replace("@bluemove.or.kr", "").lower()
-                + ">)"
+                + ">, "
+                + item[1]
+                + ")"
             )
             if item[0] == "프로젝트":
                 msg_project_list.append(inner_item)
@@ -1178,12 +1178,12 @@ def cron_remind_approvers_about_all_activity_reports_in_the_queue(request):
 
 
 def cron_notify_about_tasks_to_be_done(request):
-    yesterday = datetime.date.today() - datetime.timedelta(days=1)
-    today = datetime.date.today()
-    tomorrow = datetime.date.today() + datetime.timedelta(days=1)
     if ("07:59" < datetime.datetime.now().strftime("%H:%M") < "08:01") or (
         "17:59" < datetime.datetime.now().strftime("%H:%M") < "18:01"
     ):
+        yesterday = datetime.date.today() - datetime.timedelta(days=1)
+        today = datetime.date.today()
+        tomorrow = datetime.date.today() + datetime.timedelta(days=1)
         for datetime_value in [tomorrow, today, yesterday]:
             unfinished_task_status, unfinished_task_list = get_tasks_to_be_done(
                 datetime_value
@@ -1209,84 +1209,83 @@ def cron_notify_about_tasks_to_be_done(request):
 
 
 def cron_notify_about_msg(request):
-    msg_item_list = []
-    for db_id, item_category in [(project_db_id, "프로젝트"), (task_db_id, "태스크")]:
-        msg_item_list_pre = json.loads(
-            requests.post(
-                "https://api.notion.com/v1/databases/" + db_id + "/query",
-                headers=notion_headers,
-                data=(
-                    '{ "filter": { "property": "상태", "formula": { "string": { "contains": "⛔ MSG" } } } }'
-                ).encode("utf-8"),
-            ).text
-        ).get("results")
-        msg_project = (
-            True if item_category == "프로젝트" and msg_item_list_pre != [] else False
-        )
-        msg_task = True if item_category == "태스크" and msg_item_list_pre != [] else False
-        for i in range(len(msg_item_list_pre)):
-            item_status = (
-                msg_item_list_pre[i]
-                .get("properties")
-                .get("상태")
-                .get("formula")
-                .get("string")
-                .replace("⛔ MSG: ", "")
-            )
-            item_created_by_email_pre = msg_item_list_pre[i].get("created_by").get("id")
-            item_created_by_email = (
-                get_notion_user_info(item_created_by_email_pre)
-                .get("person")
-                .get("email")
-            )
-            try:
-                item_title = (
+    if "07:59" < datetime.datetime.now().strftime("%H:%M") < "22:01":
+        msg_item_list = []
+        for db_id, item_category in [(project_db_id, "프로젝트"), (task_db_id, "태스크")]:
+            msg_item_list_pre = json.loads(
+                requests.post(
+                    "https://api.notion.com/v1/databases/" + db_id + "/query",
+                    headers=notion_headers,
+                    data=(
+                        '{ "filter": { "property": "상태", "formula": { "string": { "contains": "⛔ MSG" } } } }'
+                    ).encode("utf-8"),
+                ).text
+            ).get("results")
+            for i in range(len(msg_item_list_pre)):
+                item_status = (
                     msg_item_list_pre[i]
                     .get("properties")
-                    .get(item_category)
-                    .get("title")[0]
-                    .get("plain_text")
+                    .get("상태")
+                    .get("formula")
+                    .get("string")
+                    .replace("⛔ MSG: ", "")
                 )
-            except:
-                item_title = "제목 없는 " + item_category
-            try:
-                item_responsibility_email = (
-                    msg_item_list_pre[i]
-                    .get("properties")
-                    .get(item_category + " 담당자")
-                    .get("people")[0]
+                item_created_by_email_pre = (
+                    msg_item_list_pre[i].get("created_by").get("id")
+                )
+                item_created_by_email = (
+                    get_notion_user_info(item_created_by_email_pre)
                     .get("person")
                     .get("email")
                 )
+                try:
+                    item_title = (
+                        msg_item_list_pre[i]
+                        .get("properties")
+                        .get(item_category)
+                        .get("title")[0]
+                        .get("plain_text")
+                    )
+                except:
+                    item_title = "제목 없는 " + item_category
+                try:
+                    item_responsibility_email = (
+                        msg_item_list_pre[i]
+                        .get("properties")
+                        .get(item_category + " 담당자")
+                        .get("people")[0]
+                        .get("person")
+                        .get("email")
+                    )
+                except:
+                    item_responsibility_email = None
+                item_url = msg_item_list_pre[i].get("url")
+                msg_item_list.append(
+                    [
+                        item_category,
+                        item_status,
+                        item_created_by_email,
+                        item_title,
+                        item_responsibility_email,
+                        item_url,
+                    ]
+                )
+        if len(msg_item_list) > 0:
+            client = WebClient(token=slack_bot_token)
+            try:
+                client.conversations_join(channel=management_all_channel_id)
             except:
-                item_responsibility_email = None
-            item_url = msg_item_list_pre[i].get("url")
-            msg_item_list.append(
-                [
-                    item_category,
-                    item_status,
-                    item_created_by_email,
-                    item_title,
-                    item_responsibility_email,
-                    item_url,
-                ]
+                pass
+            blocks, text = slack_blocks_and_text(
+                lst_msg_item_list=msg_item_list,
             )
-    if len(msg_item_list) > 0:
-        client = WebClient(token=slack_bot_token)
-        try:
-            client.conversations_join(channel=management_all_channel_id)
-        except:
-            pass
-        blocks, text = slack_blocks_and_text(
-            lst_msg_item_list=msg_item_list,
-        )
-        client.chat_postMessage(
-            channel=management_all_channel_id,
-            link_names=True,
-            as_user=True,
-            blocks=blocks,
-            text=text,
-        )
+            client.chat_postMessage(
+                channel=management_all_channel_id,
+                link_names=True,
+                as_user=True,
+                blocks=blocks,
+                text=text,
+            )
     return HttpResponse(status=200)
 
 
