@@ -21,6 +21,10 @@ requests.get(
 )
 
 requests.get(
+    "https://portal.bluemove.or.kr/draftnapprove/activityreport/cron-notify-about-tasks-done"
+)
+
+requests.get(
     "https://portal.bluemove.or.kr/draftnapprove/activityreport/cron-notify-about-tasks-to-be-done"
 )
 

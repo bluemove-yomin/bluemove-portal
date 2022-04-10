@@ -545,6 +545,7 @@ def slack_blocks_and_text(
     str_unfinished_task_status=None,
     lst_unfinished_task_list=None,
     lst_msg_item_list=None,
+    lst_finished_task_list=None,
     boolean_reminder=None,
 ):
     # message blocks and a text for the activity report receipt notification
@@ -930,7 +931,54 @@ def slack_blocks_and_text(
             },
         ]
         text = f"⚠ '일일활동보고서' 페이지 오류 발생"
-    # message blocks and a text for the notification about tasks to be done by today or tomorrow
+    # message blocks and a text for the notification about tasks done
+    elif lst_finished_task_list:
+        finished_task_list = []
+        for task in lst_finished_task_list:
+            item = (
+                "• <"
+                + task[3]
+                + "|"
+                + task[1]
+                + "> (<@"
+                + task[2].replace("@bluemove.or.kr", "").lower()
+                + ">, "
+                + task[4]
+                + " 마감)"
+            )
+            finished_task_list.append(item)
+        title = "🟢 새로 완료된 태스크가 " + str(len(lst_finished_task_list)) + "개 있음"
+        contents = (
+            str(datetime.date.today().strftime("%Y-%m-%d %H:%M"))
+            + " 기준 새로 완료된 태스크가 있습니다! 👏"
+        )
+        blocks = [
+            {
+                "type": "header",
+                "text": {"type": "plain_text", "text": title},
+            },
+            {
+                "type": "section",
+                "text": {"type": "mrkdwn", "text": contents},
+            },
+            {
+                "type": "section",
+                "text": {
+                    "type": "mrkdwn",
+                    "text": "*해당 태스크:*\n" + "\n".join(finished_task_list),
+                },
+            },
+            {
+                "type": "section",
+                "text": {
+                    "type": "mrkdwn",
+                    "text": "*확인일시:*\n"
+                    + datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+                },
+            },
+        ]
+        text = title
+    # message blocks and a text for the notification about tasks to be done
     elif str_unfinished_task_status and lst_unfinished_task_list:
         if str_unfinished_task_status == "yesterday":
             title = "🔴 지연된 태스크가 " + str(len(lst_unfinished_task_list)) + "개 있음"
@@ -1005,6 +1053,7 @@ def slack_blocks_and_text(
             },
         ]
         text = title
+    # message blocks and a text for the notification about projects or tasks that require action
     elif lst_msg_item_list:
         msg_project_list = []
         msg_task_list = []
@@ -1035,13 +1084,7 @@ def slack_blocks_and_text(
             else None
         )
         title = "⛔ 조치가 필요한 " + category + "가 " + str(len(lst_msg_item_list)) + "개 있음"
-        contents = (
-            "유효하지 않은 "
-            + category
-            + " "
-            + str(len(lst_msg_item_list))
-            + "개에 대해 서둘러 조치해주시기 바랍니다."
-        )
+        contents = "유효하지 않은 " + category + "에 대해 서둘러 조치해주시기 바랍니다."
         if category == "프로젝트":
             blocks = [
                 {
@@ -1177,6 +1220,90 @@ def cron_remind_approvers_about_all_activity_reports_in_the_queue(request):
     return HttpResponse(status=200)
 
 
+def cron_notify_about_tasks_done(request):
+    if ("07:59" < datetime.datetime.now().strftime("%H:%M") < "08:01") or (
+        "17:59" < datetime.datetime.now().strftime("%H:%M") < "18:01"
+    ):
+        finished_task_list = []
+        finished_task_list_pre = json.loads(
+            requests.post(
+                "https://api.notion.com/v1/databases/" + task_db_id + "/query",
+                headers=notion_headers,
+                data=(
+                    '{ "filter": { "and": [ {"property": "완료 Slack 메시지 URL", "url": {"is_empty": true} }, {"property": "완료", "checkbox": {"equals": true} } ] } }'
+                ).encode("utf-8"),
+            ).text
+        ).get("results")
+        for i in range(len(finished_task_list_pre)):
+            task_id = finished_task_list_pre[i].get("id")
+            task_title = (
+                finished_task_list_pre[i]
+                .get("properties")
+                .get("태스크")
+                .get("title")[0]
+                .get("plain_text")
+            )
+            task_responsibility_email = (
+                finished_task_list_pre[i]
+                .get("properties")
+                .get("태스크 담당자")
+                .get("people")[0]
+                .get("person")
+                .get("email")
+            )
+            task_url = finished_task_list_pre[i].get("url")
+            task_deadline = (
+                finished_task_list_pre[i]
+                .get("properties")
+                .get("마감일")
+                .get("date")
+                .get("start")
+            )
+            finished_task_list.append(
+                [
+                    task_id,
+                    task_title,
+                    task_responsibility_email,
+                    task_url,
+                    task_deadline,
+                ]
+            )
+            finished_task_list.reverse()
+        if len(finished_task_list) > 0:
+            client = WebClient(token=slack_bot_token)
+            try:
+                client.conversations_join(channel=management_all_channel_id)
+            except:
+                pass
+            blocks, text = slack_blocks_and_text(
+                lst_finished_task_list=finished_task_list,
+            )
+            slack_response = client.chat_postMessage(
+                channel=management_all_channel_id,
+                link_names=True,
+                as_user=True,
+                blocks=blocks,
+                text=text,
+            )
+        channel = slack_response.get("channel")
+        ts = slack_response.get("ts").replace(".", "")
+        slack_message_url = f"https://bwbluemove.slack.com/archives/{channel}/p{ts}"
+        for task in finished_task_list:
+            task_id = task[0]
+            requests.patch(
+                f"https://api.notion.com/v1/pages/{task_id}",
+                data=json.dumps(
+                    {
+                        "properties": {
+                            "완료 Slack 메시지 URL": {"url": f"{slack_message_url}"}
+                        }
+                    }
+                ),
+                headers=notion_headers,
+            )
+    return HttpResponse(status=200)
+
+
 def cron_notify_about_tasks_to_be_done(request):
     if ("07:59" < datetime.datetime.now().strftime("%H:%M") < "08:01") or (
         "17:59" < datetime.datetime.now().strftime("%H:%M") < "18:01"
@@ -1270,6 +1397,7 @@ def cron_notify_about_msg(request):
                         item_url,
                     ]
                 )
+                msg_item_list.reverse()
         if len(msg_item_list) > 0:
             client = WebClient(token=slack_bot_token)
             try:
