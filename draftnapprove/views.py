@@ -98,6 +98,7 @@ notion_headers = {
     "Content-Type": "application/json",
     "Notion-Version": "2022-02-22",
 }
+kst = pytz.timezone("Asia/Seoul")
 
 # Bluemove data
 activity_report_temp_id = "1r9kcAI83dIxXLJ-I1an_OhDZU2Ii-Pf9_-sybJT6Um0"
@@ -1364,7 +1365,6 @@ def cron_notify_about_tasks_to_be_done(request):
 def cron_notify_about_msg(request):
     if "07:59" < datetime.datetime.now().strftime("%H:%M") < "22:01":
         msg_item_list = []
-        kst = pytz.timezone("Asia/Seoul")
         for db_id, item_category in [(project_db_id, "프로젝트"), (task_db_id, "태스크")]:
             msg_item_list_pre = json.loads(
                 requests.post(
@@ -2405,13 +2405,26 @@ def activityreport(request):
         write = True
         project_list_pre = json.loads(
             requests.post(
-                "https://api.notion.com/v1/databases/" + project_db_id + "/query",
+                f"https://api.notion.com/v1/databases/{project_db_id}/query",
                 headers=notion_headers,
-                data=(
-                    '{ "filter": {"property": "종료일", "date": {"on_or_after": "'
-                    + str(datetime.datetime.now().isoformat())[:10]
-                    + '"} }, "sorts": [ {"property": "완료", "direction": "ascending"}, {"property": "종료일", "direction": "ascending"} ] }'
-                ).encode("utf-8"),
+                data=json.dumps(
+                    {
+                        "filter": {
+                            "property": "종료일",
+                            "date": {
+                                "on_or_after": (
+                                    datetime.datetime.now(
+                                        datetime.timezone.utc
+                                    ).astimezone(kst)
+                                ).isoformat()
+                            },
+                        },
+                        "sorts": [
+                            {"property": "완료 여부", "direction": "ascending"},
+                            {"property": "종료일", "direction": "ascending"},
+                        ],
+                    }
+                ),
             ).text
         ).get("results")
         for i in range(len(project_list_pre)):
@@ -2438,7 +2451,7 @@ def activityreport(request):
                 .get("email")
             )
             project_folder_url = (
-                project_list_pre[i].get("properties").get("프로젝트 폴더 주소").get("url")
+                project_list_pre[i].get("properties").get("프로젝트 폴더 URL").get("url")
             )
             project_url = project_list_pre[i].get("url")
             project_list.append(

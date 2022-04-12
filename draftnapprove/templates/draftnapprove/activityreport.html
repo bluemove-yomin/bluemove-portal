@@ -524,7 +524,7 @@
                             {% for project_name, project_approver, project_approver_email, project_folder_url, project_url in project_list %}
                             <option
                                 value="{{ project_name }}#{{ project_approver }}#{{ project_approver_email }}#{{ project_folder_url }}#{{ project_url }}">
-                                {{ project_name }}</option>
+                                {{ project_name }} ({{ project_approver }})</option>
                             {% empty %}
                             <option disabled>진행 중인 프로젝트가 없습니다.</option>
                             {% endfor %}
