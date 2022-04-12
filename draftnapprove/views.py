@@ -732,7 +732,7 @@ def slack_blocks_and_text(
                 "type": "header",
                 "text": {
                     "type": "plain_text",
-                    "text": "⛔ '" + str_title + "' 일일활동보고서 반려됨",
+                    "text": f"⛔ '{str_title}' 일일활동보고서 반려됨",
                 },
             },
             {
@@ -751,11 +751,11 @@ def slack_blocks_and_text(
                 "fields": [
                     {
                         "type": "mrkdwn",
-                        "text": "*프로젝트:*\n" + str_project,
+                        "text": f"*프로젝트:*\n{str_project}",
                     },
                     {
                         "type": "mrkdwn",
-                        "text": "*활동명:*\n" + str_title,
+                        "text": f"*활동명:*\n{str_title}",
                     },
                 ],
             },
@@ -764,11 +764,11 @@ def slack_blocks_and_text(
                 "fields": [
                     {
                         "type": "mrkdwn",
-                        "text": "*결재일시:*\n" + str_approver_datetime,
+                        "text": f"*결재일시:*\n{str_approver_datetime}",
                     },
                     {
                         "type": "mrkdwn",
-                        "text": "*결재자:*\n" + str_approver,
+                        "text": f"*결재자:*\n{str_approver}",
                     },
                 ],
             },
@@ -776,7 +776,7 @@ def slack_blocks_and_text(
                 "type": "section",
                 "text": {
                     "type": "mrkdwn",
-                    "text": "*반려 사유:*\n" + str_rejection_reason,
+                    "text": f"*반려 사유:*\n{str_rejection_reason}",
                 },
             },
             {
@@ -1442,14 +1442,14 @@ def cron_notify_about_msg(request):
         if len(msg_item_list) > 0:
             client = WebClient(token=slack_bot_token)
             try:
-                client.conversations_join(channel=management_dev_channel_id)
+                client.conversations_join(channel=management_all_channel_id)
             except:
                 pass
             blocks, text = slack_blocks_and_text(
                 lst_msg_item_list=msg_item_list,
             )
             client.chat_postMessage(
-                channel=management_dev_channel_id,
+                channel=management_all_channel_id,
                 link_names=True,
                 as_user=True,
                 blocks=blocks,
