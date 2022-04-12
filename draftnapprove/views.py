@@ -1232,7 +1232,7 @@ def cron_remind_approvers_about_all_activity_reports_in_the_queue(request):
 
 def cron_notify_about_tasks_done(request):
     if ("07:59" < datetime.datetime.now().strftime("%H:%M") < "08:01") or (
-        "17:59" < datetime.datetime.now().strftime("%H:%M") < "23:01"
+        "17:59" < datetime.datetime.now().strftime("%H:%M") < "18:01"
     ):
         finished_task_list = []
         finished_task_list_pre = json.loads(
