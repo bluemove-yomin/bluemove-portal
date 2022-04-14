@@ -107,6 +107,7 @@ register_id = "1HkfnZ-2udmQAgE3u8o54rj6ek6IpcDFPjsgX4ycFATs"
 project_db_id = "d17acacd-fb64-4e0d-9f75-462424c7cb81"
 task_db_id = "45e43f3f-dfb3-4d34-8b02-1c95a745719d"
 docs_log_id = "10-ROxf9XjSRIN7R71EIiAQCstre8jqOwrfxbEC_uRX4"
+notice_all_channel_id = "C2EH6PNJU"
 management_all_channel_id = "CV3THBHJB"
 management_dev_channel_id = "C01L8PETS5S"
 
@@ -1299,14 +1300,14 @@ def cron_notify_about_tasks_done(request):
         if len(finished_task_list) > 0:
             client = WebClient(token=slack_bot_token)
             try:
-                client.conversations_join(channel=management_all_channel_id)
+                client.conversations_join(channel=notice_all_channel_id)
             except:
                 pass
             blocks, text = slack_blocks_and_text(
                 lst_finished_task_list=finished_task_list,
             )
             slack_response = client.chat_postMessage(
-                channel=management_all_channel_id,
+                channel=notice_all_channel_id,
                 link_names=True,
                 as_user=True,
                 blocks=blocks,
@@ -1345,7 +1346,7 @@ def cron_notify_about_tasks_to_be_done(request):
             if len(unfinished_task_list) > 0:
                 client = WebClient(token=slack_bot_token)
                 try:
-                    client.conversations_join(channel=management_all_channel_id)
+                    client.conversations_join(channel=notice_all_channel_id)
                 except:
                     pass
                 blocks, text = slack_blocks_and_text(
@@ -1353,7 +1354,7 @@ def cron_notify_about_tasks_to_be_done(request):
                     lst_unfinished_task_list=unfinished_task_list,
                 )
                 client.chat_postMessage(
-                    channel=management_all_channel_id,
+                    channel=notice_all_channel_id,
                     link_names=True,
                     as_user=True,
                     blocks=blocks,
@@ -1448,14 +1449,14 @@ def cron_notify_about_msg(request):
         if len(msg_item_list) > 0:
             client = WebClient(token=slack_bot_token)
             try:
-                client.conversations_join(channel=management_all_channel_id)
+                client.conversations_join(channel=notice_all_channel_id)
             except:
                 pass
             blocks, text = slack_blocks_and_text(
                 lst_msg_item_list=msg_item_list,
             )
             client.chat_postMessage(
-                channel=management_all_channel_id,
+                channel=notice_all_channel_id,
                 link_names=True,
                 as_user=True,
                 blocks=blocks,
