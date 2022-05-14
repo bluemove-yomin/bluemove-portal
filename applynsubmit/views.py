@@ -2616,6 +2616,7 @@ def applymembership(request):
     app_submitted = None
     noti_saved = None
     wrong_url = None
+    inaccessible_portfolio = None
     wrong_portfolio = None
     timeout = None
     scroll_to_app = None
@@ -2709,53 +2710,53 @@ def applymembership(request):
                         tracking_etc,
                         portfolio,
                     )
-                    try:
-                        if (
-                            portfolio == ""
-                            or requests.get(portfolio, headers=bs4_headers).status_code
-                            == 200
-                            or requests.get(portfolio, headers=bs4_headers).status_code
-                            == 401
-                        ):
-                            if timeout:
-                                app.last_saved = True
-                                app.save()
-                            if cmd_post == "save" and not timeout:
-                                app_saved = True
-                            elif cmd_post == "submit" and not timeout:
-                                app.received = True
-                                app.received_at = datetime.datetime.now()
-                                app.save()
-                                app_submitted = True
-                                client = WebClient(token=slack_bot_token)
-                                try:
-                                    client.conversations_join(
-                                        channel=management_all_channel_id
-                                    )
-                                except:
-                                    pass
-                                blocks, text = slack_blocks_and_text(
+                    if (
+                        portfolio == ""
+                        or requests.get(portfolio, headers=bs4_headers).status_code
+                        == 200
+                    ):
+                        if timeout:
+                            app.last_saved = True
+                            app.save()
+                        if cmd_post == "save" and not timeout:
+                            app_saved = True
+                        elif cmd_post == "submit" and not timeout:
+                            app.received = True
+                            app.received_at = datetime.datetime.now()
+                            app.save()
+                            app_submitted = True
+                            client = WebClient(token=slack_bot_token)
+                            try:
+                                client.conversations_join(
+                                    channel=management_all_channel_id
+                                )
+                            except:
+                                pass
+                            blocks, text = slack_blocks_and_text(
+                                request=request,
+                                str_wanted_title=wanted_title,
+                                obj_app=app,
+                            )
+                            client.chat_postMessage(
+                                channel=management_all_channel_id,
+                                link_names=True,
+                                as_user=True,
+                                blocks=blocks,
+                                text=text,
+                            )
+                            mail_service.users().messages().send(
+                                userId=google_delegated_email,
+                                body=gmail_message(
                                     request=request,
-                                    str_wanted_title=wanted_title,
                                     obj_app=app,
-                                )
-                                client.chat_postMessage(
-                                    channel=management_all_channel_id,
-                                    link_names=True,
-                                    as_user=True,
-                                    blocks=blocks,
-                                    text=text,
-                                )
-                                mail_service.users().messages().send(
-                                    userId=google_delegated_email,
-                                    body=gmail_message(
-                                        request=request,
-                                        obj_app=app,
-                                        str_wanted_title=wanted_title,
-                                    ),
-                                ).execute()
-                    except:
-                        wrong_portfolio = True
+                                    str_wanted_title=wanted_title,
+                                ),
+                            ).execute()
+                    else:
+                        if requests.get(portfolio, headers=bs4_headers).status_code == 401:
+                            inaccessible_portfolio = True
+                        else:
+                            wrong_portfolio = True
                 # delete the application
                 elif cmd_post == "delete" and app:
                     scroll_to_app = True
@@ -2906,6 +2907,7 @@ def applymembership(request):
                         "scroll_to_app": scroll_to_app,
                         "scroll_to_join": scroll_to_join,
                         "scroll_to_noti": scroll_to_noti,
+                        "inaccessible_portfolio": inaccessible_portfolio,
                         "wrong_portfolio": wrong_portfolio,
                         "timeout": timeout,
                     },
@@ -2959,6 +2961,7 @@ def applymembership(request):
                             "scroll_to_app": scroll_to_app,
                             "scroll_to_join": scroll_to_join,
                             "scroll_to_noti": scroll_to_noti,
+                            "inaccessible_portfolio": inaccessible_portfolio,
                             "wrong_portfolio": wrong_portfolio,
                             "timeout": timeout,
                         },
