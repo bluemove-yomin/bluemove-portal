@@ -2712,8 +2712,10 @@ def applymembership(request):
                     try:
                         if (
                             portfolio == ""
-                            or not requests.get(portfolio, headers=bs4_headers).status_code
-                            == 404
+                            or requests.get(portfolio, headers=bs4_headers).status_code
+                            == 200
+                            or requests.get(portfolio, headers=bs4_headers).status_code
+                            == 401
                         ):
                             if timeout:
                                 app.last_saved = True
