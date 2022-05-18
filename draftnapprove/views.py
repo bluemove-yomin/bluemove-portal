@@ -1264,13 +1264,29 @@ def cron_notify_about_tasks_done(request):
         ).get("results")
         for i in range(len(finished_task_list_pre)):
             task_id = finished_task_list_pre[i].get("id")
-            task_title = (
-                finished_task_list_pre[i]
-                .get("properties")
-                .get("태스크")
-                .get("title")[0]
-                .get("plain_text")
-            )
+            try:
+                task_title_length = len(
+                    finished_task_list_pre[i].get("properties").get("태스크").get("title")
+                )
+                task_title_list = []
+                for j in range(task_title_length):
+                    task_title_raw = (
+                        finished_task_list_pre[i]
+                        .get("properties")
+                        .get("태스크")
+                        .get("title")[j]
+                        .get("plain_text")
+                    )
+                    task_title_list.append(task_title_raw)
+                task_title = "".join(task_title_list)
+            except:
+                task_title = (
+                    finished_task_list_pre[i]
+                    .get("properties")
+                    .get("태스크")
+                    .get("title")[0]
+                    .get("plain_text")
+                )
             task_responsibility_email = (
                 finished_task_list_pre[i]
                 .get("properties")
