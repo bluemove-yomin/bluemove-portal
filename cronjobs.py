@@ -34,5 +34,8 @@ requests.get(
 
 # member
 requests.get(
+    "https://portal.bluemove.or.kr/member/cron-delete-all-expired-v-codes"
+)
+requests.get(
     "https://portal.bluemove.or.kr/member/cron-delete-all-inactive-users"
 )

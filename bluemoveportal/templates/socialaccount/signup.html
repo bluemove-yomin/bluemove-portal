@@ -39,7 +39,7 @@
             </a>
         </h5>
         <form action="{% url 'socialaccount_signup' %}" method="POST" enctype="multipart/form-data" class="signup"
-            id="signup_form" onsubmit="return validation(this)">
+            id="signupForm" onsubmit="phoneNumValidation()">
             {% csrf_token %}
             <div class="alert alert-primary" role="alert">
                 <h5>개인정보 수집·이용 동의</h5>
@@ -58,6 +58,7 @@
                     <ul style="padding-left: 20px;">
                         <li>일반 사용자: 이용 목적 달성 후 즉시 파기</li>
                         <li>블루무버(활동 회원): 활동 기간 종료 시 파기</li>
+                        <li>모든 사용자: 30일 간 비활성 시 즉시 파기</li>
                     </ul>
                     <li>동의 거부 시 불이익</li>
                     <ul style="padding-left: 20px;">
@@ -66,8 +67,8 @@
                 </ol>
                 <div class="d-flex justify-content-end">
                     <div class="form-check d-flex align-items-center">
-                        <input class="form-check-input" type="checkbox" value="unchecked" id="agreementCheckbox"
-                            onclick="agreementCheck(this)" required>
+                        <input class="form-check-input phone-num-validation" type="checkbox" value="unchecked"
+                            id="agreementCheckbox" onclick="agreementCheck(this)" required>
                         <label class="form-check-label ms-2" for="agreementCheckbox">
                             위 내용에 동의합니다.
                         </label>
@@ -105,9 +106,34 @@
                     {{ form.phone }}
                 </div>
             </div>
+            <div id="phoneNumVCodeDiv" style="margin-top: 1rem;" hidden>
+                <div class="screenLarge">
+                    <div class="d-flex justify-content-between">
+                        <label for="id_v_code" class="form-label">인증 번호</label>
+                        <small style="margin-top: .125rem;"><i class="bi bi-clock me-1"></i><span
+                                class="willExpireOnSpan"></span></small>
+                    </div>
+                </div>
+                <div class="screenSmall">
+                    <label for="id_v_code" class="form-label">인증 번호</label>
+                    <small class="d-flex justify-content-center border border-secondary rounded-1 mb-3"
+                        style="border-color: rgba(0,0,0,.3) !important;">
+                        <i class="bi bi-clock me-1"></i><span class="willExpireOnSpan"></span></small>
+                </div>
+                <div class="input-group">
+                    {{ form.v_code }}
+                    <span class="input-group-text" id="phoneNumVCodeInfo">전송 완료</span>
+                </div>
+            </div>
             <div class="d-grid" style="padding-top: 1.25rem !important;">
-                <button type="submit" class="btn btn-outline-secondary" aria-label="로그인">
-                    <i class="bi bi-door-open me-2"></i>로그인</button>
+                <button type="button" class="btn btn-outline-secondary" id="phoneNumVCodeBtn" aria-label="인증 번호 전송">
+                    <i class="bi bi-envelope me-2"></i>인증 번호 전송</button>
+                <button type="button" class="btn btn-outline-secondary" id="phoneNumVCodeCheckBtn" aria-label="인증 번호 확인"
+                    hidden disabled>
+                    <i class="bi bi-check2 me-2"></i>인증 번호 확인</button>
+                <button type="button" class="btn btn-outline-secondary" id="resetBtn" aria-label="초기화" onclick="init()"
+                    hidden disabled>
+                    <i class="bi bi-bootstrap-reboot me-2"></i>초기화</button>
             </div>
         </form>
     </div>
@@ -125,20 +151,19 @@
             agreementCheckbox.removeAttribute("checked");
         }
     }
-    // call 'validation' function when Enter is pressed in the "id_phone" element
-    document.getElementById("id_phone")
-        .addEventListener("keyup", function (event) {
-            if (event.code === "Enter") {
-                validation();
-            }
-        });
     // validation
+    var patternNum = /[0-9]/; // number
+    var patternSpc = /[ \[\]{}()<>?|`~!@#$%^&*-_+=,.;:\"\'\\]/; // special characters
+    var patternSpcWithoutDash = /[ \[\]{}()<>?|`~!@#$%^&*_+=,.;:\"\'\\]/; // special characters without dash
+    var patternEng = /[a-zA-Z]/; // alphabet
+    var patternKor = /[ㄱ-ㅎ|ㅏ-ㅣ|가-힣]/; // Hangul
+    var patternEml = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/ // email
     $("#id_last_name").keyup(function () {
-        var foo = $(this).val().replace(/[a-z0-9]|[ \[\]{}()<>?|`~!@#$%^&*-_+=,.;:\"\\]/g, "");
+        var foo = $(this).val().replace(/[a-z0-9]|[ \[\]{}()<>?|`~!@#$%^&*-_+=,.;:\"\'\\]/g, "");
         $(this).val(foo);
     });
     $("#id_first_name").keyup(function () {
-        var foo = $(this).val().replace(/[a-z0-9]|[ \[\]{}()<>?|`~!@#$%^&*-_+=,.;:\"\\]/g, "");
+        var foo = $(this).val().replace(/[a-z0-9]|[ \[\]{}()<>?|`~!@#$%^&*-_+=,.;:\"\'\\]/g, "");
         $(this).val(foo);
     });
     $("#id_phone").keyup(function () {
@@ -153,79 +178,239 @@
         }
     }
     function validation() {
-        var patternNum = /[0-9]/; // number
-        var patternSpc = /[~!@#$%^&*()_+|<>?:{}]/; // special characters
-        var patternEng = /[a-zA-Z]/; // alphabet
-        var patternKor = /[ㄱ-ㅎ|ㅏ-ㅣ|가-힣]/; // Hangul
-        var patternEml = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/ // email
-        var lastName = document.querySelector("#id_last_name");
-        var firstName = document.querySelector("#id_first_name");
-        var phone = document.querySelector("#id_phone");
         if (agreementCheckbox.value !== "checked") {
+            agreementCheckbox.focus();
             alert("개인정보 수집·이용에 동의해주세요.");
             return false;
         }
-        if (lastName.value == "") {
+        if (id_last_name.value == "") {
+            id_last_name.focus();
             alert("성을 입력해주세요.");
             return false;
         };
-        if (!patternKor.test(lastName.value)) {
+        if (!patternKor.test(id_last_name.value)) {
+            id_last_name.focus();
             alert("성은 한글만 입력해주세요.");
             return false;
         };
-        if (firstName.value == "") {
+        if (id_first_name.value == "") {
+            id_first_name.focus();
             alert("이름을 입력해주세요.");
             return false;
         };
-        if (!patternKor.test(firstName.value)) {
+        if (!patternKor.test(id_first_name.value)) {
+            id_first_name.focus();
             alert("이름은 한글만 입력해주세요.");
             return false;
         };
-        if (phone.value.length !== 13) {
+        if (id_phone.value.length !== 13) {
+            id_phone.focus();
             alert("휴대전화 번호는 '010'으로 시작하는 숫자 11자리를 입력해주세요.");
             return false;
         };
-        if (!patternNum.test(phone.value)) {
+        if (!patternNum.test(id_phone.value)) {
+            id_phone.focus();
             alert("휴대전화 번호는 숫자만 입력해주세요.");
             return false;
         };
-        if (phone.value.indexOf("010") !== 0) {
+        if (id_phone.value.indexOf("010") !== 0) {
+            id_phone.focus();
             alert("휴대전화 번호는 '010'으로 시작해야 합니다.");
             return false;
         };
-        if (phone.value.indexOf("-") !== 3 &&
-            phone.value.lastIndexOf("-") !== 8) {
+        if (id_phone.value.indexOf("-") !== 3 &&
+            id_phone.value.lastIndexOf("-") !== 8) {
+            id_phone.focus();
             alert("올바른 휴대전화 번호를 입력해주세요.");
             return false;
         };
-        if (phone.value.match(/-/g).length !== 2) {
+        if (id_phone.value.match(/-/g).length !== 2) {
+            id_phone.focus();
             alert("올바른 휴대전화 번호를 입력해주세요.");
             return false;
         };
-        if (!patternNum.test(lastName.value) &&
-            !patternSpc.test(lastName.value) &&
-            !patternEng.test(lastName.value) &&
-            patternKor.test(lastName.value) &&
-            !patternNum.test(firstName.value) &&
-            !patternSpc.test(firstName.value) &&
-            !patternEng.test(firstName.value) &&
-            patternKor.test(firstName.value) &&
-            patternNum.test(phone.value) &&
-            !patternSpc.test(phone.value) &&
-            !patternEng.test(phone.value) &&
-            !patternKor.test(phone.value) &&
-            phone.value.indexOf("010") == 0 &&
-            phone.value.indexOf("-") == 3 &&
-            phone.value.match(/-/g).length == 2) {
-            // call 'spinner (transition)' function
-            fadeOut();
-            // call 'avoiding duplicate requests (btn disabled)' function
-            setTimeout(inProgress, 0);
-            return document.querySelector("form").submit();
+        if (!patternNum.test(id_last_name.value) &&
+            !patternSpc.test(id_last_name.value) &&
+            !patternEng.test(id_last_name.value) &&
+            patternKor.test(id_last_name.value) &&
+            !patternNum.test(id_first_name.value) &&
+            !patternSpc.test(id_first_name.value) &&
+            !patternEng.test(id_first_name.value) &&
+            patternKor.test(id_first_name.value) &&
+            patternNum.test(id_phone.value) &&
+            !patternSpcWithoutDash.test(id_phone.value) &&
+            !patternEng.test(id_phone.value) &&
+            !patternKor.test(id_phone.value) &&
+            id_phone.value.indexOf("010") == 0 &&
+            id_phone.value.indexOf("-") == 3 &&
+            id_phone.value.match(/-/g).length == 2) {
+            return true;
         } else {
             alert("잘못된 값이 있습니다.\n올바른 값을 입력해주세요.");
             return false;
         };
     };
+    // phone number validation
+    function objectToJson(object) {
+        const object_to_string = JSON.stringify(object);
+        const string_to_json = JSON.parse(object_to_string);
+        return string_to_json;
+    }
+    function phoneNumValidation() {
+        lastName = $("#id_last_name").val();
+        firstName = $("#id_first_name").val();
+        phoneNum = $("#id_phone").val();
+        vCodeInputValue = $("#id_v_code").val();
+        err_msg = "문제가 발생했습니다.\n오류가 반복될 경우 사무국에 문의해주세요.\n\n☎️ 02-3296-0613\n📧 management@bluemove.or.kr"
+        if (phoneNumVCodeDiv.hidden == false) {
+            if (phoneNumVCodeValidation() == true) {
+                $.ajax({
+                    type: "POST",
+                    url: "/member/phone-num-validation",
+                    data: JSON.stringify(lastName + "#" + phoneNum + "#" + vCodeInputValue),
+                    success: function (object) {
+                        const status = objectToJson(object).status;
+                        if (status == "passed") {
+                            id_v_code.readOnly = true;
+                            phoneNumVCodeCheckBtn.disabled = true;
+                            phoneNumVCodeInfo.innerText = "인증 성공"
+                            phoneNumVCodeInfo.setAttribute("style", "background: #0077C8; border-color: #0077C8; color: #FFFFFF;");
+                            // call 'spinner (transition)' function
+                            fadeOut();
+                            // call 'avoiding duplicate requests (btn disabled)' function
+                            setTimeout(inProgress, 0);
+                            document.querySelector("form").submit();
+                        } else {
+                            phoneNumVCodeInfo.innerText = "인증 실패"
+                            phoneNumVCodeInfo.setAttribute("style", "background: #ffc107; border-color: #ffc107;")
+                            id_v_code.focus();
+                            alert("올바른 인증 번호를 입력해주세요.");
+                        }
+                    },
+                    error: function (xhr, errmsg, err) {
+                        // console.log(xhr.status + ": " + xhr.responseText);
+                        alert(err_msg);
+                    }
+                });
+            } else {
+                return false;
+            }
+        } else if (validation() == true) {
+            if (confirm("올바른 정보인지 최종 확인해주세요.\n🙋 성명: " + lastName + firstName + "\n📱 휴대전화 번호: " + phoneNum + "\n\n위 휴대전화 번호로 인증 번호를 전송하시겠어요?")) {
+                $.ajax({
+                    type: "POST",
+                    url: "/member/phone-num-validation",
+                    data: JSON.stringify(lastName + "$" + phoneNum),
+                    success: function (object) {
+                        const status = objectToJson(object).status;
+                        if (status == "generated") {
+                            agreementCheckbox.disabled = true;
+                            id_last_name.readOnly = true;
+                            id_first_name.readOnly = true;
+                            id_phone.readOnly = true;
+                            phoneNumVCodeDiv.hidden = false;
+                            id_v_code.required = true;
+                            phoneNumVCodeBtn.hidden = true;
+                            phoneNumVCodeBtn.disabled = true;
+                            phoneNumVCodeCheckBtn.hidden = false;
+                            phoneNumVCodeCheckBtn.disabled = false;
+                            countDown();
+                        } else {
+                            alert("STATUS CODE: " + status + "\n\n" + err_msg);
+                        }
+                    },
+                    error: function (xhr, errmsg, err) {
+                        // console.log(xhr.status + ": " + xhr.responseText);
+                        alert(err_msg);
+                    }
+                });
+            }
+        } else {
+            return false;
+        }
+    }
+    $("#id_v_code").keyup(function () {
+        var foo = $(this).val().replace(/[^0-9]/g, "");
+        $(this).val(foo);
+    });
+    function phoneNumVCodeValidation() {
+        vCodeInputValue = $("#id_v_code").val();
+        if (vCodeInputValue == "") {
+            alert("인증 번호를 입력해주세요.");
+            return false;
+        }
+        if (vCodeInputValue.length !== 6) {
+            alert("올바른 인증 번호를 입력해주세요.");
+            return false;
+        }
+        if (!patternNum.test(vCodeInputValue)) {
+            alert("인증 번호는 숫자만 입력해주세요.");
+            return false;
+        }
+        if (vCodeInputValue !== "" &&
+            vCodeInputValue.length == 6 &&
+            patternNum.test(vCodeInputValue)) {
+            return true;
+        } else {
+            alert("올바른 인증 번호를 입력해주세요.");
+            return false;
+        }
+    };
+    document.querySelectorAll(".phone-num-validation").forEach(item => {
+        item.addEventListener("keyup", event => {
+            if (event.keyCode === 13) {
+                phoneNumValidation();
+            }
+        })
+    })
+    $("#phoneNumVCodeBtn").on("click", function () {
+        phoneNumValidation();
+    });
+    $("#phoneNumVCodeCheckBtn").on("click", function () {
+        phoneNumValidation();
+    });
+    // time remaining until v code expires
+    function pleaseReset() {
+        document.querySelectorAll(".willExpireOnSpan").forEach(element => {
+            element.textContent = "인증 시간 만료됨";
+        });
+        phoneNumVCodeInfo.innerText = "시간 만료"
+        phoneNumVCodeInfo.setAttribute("style", "background: #ffc107; border-color: #ffc107;")
+        id_v_code.readOnly = true;
+        phoneNumVCodeCheckBtn.hidden = true;
+        phoneNumVCodeCheckBtn.disabled = true;
+        resetBtn.hidden = false;
+        resetBtn.disabled = false;
+        alert("인증 시간이 만료되었습니다.\n초기화 후 다시 시도해주세요.");
+    };
+    function startCountDown(duration) {
+        let sec = 0;
+        let countInterval = setInterval(function () {
+            sec = parseInt(duration % 60);
+            document.querySelectorAll(".willExpireOnSpan").forEach(element => {
+                element.textContent = `${sec}초 후 만료됨`;
+            });
+            duration = duration - 1;
+            if (sec == 0) {
+                clearInterval(countInterval);
+                pleaseReset();
+            };
+        }, 1000);
+    }
+    function countDown() {
+        let duration = 60;
+        document.querySelectorAll(".willExpireOnSpan").forEach(element => {
+            element.textContent = `${duration}초 후 만료됨`;
+        });
+        startCountDown(--duration);
+    };
+    // reset
+    function init() {
+        location.href = "/accounts/social/signup/";
+        // call 'spinner (transition)' function
+        fadeOut();
+        // call 'avoiding duplicate requests (btn disabled)' function
+        setTimeout(inProgress, 0);
+    }
 </script>
 {% endblock %}

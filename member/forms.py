@@ -12,7 +12,7 @@ class BluemoveSocialSignupForm(SignupForm):
         widget=forms.TextInput(
             attrs={
                 "type": "text",
-                "class": "form-control",
+                "class": "form-control phone-num-validation",
                 "placeholder": "성을 입력하세요.",
             }
         ),
@@ -23,7 +23,7 @@ class BluemoveSocialSignupForm(SignupForm):
         widget=forms.TextInput(
             attrs={
                 "type": "text",
-                "class": "form-control",
+                "class": "form-control phone-num-validation",
                 "placeholder": "이름을 입력하세요.",
             }
         ),
@@ -34,9 +34,9 @@ class BluemoveSocialSignupForm(SignupForm):
         widget=forms.TextInput(
             attrs={
                 "type": "email",
-                "class": "form-control",
+                "class": "form-control phone-num-validation",
                 "placeholder": "이메일 주소를 입력하세요.",
-                "readOnly": "",
+                "readOnly": "readOnly",
             }
         ),
     )
@@ -47,8 +47,21 @@ class BluemoveSocialSignupForm(SignupForm):
         widget=forms.TextInput(
             attrs={
                 "type": "tel",
-                "class": "form-control",
+                "class": "form-control phone-num-validation",
                 "placeholder": "휴대전화 번호를 입력하세요.",
+                "onkeypress": "onlyNumbers(event)",
+            }
+        ),
+    )
+    v_code = forms.CharField(
+        max_length=6,
+        min_length=6,
+        label="인증 번호",
+        widget=forms.TextInput(
+            attrs={
+                "type": "text",
+                "class": "form-control phone-num-validation",
+                "placeholder": "인증 번호를 입력하세요.",
                 "onkeypress": "onlyNumbers(event)",
             }
         ),

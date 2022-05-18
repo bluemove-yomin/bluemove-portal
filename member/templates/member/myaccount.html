@@ -30,9 +30,36 @@
 -->
 <div class="card shadow-hover" id="modify">
     <div class="card-body" style="background-color: rgba(0,0,0,.025);">
-        <h5 class="card-title pb-1">개인정보 수정</h5>
+        <h5 class="card-title pb-1">개인정보 변경</h5>
         <!-- alert -->
-        {% if modified %}
+        <div id="phoneAlert" hidden>
+            <div class="alert alert-secondary d-flex align-items-center" role="alert">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor"
+                    class="bi bi-info-circle flex-shrink-0 me-2" viewBox="0 0 16 16">
+                    <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z" />
+                    <path
+                        d="m8.93 6.588-2.29.287-.082.38.45.083c.294.07.352.176.288.469l-.738 3.468c-.194.897.105 1.319.808 1.319.545 0 1.178-.252 1.465-.598l.088-.416c-.2.176-.492.246-.686.246-.275 0-.375-.193-.304-.533L8.93 6.588zM9 4.5a1 1 0 1 1-2 0 1 1 0 0 1 2 0z" />
+                </svg>
+                <div class="vertical">
+                    휴대전화 번호 변경은 재인증 후 가능합니다.
+                </div>
+            </div>
+        </div>
+        {% if not_modified %}
+        <!-- boolean NOT_MODIFIED -->
+        <div class="alert alert-secondary alert-dismissible fade show d-flex align-items-center" role="alert">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor"
+                class="bi bi-info-circle flex-shrink-0 me-2" viewBox="0 0 16 16">
+                <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z" />
+                <path
+                    d="m8.93 6.588-2.29.287-.082.38.45.083c.294.07.352.176.288.469l-.738 3.468c-.194.897.105 1.319.808 1.319.545 0 1.178-.252 1.465-.598l.088-.416c-.2.176-.492.246-.686.246-.275 0-.375-.193-.304-.533L8.93 6.588zM9 4.5a1 1 0 1 1-2 0 1 1 0 0 1 2 0z" />
+            </svg>
+            <div class="vertical">
+                변경된 내용이 없습니다.
+            </div>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="안내창 닫기"></button>
+        </div>
+        {% elif modified %}
         <!-- boolean MODIFIED -->
         <div class="alert alert-primary alert-dismissible fade show d-flex align-items-center" role="alert">
             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor"
@@ -42,14 +69,14 @@
                     d="M4.5 0A2.5 2.5 0 0 0 2 2.5V14a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V2.5A2.5 2.5 0 0 0 11.5 0h-7zM3 2.5A1.5 1.5 0 0 1 4.5 1h7A1.5 1.5 0 0 1 13 2.5v10.795a4.2 4.2 0 0 0-.776-.492C11.392 12.387 10.063 12 8 12s-3.392.387-4.224.803a4.2 4.2 0 0 0-.776.492V2.5z" />
             </svg>
             <div class="vertical">
-                수정되었습니다! <span id="emoji"></span>
+                변경되었습니다! <span id="emoji"></span>
             </div>
             <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="안내창 닫기"></button>
         </div>
         {% endif %}
         <!-- form -->
-        <form action="{% url 'member:myaccount' %}" method="POST" enctype="multipart/form-data"
-            onsubmit="return validation(this)">
+        <form id="personalInfoForm" action="{% url 'member:myaccount' %}" method="POST" enctype="multipart/form-data"
+            onsubmit="finalMsg()">
             {% csrf_token %}
             <div style="margin-bottom: 1rem;">
                 <label for="email" class="form-label">이메일 주소
@@ -64,8 +91,8 @@
                         </svg>
                     </a>
                 </label>
-                <input type="text" class="form-control" id="email" name="email"
-                    aria-label="{{ user.last_name }}{{ user.first_name }}님의 이메일 주소" value="{{ user.email }}" disabled>
+                <input type="text" class="form-control" id="email"
+                    aria-label="{{ user.last_name }}{{ user.first_name }}님의 이메일 주소" value="{{ user.email }}" readonly>
             </div>
             <div class="row row-cols-1 row-cols-md-2 g-3">
                 <div class="col">
@@ -76,30 +103,62 @@
                     <div class="input-group">
                         {% if modified %}
                         <!-- boolean MODIFIED -->
-                        <input type="text" class="form-control" id="last_name" name="last_name" placeholder="성을 입력하세요."
-                            aria-label="{{ last_name }}{{ first_name }}님의 성 입력" value="{{ last_name }}">
-                        <input type="text" class="form-control" id="first_name" name="first_name" placeholder="이름을 입력하세요."
-                            aria-label="{{ last_name }}{{ first_name }}님의 이름 입력"
+                        <input type="text" class="form-control final-msg" id="last_name" name="last_name"
+                            placeholder="성을 입력하세요." aria-label="{{ last_name }}{{ first_name }}님의 성 입력"
+                            value="{{ last_name }}">
+                        <input type="text" class="form-control final-msg" id="first_name" name="first_name"
+                            placeholder="이름을 입력하세요." aria-label="{{ last_name }}{{ first_name }}님의 이름 입력"
                             value="{{ first_name }}">
                         {% else %}
-                        <input type="text" class="form-control" id="last_name" name="last_name" placeholder="성을 입력하세요."
-                            aria-label="{{ user.last_name }}{{ user.first_name }}님의 성 입력" value="{{ user.last_name }}">
-                        <input type="text" class="form-control" id="first_name" name="first_name" placeholder="이름을 입력하세요."
-                            aria-label="{{ user.last_name }}{{ user.first_name }}님의 이름 입력"
+                        <input type="text" class="form-control final-msg" id="last_name" name="last_name"
+                            placeholder="성을 입력하세요." aria-label="{{ user.last_name }}{{ user.first_name }}님의 성 입력"
+                            value="{{ user.last_name }}">
+                        <input type="text" class="form-control final-msg" id="first_name" name="first_name"
+                            placeholder="이름을 입력하세요." aria-label="{{ user.last_name }}{{ user.first_name }}님의 이름 입력"
                             value="{{ user.first_name }}">
                         {% endif %}
                     </div>
                 </div>
                 <div class="col">
                     <label for="phone" class="form-label">휴대전화 번호</label>
-                    <input type="text" class="form-control" id="phone" name="phone" placeholder="휴대전화 번호를 입력하세요."
+                    <input type="text" class="form-control final-msg" id="phone" name="phone"
+                        placeholder="휴대전화 번호를 입력하세요."
                         aria-label="{{ user.last_name }}{{ user.first_name }}님의 휴대전화 번호 입력" maxlength="13"
                         minlength="13" value="{{ user.profile.phone }}">
                 </div>
             </div>
+            <div id="phoneNumVCodeDiv" style="margin-top: 1rem;" hidden>
+                <div class="screenLarge">
+                    <div class="d-flex justify-content-between">
+                        <label for="id_v_code" class="form-label">인증 번호</label>
+                        <small style="margin-top: .125rem;"><i class="bi bi-clock me-1"></i><span
+                                class="willExpireOnSpan"></span></small>
+                    </div>
+                </div>
+                <div class="screenSmall">
+                    <label for="id_v_code" class="form-label">인증 번호</label>
+                    <small class="d-flex justify-content-center border border-secondary rounded-1 mb-3"
+                        style="border-color: rgba(0,0,0,.3) !important;">
+                        <i class="bi bi-clock me-1"></i><span class="willExpireOnSpan"></span></small>
+                </div>
+                <div class="input-group">
+                    <input type="text" name="v_code" class="form-control final-msg" placeholder="인증 번호를 입력하세요."
+                        onkeypress="onlyNumbers(event)" maxlength="6" minlength="6" required="" id="id_v_code">
+                    <span class="input-group-text" id="phoneNumVCodeInfo">전송 완료</span>
+                </div>
+            </div>
+            <input type="hidden" id="last_name_h" value="{{ user.last_name }}" readonly hidden>
+            <input type="hidden" id="first_name_h" value="{{ user.first_name }}" readonly hidden>
+            <input type="hidden" id="phone_h" value="{{ user.profile.phone }}" readonly hidden>
             <div class="d-grid" style="padding-top: 1.25rem !important;">
-                <button type="submit" class="btn btn-outline-secondary" aria-label="개인정보 수정">
-                    <i class="bi bi-check2 me-2"></i>수정</button>
+                <button type="button" id="personalInfoBtn" class="btn btn-outline-secondary" aria-label="개인정보 변경">
+                    <i class="bi bi-pencil me-2"></i>변경</button>
+                <button type="button" class="btn btn-outline-secondary" id="phoneNumVCodeCheckBtn" aria-label="인증 번호 확인"
+                    hidden disabled>
+                    <i class="bi bi-check2 me-2"></i>인증 번호 확인</button>
+                <button type="button" class="btn btn-outline-secondary" id="resetBtn" aria-label="초기화" onclick="init()"
+                    hidden disabled>
+                    <i class="bi bi-bootstrap-reboot me-2"></i>초기화</button>
             </div>
         </form>
     </div>
@@ -110,12 +169,18 @@
 -->
 <script type="text/javascript">
     // validation
+    var patternNum = /[0-9]/; // number
+    var patternSpc = /[ \[\]{}()<>?|`~!@#$%^&*-_+=,.;:\"\'\\]/; // special characters
+    var patternSpcWithoutDash = /[ \[\]{}()<>?|`~!@#$%^&*_+=,.;:\"\'\\]/; // special characters without dash
+    var patternEng = /[a-zA-Z]/; // alphabet
+    var patternKor = /[ㄱ-ㅎ|ㅏ-ㅣ|가-힣]/; // Hangul
+    var patternEml = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/ // email
     $("#last_name").keyup(function () {
-        var foo = $(this).val().replace(/[a-z0-9]|[ \[\]{}()<>?|`~!@#$%^&*-_+=,.;:\"\\]/g, "");
+        var foo = $(this).val().replace(/[a-z0-9]|[ \[\]{}()<>?|`~!@#$%^&*-_+=,.;:\"\'\\]/g, "");
         $(this).val(foo);
     });
     $("#first_name").keyup(function () {
-        var foo = $(this).val().replace(/[a-z0-9]|[ \[\]{}()<>?|`~!@#$%^&*-_+=,.;:\"\\]/g, "");
+        var foo = $(this).val().replace(/[a-z0-9]|[ \[\]{}()<>?|`~!@#$%^&*-_+=,.;:\"\'\\]/g, "");
         $(this).val(foo);
     });
     $("#phone").keyup(function () {
@@ -130,76 +195,247 @@
         }
     }
     function validation() {
-        var patternNum = /[0-9]/; // number
-        var patternSpc = /[~!@#$%^&*()_+|<>?:{}]/; // special characters
-        var patternEng = /[a-zA-Z]/; // alphabet
-        var patternKor = /[ㄱ-ㅎ|ㅏ-ㅣ|가-힣]/; // Hangul
-        var patternEml = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/ // email
-        var lastName = document.querySelector("#last_name");
-        var firstName = document.querySelector("#first_name");
-        var phone = document.querySelector("#phone");
-        if (lastName.value == "") {
+        if (last_name.value == "") {
+            last_name.focus();
             alert("성을 입력해주세요.");
             return false;
         };
-        if (!patternKor.test(lastName.value)) {
+        if (!patternKor.test(last_name.value)) {
+            last_name.focus();
             alert("성은 한글만 입력해주세요.");
             return false;
         };
-        if (firstName.value == "") {
+        if (first_name.value == "") {
+            first_name.focus();
             alert("이름을 입력해주세요.");
             return false;
         };
-        if (!patternKor.test(firstName.value)) {
+        if (!patternKor.test(first_name.value)) {
+            first_name.focus();
             alert("이름은 한글만 입력해주세요.");
             return false;
         };
         if (phone.value.length !== 13) {
+            phone.focus();
             alert("휴대전화 번호는 '010'으로 시작하는 숫자 11자리를 입력해주세요.");
             return false;
         };
         if (!patternNum.test(phone.value)) {
+            phone.focus();
             alert("휴대전화 번호는 숫자만 입력해주세요.");
             return false;
         };
         if (phone.value.indexOf("010") !== 0) {
+            phone.focus();
             alert("휴대전화 번호는 '010'으로 시작해야 합니다.");
             return false;
         };
         if (phone.value.indexOf("-") !== 3 &&
             phone.value.lastIndexOf("-") !== 8) {
+            phone.focus();
             alert("올바른 휴대전화 번호를 입력해주세요.");
             return false;
         };
         if (phone.value.match(/-/g).length !== 2) {
+            phone.focus();
             alert("올바른 휴대전화 번호를 입력해주세요.");
             return false;
         };
-        if (!patternNum.test(lastName.value) &&
-            !patternSpc.test(lastName.value) &&
-            !patternEng.test(lastName.value) &&
-            patternKor.test(lastName.value) &&
-            !patternNum.test(firstName.value) &&
-            !patternSpc.test(firstName.value) &&
-            !patternEng.test(firstName.value) &&
-            patternKor.test(firstName.value) &&
+        if (!patternNum.test(last_name.value) &&
+            !patternSpc.test(last_name.value) &&
+            !patternEng.test(last_name.value) &&
+            patternKor.test(last_name.value) &&
+            !patternNum.test(first_name.value) &&
+            !patternSpc.test(first_name.value) &&
+            !patternEng.test(first_name.value) &&
+            patternKor.test(first_name.value) &&
             patternNum.test(phone.value) &&
-            !patternSpc.test(phone.value) &&
+            !patternSpcWithoutDash.test(phone.value) &&
             !patternEng.test(phone.value) &&
             !patternKor.test(phone.value) &&
             phone.value.indexOf("010") == 0 &&
             phone.value.indexOf("-") == 3 &&
             phone.value.match(/-/g).length == 2) {
-            // call 'spinner (transition)' function
-            fadeOut();
-            // call 'avoiding duplicate requests (btn disabled)' function
-            setTimeout(inProgress, 0);
-            return document.querySelector("form").submit();
+            return true;
         } else {
             alert("잘못된 값이 있습니다.\n올바른 값을 입력해주세요.");
             return false;
         };
     };
+    function objectToJson(object) {
+        const object_to_string = JSON.stringify(object);
+        const string_to_json = JSON.parse(object_to_string);
+        return string_to_json;
+    }
+    function finalMsg() {
+        err_msg = "문제가 발생했습니다.\n오류가 반복될 경우 사무국에 문의해주세요.\n\n☎️ 02-3296-0613\n📧 management@bluemove.or.kr"
+        if (phoneNumVCodeDiv.hidden == false) {
+            if (phoneNumVCodeValidation() == true) {
+                $.ajax({
+                    type: "POST",
+                    url: "/member/phone-num-validation",
+                    data: JSON.stringify(last_name.value + "#" + phone.value + "#" + id_v_code.value),
+                    success: function (object) {
+                        const status = objectToJson(object).status;
+                        if (status == "passed") {
+                            id_v_code.readOnly = true;
+                            phoneNumVCodeCheckBtn.disabled = true;
+                            phoneNumVCodeInfo.innerText = "인증 성공"
+                            phoneNumVCodeInfo.setAttribute("style", "background: #0077C8; border-color: #0077C8; color: #FFFFFF;");
+                            // call 'spinner (transition)' function
+                            fadeOut();
+                            // call 'avoiding duplicate requests (btn disabled)' function
+                            setTimeout(inProgress, 0);
+                            document.querySelector("#personalInfoForm").submit();
+                        } else {
+                            phoneNumVCodeInfo.innerText = "인증 실패"
+                            phoneNumVCodeInfo.setAttribute("style", "background: #ffc107; border-color: #ffc107;")
+                            id_v_code.focus();
+                            alert("올바른 인증 번호를 입력해주세요.");
+                        }
+                    },
+                    error: function (xhr, errmsg, err) {
+                        // console.log(xhr.status + ": " + xhr.responseText);
+                        alert(err_msg);
+                    }
+                });
+            } else {
+                return false;
+            }
+        } else if (validation() == true) {
+            if (phone.value !== phone_h.value) {
+                if (confirm("올바른 정보인지 최종 확인해주세요.\n🙋 성명: " + last_name.value + first_name.value + "\n📱 휴대전화 번호: " + phone.value + "\n\n위 휴대전화 번호로 인증 번호를 전송하시겠어요?")) {
+                    $.ajax({
+                        type: "POST",
+                        url: "/member/phone-num-validation",
+                        data: JSON.stringify(last_name.value + "$" + phone.value),
+                        success: function (object) {
+                            const status = objectToJson(object).status;
+                            if (status == "generated") {
+                                last_name.readOnly = true;
+                                first_name.readOnly = true;
+                                phone.readOnly = true;
+                                phoneNumVCodeDiv.hidden = false;
+                                id_v_code.required = true;
+                                personalInfoBtn.hidden = true;
+                                personalInfoBtn.disabled = true;
+                                phoneNumVCodeCheckBtn.hidden = false;
+                                phoneNumVCodeCheckBtn.disabled = false;
+                                countDown();
+                            } else {
+                                alert("STATUS CODE: " + status + "\n\n" + err_msg);
+                            }
+                        },
+                        error: function (xhr, errmsg, err) {
+                            // console.log(xhr.status + ": " + xhr.responseText);
+                            alert(err_msg);
+                        }
+                    });
+                } else {
+                    return false;
+                }
+            } else {
+                // call 'spinner (transition)' function
+                fadeOut();
+                // call 'avoiding duplicate requests (btn disabled)' function
+                setTimeout(inProgress, 0);
+                return document.querySelector("#personalInfoForm").submit();
+            }
+        }
+    };
+    $("#id_v_code").keyup(function () {
+        var foo = $(this).val().replace(/[^0-9]/g, "");
+        $(this).val(foo);
+    });
+    function phoneNumVCodeValidation() {
+        if (id_v_code.value == "") {
+            alert("인증 번호를 입력해주세요.");
+            return false;
+        }
+        if (id_v_code.value.length !== 6) {
+            alert("올바른 인증 번호를 입력해주세요.");
+            return false;
+        }
+        if (!patternNum.test(id_v_code.value)) {
+            alert("인증 번호는 숫자만 입력해주세요.");
+            return false;
+        }
+        if (id_v_code.value !== "" &&
+            id_v_code.value.length == 6 &&
+            patternNum.test(id_v_code.value)) {
+            return true;
+        } else {
+            alert("올바른 인증 번호를 입력해주세요.");
+            return false;
+        }
+    };
+    document.querySelectorAll(".final-msg").forEach(item => {
+        item.addEventListener("keyup", event => {
+            if (event.keyCode === 13) {
+                finalMsg();
+            }
+        })
+    })
+    $("#phone").keyup(function () {
+        if (phone.value.length == 13 && phone.value !== phone_h.value) {
+            personalInfoBtn.innerHTML = '<i id="personalInfoBtnIcon" class="bi bi-envelope me-2"></i>인증 번호 전송';
+            personalInfoBtn.setAttribute("aria-label", "인증 번호 전송");
+            phoneAlert.hidden = false;
+        } else if (phone.value.length !== 13 || phone.value == phone_h.value) {
+            personalInfoBtn.innerHTML = '<i id="personalInfoBtnIcon" class="bi bi-pencil me-2"></i>변경'
+            personalInfoBtn.setAttribute("aria-label", "개인정보 변경");
+            phoneAlert.hidden = true;
+        }
+    });
+    $("#personalInfoBtn").on("click", function () {
+        finalMsg();
+    });
+    $("#phoneNumVCodeCheckBtn").on("click", function () {
+        finalMsg();
+    });
+    // time remaining until v code expires
+    function pleaseReset() {
+        document.querySelectorAll(".willExpireOnSpan").forEach(element => {
+            element.textContent = "인증 시간 만료됨";
+        });
+        phoneNumVCodeInfo.innerText = "시간 만료"
+        phoneNumVCodeInfo.setAttribute("style", "background: #ffc107; border-color: #ffc107;")
+        id_v_code.readOnly = true;
+        phoneNumVCodeCheckBtn.hidden = true;
+        phoneNumVCodeCheckBtn.disabled = true;
+        resetBtn.hidden = false;
+        resetBtn.disabled = false;
+        alert("인증 시간이 만료되었습니다.\n초기화 후 다시 시도해주세요.");
+    };
+    function startCountDown(duration) {
+        let sec = 0;
+        let countInterval = setInterval(function () {
+            sec = parseInt(duration % 60);
+            document.querySelectorAll(".willExpireOnSpan").forEach(element => {
+                element.textContent = `${sec}초 후 만료됨`;
+            });
+            duration = duration - 1;
+            if (sec == 0) {
+                clearInterval(countInterval);
+                pleaseReset();
+            };
+        }, 1000);
+    }
+    function countDown() {
+        let duration = 60;
+        document.querySelectorAll(".willExpireOnSpan").forEach(element => {
+            element.textContent = `${duration}초 후 만료됨`;
+        });
+        startCountDown(--duration);
+    };
+    // reset
+    function init() {
+        location.href = "/member/myaccount";
+        // call 'spinner (transition)' function
+        fadeOut();
+        // call 'avoiding duplicate requests (btn disabled)' function
+        setTimeout(inProgress, 0);
+    }
     // scroll down to 'modify' div
     function scrollToModify() {
         document.getElementById("modify").scrollIntoView({ behavior: "smooth", block: "start", inline: "start" });
