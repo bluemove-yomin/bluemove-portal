@@ -89,7 +89,9 @@ def phone_num_validation(request):
                 )
                 if v_code_obj.will_expire_on > datetime.datetime.now():
                     context = {"status": "passed"}
-                    v_code_obj.delete()
+                    v_code_obj.will_expire_on = (
+                        datetime.datetime.now() + datetime.timedelta(minutes=1)
+                    )
                 else:
                     context = {"status": "expired"}
             except:
@@ -229,25 +231,40 @@ def myaccount(request):
     first_name = request.POST.get("first_name")
     phone = request.POST.get("phone")
     delete_msg = request.POST.get("deleteMsg")
+    v_code_input_value = request.POST.get("v_code")
     # boolean
     not_modified = None
     modified = None
     unable_to_delete = None
     wrong_delete_msg = None
+    unable_to_modify = None
     scroll_to_modify = None
     scroll_to_delete = None
     if request.method == "POST" and not delete_msg:
         user = User.objects.get(id=request.user.id)
         profile = Profile.objects.get(user=request.user)
-        if user.last_name == last_name and user.first_name == first_name and profile.phone == phone:
+        if (
+            user.last_name == last_name
+            and user.first_name == first_name
+            and profile.phone == phone
+        ):
             not_modified = True
-        else:
-            user.last_name = last_name
-            user.first_name = first_name
-            user.save()
-            profile.phone = phone
-            profile.save()
-            modified = True
+        elif not profile.phone == phone:
+            try:
+                v_code_obj = Signupvcode.objects.get(
+                    last_name=last_name,
+                    phone_last_five_digits=phone.replace("-", "")[6:],
+                    code=v_code_input_value,
+                )
+                if v_code_obj:
+                    user.last_name = last_name
+                    user.first_name = first_name
+                    user.save()
+                    profile.phone = phone
+                    profile.save()
+                    modified = True
+            except:
+                unable_to_modify = True
         scroll_to_modify = True
     elif request.method == "POST" and delete_msg:
         try:
@@ -276,6 +293,7 @@ def myaccount(request):
             "modified": modified,
             "unable_to_delete": unable_to_delete,
             "wrong_delete_msg": wrong_delete_msg,
+            "unable_to_modify": unable_to_modify,
             "scroll_to_modify": scroll_to_modify,
             "scroll_to_delete": scroll_to_delete,
         },
