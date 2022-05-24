@@ -1163,6 +1163,10 @@
             alert("올바른 활동 시간을 입력해주세요.");
             return false;
         }
+        if (new Date(date.value).setHours(activityReportTimeStart.value.split(":")[0], activityReportTimeStart.value.split(":")[1], 0, 0) > new Date().setSeconds(0)) {
+            alert("활동 연월일과 활동 시간은 과거의 일시로 입력해주세요.");
+            return false;
+        }
         if (address.value == "") {
             alert("활동 장소를 입력해주세요.");
             return false;
