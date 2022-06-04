@@ -114,20 +114,6 @@
             </div>
             <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="안내창 닫기"></button>
         </div>
-        {% elif app_related_error %}
-        <!-- boolean APP_RELATED_ERROR -->
-        <div class="alert alert-secondary alert-dismissible fade show d-flex align-items-center" role="alert">
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor"
-                class="bi bi-emoji-neutral flex-shrink-0 me-2" viewBox="0 0 16 16">
-                <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z" />
-                <path
-                    d="M4 10.5a.5.5 0 0 0 .5.5h7a.5.5 0 0 0 0-1h-7a.5.5 0 0 0-.5.5zm3-4C7 5.672 6.552 5 6 5s-1 .672-1 1.5S5.448 8 6 8s1-.672 1-1.5zm4 0c0-.828-.448-1.5-1-1.5s-1 .672-1 1.5S9.448 8 10 8s1-.672 1-1.5z" />
-            </svg>
-            <div class="vertical">
-                지원서 관련 오류가 발생했습니다. 사무국에 문의해주세요.
-            </div>
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="안내창 닫기"></button>
-        </div>
         {% endif %}
         <!-- form -->
         <form action="{% url 'applynsubmit:applymembership' %}" method="GET" onsubmit="validation();">
@@ -773,6 +759,20 @@
                 접수가 마감되었습니다.
             </div>
         </div>
+        {% elif app_related_error %}
+        <!-- boolean APP_RELATED_ERROR -->
+        <div class="alert alert-secondary alert-dismissible fade show d-flex align-items-center" role="alert">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor"
+                class="bi bi-emoji-neutral flex-shrink-0 me-2" viewBox="0 0 16 16">
+                <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z" />
+                <path
+                    d="M4 10.5a.5.5 0 0 0 .5.5h7a.5.5 0 0 0 0-1h-7a.5.5 0 0 0-.5.5zm3-4C7 5.672 6.552 5 6 5s-1 .672-1 1.5S5.448 8 6 8s1-.672 1-1.5zm4 0c0-.828-.448-1.5-1-1.5s-1 .672-1 1.5S9.448 8 10 8s1-.672 1-1.5z" />
+            </svg>
+            <div class="vertical">
+                지원서 관련 오류가 발생했습니다. 사무국에 문의해주세요.
+            </div>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="안내창 닫기"></button>
+        </div>
         {% elif app_saved %}
         <!-- boolean APP_SAVED -->
         <div class="alert alert-primary alert-dismissible fade show d-flex align-items-center" role="alert">
@@ -1091,6 +1091,22 @@
         <h5 class="card-title pb-1">
             지원서 작성 및 관리
         </h5>
+        <!-- alert -->
+        {% if app_related_error %}
+        <!-- boolean APP_RELATED_ERROR -->
+        <div class="alert alert-secondary alert-dismissible fade show d-flex align-items-center" role="alert">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor"
+                class="bi bi-emoji-neutral flex-shrink-0 me-2" viewBox="0 0 16 16">
+                <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z" />
+                <path
+                    d="M4 10.5a.5.5 0 0 0 .5.5h7a.5.5 0 0 0 0-1h-7a.5.5 0 0 0-.5.5zm3-4C7 5.672 6.552 5 6 5s-1 .672-1 1.5S5.448 8 6 8s1-.672 1-1.5zm4 0c0-.828-.448-1.5-1-1.5s-1 .672-1 1.5S9.448 8 10 8s1-.672 1-1.5z" />
+            </svg>
+            <div class="vertical">
+                지원서 관련 오류가 발생했습니다. 사무국에 문의해주세요.
+            </div>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="안내창 닫기"></button>
+        </div>
+        {% endif %}
         <form action="{% url 'applynsubmit:applymembership' %}?wanted_id={{ wanted_id }}" method="POST"
             enctype="multipart/form-data" id="formAppCreate">
             {% csrf_token %}

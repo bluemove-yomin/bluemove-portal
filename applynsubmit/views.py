@@ -2865,7 +2865,7 @@ def applymembership(request):
                     app_related_error = True
                     client = WebClient(token=slack_bot_token)
                     try:
-                        client.conversations_join(channel=management_all_channel_id)
+                        client.conversations_join(channel=management_dev_channel_id)
                     except:
                         pass
                     blocks, text = slack_blocks_and_text(
@@ -2874,7 +2874,7 @@ def applymembership(request):
                         signal_app_related_error=True,
                     )
                     client.chat_postMessage(
-                        channel=management_all_channel_id,
+                        channel=management_dev_channel_id,
                         link_names=True,
                         as_user=True,
                         blocks=blocks,
