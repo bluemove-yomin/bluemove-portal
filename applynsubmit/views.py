@@ -2630,260 +2630,313 @@ def applymembership(request):
     ####
     if not wanted_id == None:
         # wanted details
-        try:
-            wanted_details = json.loads(
-                requests.get(
-                    "https://api.notion.com/v1/pages/" + wanted_id,
-                    headers=notion_headers,
-                ).text
-            ).get("properties")
-            wanted_team = wanted_details["담당"]["select"]["name"]
-            wanted_title = wanted_details["공고명"]["title"][0]["plain_text"]
-            wanted_datetime_start = wanted_details["모집 시작"]["date"]["start"]
-            wanted_datetime_end = wanted_details["모집 종료"]["date"]["start"]
-            wanted_datetime_day = wanted_details["요일"]["formula"]["string"]
-            wanted_status = wanted_details["상태"]["formula"]["string"]
-            wanted_dict = {
-                "team": wanted_team,
-                "title": wanted_title,
-                "datetime": wanted_datetime_start.split("T")[0][:4]
-                + "년 "
-                + wanted_datetime_start.split("T")[0][5:7]
-                + "월 "
-                + wanted_datetime_start.split("T")[0][8:10]
-                + "일"
-                + wanted_datetime_day_split(wanted_datetime_day.split(",")[0])
-                + " "
-                + wanted_datetime_start.split("T")[1][:5]
-                + " ~ "
-                + wanted_datetime_end.split("T")[0][:4]
-                + "년 "
-                + wanted_datetime_end.split("T")[0][5:7]
-                + "월 "
-                + wanted_datetime_end.split("T")[0][8:10]
-                + "일"
-                + wanted_datetime_day_split(wanted_datetime_day.split(",")[1])
-                + " "
-                + wanted_datetime_end.split("T")[1][:5],
-                "status": wanted_status,
-            }
-            wanted_list.append(wanted_dict.copy())
-            # application
-            if (
-                request.user.is_authenticated
-                and not "@bluemove.or.kr" in request.user.email
-            ):
-                try:
-                    app = Applymembership.objects.get(
-                        applicant=request.user, wanted_id=wanted_id
-                    )
-                except:
-                    pass
-                if reception_closed(wanted_datetime_end):
-                    timeout = True
-                # create an application
-                if cmd_post == "create" and not app and not timeout:
-                    scroll_to_app = True
-                    app = Applymembership.objects.create(
-                        applicant=request.user,
-                        wanted_id=wanted_id,
-                        wanted_title=wanted_title,
-                    )
-                # save or submit the application
-                elif (
-                    app
-                    and not app.last_saved == True
-                    and (
-                        cmd_post == "save"
-                        or (cmd_post == "submit" and not app.received == True)
-                    )
-                ):
-                    scroll_to_app = True
-                    save_the_app(
-                        app,
-                        wanted_title,
-                        self_intro,
-                        reason,
-                        plan,
-                        tracking,
-                        tracking_reference,
-                        tracking_etc,
-                        portfolio,
-                    )
-                    if (
-                        portfolio == ""
-                        or requests.get(portfolio, headers=bs4_headers).status_code
-                        == 200
-                    ):
-                        if timeout:
-                            app.last_saved = True
-                            app.save()
-                        if cmd_post == "save" and not timeout:
-                            app_saved = True
-                        elif cmd_post == "submit" and not timeout:
-                            app.received = True
-                            app.received_at = datetime.datetime.now()
-                            app.save()
-                            app_submitted = True
-                            client = WebClient(token=slack_bot_token)
-                            try:
-                                client.conversations_join(
-                                    channel=management_all_channel_id
-                                )
-                            except:
-                                pass
-                            blocks, text = slack_blocks_and_text(
-                                request=request,
-                                str_wanted_title=wanted_title,
-                                obj_app=app,
-                            )
-                            client.chat_postMessage(
-                                channel=management_all_channel_id,
-                                link_names=True,
-                                as_user=True,
-                                blocks=blocks,
-                                text=text,
-                            )
-                            mail_service.users().messages().send(
-                                userId=google_delegated_email,
-                                body=gmail_message(
-                                    request=request,
-                                    obj_app=app,
-                                    str_wanted_title=wanted_title,
-                                ),
-                            ).execute()
-                    else:
-                        if requests.get(portfolio, headers=bs4_headers).status_code == 401:
-                            inaccessible_portfolio = True
-                        else:
-                            wrong_portfolio = True
-                # delete the application
-                elif cmd_post == "delete" and app:
-                    scroll_to_app = True
-                    app.delete()
-                    app = None
-                elif cmd_post == "join" and app and app.notified == True:
-                    scroll_to_join = True
-                    app.joined = True
-                    app.save()
-                    client = WebClient(token=slack_bot_token)
-                    try:
-                        client.conversations_join(channel=management_all_channel_id)
-                    except:
-                        pass
-                    blocks, text = slack_blocks_and_text(
-                        request=request,
-                        str_wanted_title=wanted_title,
-                        obj_app=app,
-                    )
-                    client.chat_postMessage(
-                        channel=management_all_channel_id,
-                        link_names=True,
-                        as_user=True,
-                        blocks=blocks,
-                        text=text,
-                    )
+        wanted_details = json.loads(
+            requests.get(
+                "https://api.notion.com/v1/pages/" + wanted_id,
+                headers=notion_headers,
+            ).text
+        ).get("properties")
+        wanted_team = wanted_details["담당"]["select"]["name"]
+        wanted_title = wanted_details["공고명"]["title"][0]["plain_text"]
+        wanted_datetime_start = wanted_details["모집 시작"]["date"]["start"]
+        wanted_datetime_end = wanted_details["모집 종료"]["date"]["start"]
+        wanted_datetime_day = wanted_details["요일"]["formula"]["string"]
+        wanted_status = wanted_details["상태"]["formula"]["string"]
+        wanted_dict = {
+            "team": wanted_team,
+            "title": wanted_title,
+            "datetime": wanted_datetime_start.split("T")[0][:4]
+            + "년 "
+            + wanted_datetime_start.split("T")[0][5:7]
+            + "월 "
+            + wanted_datetime_start.split("T")[0][8:10]
+            + "일"
+            + wanted_datetime_day_split(wanted_datetime_day.split(",")[0])
+            + " "
+            + wanted_datetime_start.split("T")[1][:5]
+            + " ~ "
+            + wanted_datetime_end.split("T")[0][:4]
+            + "년 "
+            + wanted_datetime_end.split("T")[0][5:7]
+            + "월 "
+            + wanted_datetime_end.split("T")[0][8:10]
+            + "일"
+            + wanted_datetime_day_split(wanted_datetime_day.split(",")[1])
+            + " "
+            + wanted_datetime_end.split("T")[1][:5],
+            "status": wanted_status,
+        }
+        wanted_list.append(wanted_dict.copy())
+        # application
+        if (
+            request.user.is_authenticated
+            and not "@bluemove.or.kr" in request.user.email
+        ):
+            try:
+                app = Applymembership.objects.get(
+                    applicant=request.user, wanted_id=wanted_id
+                )
+            except:
+                pass
+            if reception_closed(wanted_datetime_end):
+                timeout = True
+            # create an application
+            if cmd_post == "create" and not app and not timeout:
+                scroll_to_app = True
+                app = Applymembership.objects.create(
+                    applicant=request.user,
+                    wanted_id=wanted_id,
+                    wanted_title=wanted_title,
+                )
+            # save or submit the application
             elif (
-                request.user.is_authenticated
-                and "@bluemove.or.kr" in request.user.email
+                app
+                and not app.last_saved == True
+                and (
+                    cmd_post == "save"
+                    or (cmd_post == "submit" and not app.received == True)
+                )
             ):
-                apps_received = Applymembership.objects.filter(
-                    wanted_id=wanted_id, received=True
-                ).order_by("-received_at")
-                apps_decided = apps_received.exclude(pf="미결정")
-                apps_passed = apps_received.filter(pf="선발")
-                apps_failed = apps_received.filter(pf="미선발")
+                scroll_to_app = True
+                save_the_app(
+                    app,
+                    wanted_title,
+                    self_intro,
+                    reason,
+                    plan,
+                    tracking,
+                    tracking_reference,
+                    tracking_etc,
+                    portfolio,
+                )
+                if (
+                    portfolio == ""
+                    or requests.get(portfolio, headers=bs4_headers).status_code
+                    == 200
+                ):
+                    if timeout:
+                        app.last_saved = True
+                        app.save()
+                    if cmd_post == "save" and not timeout:
+                        app_saved = True
+                    elif cmd_post == "submit" and not timeout:
+                        app.received = True
+                        app.received_at = datetime.datetime.now()
+                        app.save()
+                        app_submitted = True
+                        client = WebClient(token=slack_bot_token)
+                        try:
+                            client.conversations_join(
+                                channel=management_all_channel_id
+                            )
+                        except:
+                            pass
+                        blocks, text = slack_blocks_and_text(
+                            request=request,
+                            str_wanted_title=wanted_title,
+                            obj_app=app,
+                        )
+                        client.chat_postMessage(
+                            channel=management_all_channel_id,
+                            link_names=True,
+                            as_user=True,
+                            blocks=blocks,
+                            text=text,
+                        )
+                        mail_service.users().messages().send(
+                            userId=google_delegated_email,
+                            body=gmail_message(
+                                request=request,
+                                obj_app=app,
+                                str_wanted_title=wanted_title,
+                            ),
+                        ).execute()
+                else:
+                    if requests.get(portfolio, headers=bs4_headers).status_code == 401:
+                        inaccessible_portfolio = True
+                    else:
+                        wrong_portfolio = True
+            # delete the application
+            elif cmd_post == "delete" and app:
+                scroll_to_app = True
+                app.delete()
+                app = None
+            elif cmd_post == "join" and app and app.notified == True:
+                scroll_to_join = True
+                app.joined = True
+                app.save()
+                client = WebClient(token=slack_bot_token)
                 try:
-                    noti = ApplymembershipNoti.objects.get(wanted_id=wanted_id)
+                    client.conversations_join(channel=management_all_channel_id)
                 except:
                     pass
-                if not pf == None:
-                    scroll_to_app = True
-                    applicant = pf.split("#")[0]
-                    app = Applymembership.objects.get(
-                        applicant=applicant, wanted_id=wanted_id
+                blocks, text = slack_blocks_and_text(
+                    request=request,
+                    str_wanted_title=wanted_title,
+                    obj_app=app,
+                )
+                client.chat_postMessage(
+                    channel=management_all_channel_id,
+                    link_names=True,
+                    as_user=True,
+                    blocks=blocks,
+                    text=text,
+                )
+        elif (
+            request.user.is_authenticated
+            and "@bluemove.or.kr" in request.user.email
+        ):
+            apps_received = Applymembership.objects.filter(
+                wanted_id=wanted_id, received=True
+            ).order_by("-received_at")
+            apps_decided = apps_received.exclude(pf="미결정")
+            apps_passed = apps_received.filter(pf="선발")
+            apps_failed = apps_received.filter(pf="미선발")
+            try:
+                noti = ApplymembershipNoti.objects.get(wanted_id=wanted_id)
+            except:
+                pass
+            if not pf == None:
+                scroll_to_app = True
+                applicant = pf.split("#")[0]
+                app = Applymembership.objects.get(
+                    applicant=applicant, wanted_id=wanted_id
+                )
+                app.pf = pf.split("#")[1]
+                app.save()
+            # create or save or send the notification
+            elif (
+                apps_received.count() > 0
+                and apps_received.count() == apps_decided.count()
+                and (cmd_post == "noti_save" or cmd_post == "noti_send")
+            ):
+                scroll_to_noti = True
+                if not noti:
+                    noti = ApplymembershipNoti.objects.create(
+                        wanted_id=wanted_id, saved_by=request.user
                     )
-                    app.pf = pf.split("#")[1]
-                    app.save()
-                # create or save or send the notification
-                elif (
-                    apps_received.count() > 0
-                    and apps_received.count() == apps_decided.count()
-                    and (cmd_post == "noti_save" or cmd_post == "noti_send")
-                ):
-                    scroll_to_noti = True
-                    if not noti:
-                        noti = ApplymembershipNoti.objects.create(
-                            wanted_id=wanted_id, saved_by=request.user
-                        )
-                    save_the_noti(
-                        request,
-                        noti,
-                        wanted_title,
-                        title,
-                        passed_content,
-                        failed_content,
+                save_the_noti(
+                    request,
+                    noti,
+                    wanted_title,
+                    title,
+                    passed_content,
+                    failed_content,
+                )
+                if cmd_post == "noti_save":
+                    noti_saved = True
+                if cmd_post == "noti_send":
+                    if not noti.sent == True and not passed_content == None:
+                        mail_service.users().messages().send(
+                            userId=google_delegated_email,
+                            body=gmail_message(
+                                request=request,
+                                obj_noti=noti,
+                                str_wanted_id=wanted_id,
+                                str_title=title,
+                                str_passed_content=passed_content,
+                            ),
+                        ).execute()
+                    time.sleep(1)
+                    if not noti.sent == True and not failed_content == None:
+                        mail_service.users().messages().send(
+                            userId=google_delegated_email,
+                            body=gmail_message(
+                                obj_noti=noti,
+                                str_wanted_id=wanted_id,
+                                str_title=title,
+                                str_failed_content=failed_content,
+                            ),
+                        ).execute()
+                    noti.sent = True
+                    noti.will_be_deleted_on = (
+                        datetime.datetime.now() + datetime.timedelta(days=1)
                     )
-                    if cmd_post == "noti_save":
-                        noti_saved = True
-                    if cmd_post == "noti_send":
-                        if not noti.sent == True and not passed_content == None:
-                            mail_service.users().messages().send(
-                                userId=google_delegated_email,
-                                body=gmail_message(
-                                    request=request,
-                                    obj_noti=noti,
-                                    str_wanted_id=wanted_id,
-                                    str_title=title,
-                                    str_passed_content=passed_content,
-                                ),
-                            ).execute()
-                        time.sleep(1)
-                        if not noti.sent == True and not failed_content == None:
-                            mail_service.users().messages().send(
-                                userId=google_delegated_email,
-                                body=gmail_message(
-                                    obj_noti=noti,
-                                    str_wanted_id=wanted_id,
-                                    str_title=title,
-                                    str_failed_content=failed_content,
-                                ),
-                            ).execute()
-                        noti.sent = True
-                        noti.will_be_deleted_on = (
+                    noti.save()
+                    for app in apps_decided:
+                        app.notified = True
+                        app.will_be_deleted_on = (
                             datetime.datetime.now() + datetime.timedelta(days=1)
                         )
-                        noti.save()
-                        for app in apps_decided:
-                            app.notified = True
-                            app.will_be_deleted_on = (
-                                datetime.datetime.now() + datetime.timedelta(days=1)
-                            )
-                            app.save()
-                # delete the notification
-                elif (
-                    cmd_post == "noti_delete"
-                    and noti
-                    and apps_received.count() > 0
-                    and apps_received.count() == apps_decided.count()
-                ):
-                    scroll_to_noti = True
-                    noti.delete()
-                    noti = None
-            # wanted
-            try:
-                wanted_soup = BeautifulSoup(
-                    requests.get(
-                        "https://www.bluemove.or.kr/" + wanted_id,
-                        headers=bs4_headers,
-                    ).content,
-                    "lxml",
+                        app.save()
+            # delete the notification
+            elif (
+                cmd_post == "noti_delete"
+                and noti
+                and apps_received.count() > 0
+                and apps_received.count() == apps_decided.count()
+            ):
+                scroll_to_noti = True
+                noti.delete()
+                noti = None
+        # wanted
+        try:
+            wanted_soup = BeautifulSoup(
+                requests.get(
+                    "https://www.bluemove.or.kr/" + wanted_id,
+                    headers=bs4_headers,
+                ).content,
+                "lxml",
+            )
+            wanted_raw = wanted_soup.find(class_="notion-page-content")
+            del wanted_raw["style"]
+            for style in wanted_raw.select("style"):
+                style.extract()
+            wanted = str(wanted_raw)
+            return render(
+                request,
+                "applynsubmit/applymembership.html",
+                {
+                    # obj
+                    "app": app,
+                    "apps_received": apps_received,
+                    "apps_decided": apps_decided,
+                    "apps_passed": apps_passed,
+                    "apps_failed": apps_failed,
+                    "noti": noti,
+                    # str, lst
+                    "wanted_id": wanted_id,
+                    "wanted_list": wanted_list,
+                    "wanted": wanted,
+                    "portfolio": portfolio,
+                    # boolean
+                    "app_saved": app_saved,
+                    "app_submitted": app_submitted,
+                    "noti_saved": noti_saved,
+                    "scroll_to_app": scroll_to_app,
+                    "scroll_to_join": scroll_to_join,
+                    "scroll_to_noti": scroll_to_noti,
+                    "inaccessible_portfolio": inaccessible_portfolio,
+                    "wrong_portfolio": wrong_portfolio,
+                    "timeout": timeout,
+                },
+            )
+        except:
+            wanted_id_without_dash = wanted_id.replace("-", "")
+            if (
+                "-" in wanted_id
+                and len(wanted_id_without_dash) == 32
+                and requests.get(
+                    "https://www.notion.so/bluemove/" + wanted_id_without_dash
+                ).status_code
+                == 200
+            ):
+                error = True
+                client = WebClient(token=slack_bot_token)
+                try:
+                    client.conversations_join(channel=management_dev_channel_id)
+                except:
+                    pass
+                blocks, text = slack_blocks_and_text(
+                    request=request, str_wanted_id=wanted_id
                 )
-                wanted_raw = wanted_soup.find(class_="notion-page-content")
-                del wanted_raw["style"]
-                for style in wanted_raw.select("style"):
-                    style.extract()
-                wanted = str(wanted_raw)
+                client.chat_postMessage(
+                    channel=management_dev_channel_id,
+                    link_names=True,
+                    as_user=True,
+                    blocks=blocks,
+                    text=text,
+                )
                 return render(
                     request,
                     "applynsubmit/applymembership.html",
@@ -2898,9 +2951,9 @@ def applymembership(request):
                         # str, lst
                         "wanted_id": wanted_id,
                         "wanted_list": wanted_list,
-                        "wanted": wanted,
                         "portfolio": portfolio,
                         # boolean
+                        "error": error,
                         "app_saved": app_saved,
                         "app_submitted": app_submitted,
                         "noti_saved": noti_saved,
@@ -2912,65 +2965,9 @@ def applymembership(request):
                         "timeout": timeout,
                     },
                 )
-            except:
-                wanted_id_without_dash = wanted_id.replace("-", "")
-                if (
-                    "-" in wanted_id
-                    and len(wanted_id_without_dash) == 32
-                    and requests.get(
-                        "https://www.notion.so/bluemove/" + wanted_id_without_dash
-                    ).status_code
-                    == 200
-                ):
-                    error = True
-                    client = WebClient(token=slack_bot_token)
-                    try:
-                        client.conversations_join(channel=management_dev_channel_id)
-                    except:
-                        pass
-                    blocks, text = slack_blocks_and_text(
-                        request=request, str_wanted_id=wanted_id
-                    )
-                    client.chat_postMessage(
-                        channel=management_dev_channel_id,
-                        link_names=True,
-                        as_user=True,
-                        blocks=blocks,
-                        text=text,
-                    )
-                    return render(
-                        request,
-                        "applynsubmit/applymembership.html",
-                        {
-                            # obj
-                            "app": app,
-                            "apps_received": apps_received,
-                            "apps_decided": apps_decided,
-                            "apps_passed": apps_passed,
-                            "apps_failed": apps_failed,
-                            "noti": noti,
-                            # str, lst
-                            "wanted_id": wanted_id,
-                            "wanted_list": wanted_list,
-                            "portfolio": portfolio,
-                            # boolean
-                            "error": error,
-                            "app_saved": app_saved,
-                            "app_submitted": app_submitted,
-                            "noti_saved": noti_saved,
-                            "scroll_to_app": scroll_to_app,
-                            "scroll_to_join": scroll_to_join,
-                            "scroll_to_noti": scroll_to_noti,
-                            "inaccessible_portfolio": inaccessible_portfolio,
-                            "wrong_portfolio": wrong_portfolio,
-                            "timeout": timeout,
-                        },
-                    )
         ####
         #### template 01
         ####
-        except:
-            wrong_url = True
     # wanted list
     wanted_list_opened = json.loads(
         requests.post(
