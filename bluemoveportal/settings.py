@@ -60,7 +60,7 @@ NCP_KEY_ID = get_secret("NCP_KEY_ID")
 NCP_SECRET = get_secret("NCP_SECRET")
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = ["*"]
 
