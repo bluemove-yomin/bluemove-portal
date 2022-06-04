@@ -81,7 +81,7 @@ mail_service = build("gmail", "v1", credentials=credentials_delegated)
 notion_headers = {
     "Authorization": f"Bearer " + notion_token,
     "Content-Type": "application/json",
-    "Notion-Version": "2022-02-22",
+    "Notion-Version": "2021-08-16",
 }
 
 # Oopy scraping
