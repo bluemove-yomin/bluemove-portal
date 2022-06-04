@@ -2435,10 +2435,10 @@ def cron_delete_all_expired_recruiting_data(request):
     apps_notified = Applymembership.objects.filter(notified=True)
     notis_sent = ApplymembershipNoti.objects.filter(sent=True)
     for app in apps_notified:
-        if app.will_be_deleted_at < datetime.datetime.now():
+        if app.will_be_deleted_on < datetime.datetime.now():
             app.applicant.delete()
     for noti in notis_sent:
-        if noti.will_be_deleted_at < datetime.datetime.now():
+        if noti.will_be_deleted_on < datetime.datetime.now():
             client = WebClient(token=slack_bot_token)
             try:
                 client.conversations_join(channel=management_all_channel_id)
@@ -2460,7 +2460,7 @@ def cron_delete_queued_alumni_data(request):
     all_queued_alumni = ApplymembershipwithdrawalQueue.objects.all()
     all_queued_alumni_list = []
     for queued_alumni in all_queued_alumni:
-        if queued_alumni.will_be_deleted_at < datetime.datetime.now():
+        if queued_alumni.will_be_deleted_on < datetime.datetime.now():
             # newsletter (Mailchimp)
             member_email = base64.urlsafe_b64decode(
                 bytes(queued_alumni.email, "utf-8")
@@ -2850,13 +2850,13 @@ def applymembership(request):
                                 ),
                             ).execute()
                         noti.sent = True
-                        noti.will_be_deleted_at = (
+                        noti.will_be_deleted_on = (
                             datetime.datetime.now() + datetime.timedelta(days=1)
                         )
                         noti.save()
                         for app in apps_decided:
                             app.notified = True
-                            app.will_be_deleted_at = (
+                            app.will_be_deleted_on = (
                                 datetime.datetime.now() + datetime.timedelta(days=1)
                             )
                             app.save()
@@ -3211,7 +3211,7 @@ def applymembershipwithdrawal(request):
             reason=reason,
             row_idx=row_idx,
             added_at=datetime.datetime.now(),
-            will_be_deleted_at=datetime.datetime.now() + datetime.timedelta(days=1),
+            will_be_deleted_on=datetime.datetime.now() + datetime.timedelta(days=1),
         )
         mail_service.users().messages().send(
             userId=google_delegated_email,

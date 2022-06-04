@@ -14,19 +14,17 @@
             <a href="#" id="menuChecknissueLarge" class="a-nav-item p-nav-item" data-bs-toggle="dropdown"
                 aria-expanded="false"><i class="bi bi-files me-2"></i>조회/발급</a>
             <ul class="dropdown-menu text-small shadow" aria-labelledby="menuChecknissueLarge">
-                <li><a class="dropdown-item fade-onclick" href="{% url 'checknissue:checklist' %}">블루무버 명단
-                        조회</a></li>
-                <li><a class="dropdown-item fade-onclick" href="{% url 'checknissue:checkcert' %}">활동증명서 진위
-                        확인</a></li>
-                <li><a class="dropdown-item fade-onclick" href="{% url 'checknissue:issuecert' %}">활동증명서
-                        발급</a></li>
+                <li><a class="dropdown-item fade-onclick" href="{% url 'checknissue:checklist' %}">블루무버 명단 조회</a></li>
+                <li><a class="dropdown-item fade-onclick" href="{% url 'checknissue:checkcert' %}">활동증명서 진위 확인</a></li>
+                <li><a class="dropdown-item fade-onclick" href="{% url 'checknissue:issuecert' %}">활동증명서 발급</a></li>
             </ul>
             <a href="#" id="menuApplynsubmitLarge" class="a-nav-item p-nav-item" data-bs-toggle="dropdown"
                 aria-expanded="false"><i class="bi bi-box-arrow-in-up-right me-2"></i>신청/제출</a>
             <ul class="dropdown-menu text-small shadow" aria-labelledby="menuApplynsubmitLarge">
                 <li><a class="dropdown-item fade-onclick" href="{% url 'applynsubmit:applymembership' %}">블루무브 가입 지원</a>
                 </li>
-                <li><a class="dropdown-item fade-onclick" href="{% url 'applynsubmit:applymembershipwithdrawal' %}">블루무브 탈퇴
+                <li><a class="dropdown-item fade-onclick" href="{% url 'applynsubmit:applymembershipwithdrawal' %}">블루무브
+                        탈퇴
                         신청</a></li>
                 <li><a class="dropdown-item" href="#">총회의결권위임장 제출</a></li>
                 <li><a class="dropdown-item" href="#">임시총회소집요구서 제출</a></li>
@@ -168,7 +166,8 @@
                                         <li><a class="list-group-item nav-small-item no-border fade-onclick"
                                                 href="{% url 'applynsubmit:applymembership' %}">블루무브 가입 지원</a></li>
                                         <li><a class="list-group-item nav-small-item no-border fade-onclick"
-                                                href="{% url 'applynsubmit:applymembershipwithdrawal' %}">블루무브 탈퇴 신청</a></li>
+                                                href="{% url 'applynsubmit:applymembershipwithdrawal' %}">블루무브 탈퇴 신청</a>
+                                        </li>
                                         <li><a class="list-group-item nav-small-item no-border" href="#">총회의결권위임장 제출</a>
                                         </li>
                                         <li><a class="list-group-item nav-small-item no-border" href="#">임시총회소집요구서

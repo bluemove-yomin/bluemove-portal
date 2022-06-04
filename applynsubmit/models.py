@@ -36,7 +36,7 @@ class Applymembership(models.Model):
     received_at = models.DateTimeField(null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-    will_be_deleted_at = models.DateTimeField(null=True, blank=True)
+    will_be_deleted_on = models.DateTimeField(null=True, blank=True)
 
     class Meta:
         verbose_name = "지원서"
@@ -52,7 +52,7 @@ class ApplymembershipNoti(models.Model):
     failed_content = models.TextField(max_length=510, null=True, blank=True)
     sent = models.BooleanField(default=False)
     updated_at = models.DateTimeField(auto_now=True)
-    will_be_deleted_at = models.DateTimeField(null=True, blank=True)
+    will_be_deleted_on = models.DateTimeField(null=True, blank=True)
 
     class Meta:
         verbose_name = "통보 메일"
@@ -83,7 +83,7 @@ class ApplymembershipwithdrawalQueue(models.Model):
     row_idx = models.CharField(max_length=10)
     slack_ts = models.CharField(max_length=100)
     added_at = models.DateTimeField(null=True, blank=True)
-    will_be_deleted_at = models.DateTimeField(null=True, blank=True)
+    will_be_deleted_on = models.DateTimeField(null=True, blank=True)
 
     class Meta:
         verbose_name = "탈퇴 신청자"

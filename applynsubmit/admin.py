@@ -19,7 +19,7 @@ class ApplymembershipAdmin(admin.ModelAdmin):
         "received_at",
         "created_at",
         "updated_at",
-        "will_be_deleted_at",
+        "will_be_deleted_on",
     )
     search_fields = (
         "wanted_id",
@@ -39,7 +39,7 @@ class ApplymembershipAdmin(admin.ModelAdmin):
         "received_at",
         "created_at",
         "updated_at",
-        "will_be_deleted_at",
+        "will_be_deleted_on",
     )
 
 
@@ -54,7 +54,7 @@ class ApplymembershipnotiAdmin(admin.ModelAdmin):
         "failed_content",
         "sent",
         "updated_at",
-        "will_be_deleted_at",
+        "will_be_deleted_on",
     )
     search_fields = (
         "wanted_id",
@@ -65,7 +65,7 @@ class ApplymembershipnotiAdmin(admin.ModelAdmin):
         "failed_content",
         "sent",
         "updated_at",
-        "will_be_deleted_at",
+        "will_be_deleted_on",
     )
 
 
@@ -99,7 +99,7 @@ class ApplymembershipwithdrawalQueueAdmin(admin.ModelAdmin):
         "row_idx",
         "slack_ts",
         "added_at",
-        "will_be_deleted_at",
+        "will_be_deleted_on",
     )
     search_fields = (
         "number",
@@ -113,5 +113,5 @@ class ApplymembershipwithdrawalQueueAdmin(admin.ModelAdmin):
         "row_idx",
         "slack_ts",
         "added_at",
-        "will_be_deleted_at",
+        "will_be_deleted_on",
     )

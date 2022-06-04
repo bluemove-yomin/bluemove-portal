@@ -678,10 +678,6 @@ def checklist(request):
     )
 
 
-def issueaccount(request):
-    return render(request, "checknissue/issueaccount.html", {})
-
-
 def checkcert(request):
     # str, lst
     alumni_id = request.POST.get("alumniId")
