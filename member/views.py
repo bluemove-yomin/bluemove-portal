@@ -52,7 +52,7 @@ def ncp_sens_message(str_to=None, str_v_code=None):
     d_hash = base64.b64encode(digest).decode()
     from_no = "0232960613"
     to_no = str_to
-    message = f"[블루무브] 인증 코드는 {str_v_code} 입니다."
+    message = f"[블루무브] 인증 번호는 {str_v_code} 입니다."
     msg_data = {
         "type": "SMS",
         "countryCode": "82",
