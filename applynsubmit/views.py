@@ -31,7 +31,8 @@ from slack_sdk import WebClient
 import re
 
 # Mailchimp
-from mailchimp_marketing import Client
+import mailchimp_marketing as MailchimpMarketing
+from mailchimp_marketing.api_client import ApiClientError
 import hashlib
 
 # user-agents (https://github.com/selwin/python-user-agents)
@@ -70,12 +71,15 @@ sa_credentials = service_account.Credentials.from_service_account_file(
         "https://www.googleapis.com/auth/drive",
         "https://www.googleapis.com/auth/documents",
         "https://www.googleapis.com/auth/gmail.send",
+        "https://www.googleapis.com/auth/admin.directory.user",
+        "https://www.googleapis.com/auth/admin.directory.group",
     ],
 )
 credentials_delegated = sa_credentials.with_subject(google_delegated_email)
 drive_service = build("drive", "v3", credentials=credentials_delegated)
 sheets_service = build("sheets", "v4", credentials=credentials_delegated)
 mail_service = build("gmail", "v1", credentials=credentials_delegated)
+admin_service = build("admin", "directory_v1", credentials=credentials_delegated)
 
 # Notion API
 notion_headers = {
@@ -84,13 +88,16 @@ notion_headers = {
     "Notion-Version": "2021-08-16",
 }
 
+# Slack API
+client = WebClient(token=slack_bot_token)
+
 # Oopy scraping
 bs4_headers = {
     "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.114 Safari/537.36"
 }
 
 # Mailchimp API
-mailchimp = Client()
+mailchimp = MailchimpMarketing.Client()
 mailchimp.set_config({"api_key": mailchimp_key, "server": mailchimp_key.split("-")[1]})
 
 # Bluemove data
@@ -1839,10 +1846,12 @@ def slack_blocks_and_text(
     str_alumni_phone=None,
     str_alumni_email=None,
     str_queued_alumni_count=None,
+    str_new_member_info=None,
     signal_app_related_error=None,
     signal_removed_from_queue=None,
     signal_cancel_the_application_for_withdrawal=None,
     signal_gone=None,
+    signal_unable_to_join=None,
 ):
     # message blocks and a text for the application receipt notification
     if obj_app and not obj_app.notified:
@@ -1910,7 +1919,7 @@ def slack_blocks_and_text(
         ]
         text = f"📄 {masked_name}님 지원서 접수됨"
     # message blocks and a text for the sign-up completion notification
-    elif obj_app and obj_app.notified:
+    elif obj_app and obj_app.notified and obj_app.joined:
         blocks = [
             {
                 "type": "header",
@@ -1950,11 +1959,12 @@ def slack_blocks_and_text(
                 "fields": [
                     {
                         "type": "mrkdwn",
-                        "text": "*휴대전화 번호:*\n" + obj_app.applicant.profile.phone,
+                        "text": "*회번:*\n" + str_new_member_info.split("#")[0],
                     },
                     {
                         "type": "mrkdwn",
-                        "text": "*이메일 주소:*\n" + obj_app.applicant.email,
+                        "text": "*블루무버 계정 이메일 주소:*\n"
+                        + str_new_member_info.split("#")[1],
                     },
                 ],
             },
@@ -2252,7 +2262,7 @@ def slack_blocks_and_text(
             },
         ]
         text = "😢 " + name + "님이 블루무브 탈퇴를 신청함"
-    # message blocks and a text for the error notification of wanted details page
+    # message blocks and a text for the error notification of application-related requests
     elif str_wanted_id and signal_app_related_error:
         blocks = [
             {
@@ -2324,6 +2334,78 @@ def slack_blocks_and_text(
             },
         ]
         text = f"⚠ '블루무브 가입 지원' 페이지 지원서 관련 오류 발생"
+    # message blocks and a text for the error notification of requests related to confirmation of subscription
+    elif str_wanted_id and signal_unable_to_join:
+        blocks = [
+            {
+                "type": "header",
+                "text": {
+                    "type": "plain_text",
+                    "text": "⚠ '블루무브 가입 지원' 페이지 가입 확정 관련 오류 발생",
+                },
+            },
+            {
+                "type": "section",
+                "text": {
+                    "type": "mrkdwn",
+                    "text": "사용자가 '블루무브 가입 지원' 페이지에서 가입 확정 관련 요청을 요청하였으나 오류가 발생했습니다.",
+                },
+            },
+            {
+                "type": "section",
+                "fields": [
+                    {
+                        "type": "mrkdwn",
+                        "text": "*WANTED_ID:*\n" + str_wanted_id,
+                    },
+                    {
+                        "type": "mrkdwn",
+                        "text": "*DATETIME:*\n"
+                        + datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+                    },
+                ],
+            },
+            {
+                "type": "section",
+                "fields": [
+                    {
+                        "type": "mrkdwn",
+                        "text": "*USERNAME:*\n" + request.user.username
+                        if request.user.is_authenticated
+                        else "*USERNAME:*\nAnonymousUser",
+                    },
+                    {
+                        "type": "mrkdwn",
+                        "text": "*USER_AGENT:*\n"
+                        + str(user_agents.parse(request.headers.get("User-Agent"))),
+                    },
+                ],
+            },
+            {
+                "type": "section",
+                "fields": [
+                    {
+                        "type": "mrkdwn",
+                        "text": "*REQUEST_METHOD:*\n" + request.method,
+                    },
+                    {
+                        "type": "mrkdwn",
+                        "text": "*REQUEST_URI:*\n" + request.build_absolute_uri(),
+                    },
+                ],
+            },
+            {"type": "divider"},
+            {
+                "type": "context",
+                "elements": [
+                    {
+                        "type": "mrkdwn",
+                        "text": "ℹ️ 이 메시지는 사용자가 위 URI에서 가입 확정 관련 작업을 요청하였으나 오류가 발생하여 발송되었습니다.",
+                    },
+                ],
+            },
+        ]
+        text = f"⚠ '블루무브 가입 지원' 페이지 가입 확정 관련 오류 발생"
     # message blocks and a text for the error notification of wanted details page
     elif str_wanted_id:
         blocks = [
@@ -2512,7 +2594,6 @@ def cron_delete_all_expired_recruiting_data(request):
             app.applicant.delete()
     for noti in notis_sent:
         if noti.will_be_deleted_on < datetime.datetime.now():
-            client = WebClient(token=slack_bot_token)
             try:
                 client.conversations_join(channel=management_all_channel_id)
             except:
@@ -2613,7 +2694,6 @@ def cron_delete_queued_alumni_data(request):
                     request=request, signal_gone=True, obj_queued_alumni=queued_alumni
                 ),
             ).execute()
-            client = WebClient(token=slack_bot_token)
             try:
                 client.conversations_join(channel=management_all_channel_id)
             except:
@@ -2634,7 +2714,6 @@ def cron_delete_queued_alumni_data(request):
             queued_alumni.delete()
     queued_alumni_count = len(all_queued_alumni_list)
     if queued_alumni_count > 0:
-        client = WebClient(token=slack_bot_token)
         try:
             client.conversations_join(channel=management_all_channel_id)
         except:
@@ -2683,6 +2762,10 @@ def applymembership(request):
     passed_content = request.POST.get("notiPassedContent")
     failed_content = request.POST.get("notiFailedContent")
     q = request.GET.get("q")
+    bmaccount_eng_first_name = request.POST.get("bmaccountCreateEngFirstName")
+    bmaccount_id_num = request.POST.get("bmaccountCreateIdNum")
+    bmaccount_email = request.POST.get("bmaccountCreateEmail")
+    bmaccount_address = request.POST.get("bmaccountCreateAddress")
     # boolean
     error = None
     app_saved = None
@@ -2696,6 +2779,7 @@ def applymembership(request):
     scroll_to_app = None
     scroll_to_join = None
     scroll_to_noti = None
+    unable_to_join = None
     # cmd
     cmd_get = request.GET.get("cmdGet")
     cmd_post = request.POST.get("cmdPost")
@@ -2716,6 +2800,7 @@ def applymembership(request):
             wanted_datetime_start = wanted_details["모집 시작"]["date"]["start"]
             wanted_datetime_end = wanted_details["모집 종료"]["date"]["start"]
             wanted_datetime_day = wanted_details["요일"]["formula"]["string"]
+            wanted_term = wanted_details["기간"]["formula"]["string"]
             wanted_status = wanted_details["상태"]["formula"]["string"]
             wanted_dict = {
                 "team": wanted_team,
@@ -2739,6 +2824,7 @@ def applymembership(request):
                 + wanted_datetime_day_split(wanted_datetime_day.split(",")[1])
                 + " "
                 + wanted_datetime_end.split("T")[1][:5],
+                "term": wanted_term,
                 "status": wanted_status,
             }
             wanted_list.append(wanted_dict.copy())
@@ -2787,8 +2873,7 @@ def applymembership(request):
                         )
                         if (
                             portfolio == ""
-                            or requests.get(portfolio, headers=bs4_headers).status_code
-                            == 200
+                            or requests.get(portfolio, headers=bs4_headers).status_code == 200
                         ):
                             if timeout:
                                 app.last_saved = True
@@ -2800,11 +2885,8 @@ def applymembership(request):
                                 app.received_at = datetime.datetime.now()
                                 app.save()
                                 app_submitted = True
-                                client = WebClient(token=slack_bot_token)
                                 try:
-                                    client.conversations_join(
-                                        channel=management_all_channel_id
-                                    )
+                                    client.conversations_join(channel=management_all_channel_id)
                                 except:
                                     pass
                                 blocks, text = slack_blocks_and_text(
@@ -2828,10 +2910,7 @@ def applymembership(request):
                                     ),
                                 ).execute()
                         else:
-                            if (
-                                requests.get(portfolio, headers=bs4_headers).status_code
-                                == 401
-                            ):
+                            if requests.get(portfolio, headers=bs4_headers).status_code == 401:
                                 inaccessible_portfolio = True
                             else:
                                 wrong_portfolio = True
@@ -2840,30 +2919,209 @@ def applymembership(request):
                         scroll_to_app = True
                         app.delete()
                         app = None
-                    elif cmd_post == "join" and app and app.notified == True:
+                    # join Bluemove
+                    elif (
+                        cmd_post == "join"
+                        and app
+                        and app.notified == True
+                        and app.joined == False
+                    ):
+                        bluemover_list = (
+                            sheets_service.spreadsheets()
+                            .values()
+                            .get(
+                                spreadsheetId=register_id,
+                                range="register!A:M",
+                                majorDimension="ROWS",
+                            )
+                            .execute()
+                        ).get("values")
+                        del bluemover_list[0]
+                        last_bluemover_id = int(bluemover_list[-1][0])
+                        duplicate_check = [
+                            True
+                            if bluemover[11] == request.user.profile.phone
+                            or bluemover[12] == bmaccount_email
+                            else False
+                            for bluemover in bluemover_list
+                        ]
+                        if not True in duplicate_check:
+                            unable_to_join = False
+                            team_raw = wanted_team
+                            if "이사회" in team_raw:
+                                team = "이사회"
+                                group_key = "management@bluemove.or.kr"
+                            elif "사무국" in team_raw:
+                                team = "사무국"
+                                group_key = "management@bluemove.or.kr"
+                            elif "교육팀" in team_raw:
+                                team = "교육팀"
+                                group_key = "education@bluemove.or.kr"
+                            elif "콘텐츠팀" in team_raw:
+                                team = "콘텐츠팀"
+                                group_key = "content@bluemove.or.kr"
+                            dob_raw = bmaccount_id_num.split("-")[0]
+                            dob_last = dob_raw[0:2] + "-" + dob_raw[2:4] + "-" + dob_raw[4:6]
+                            dob_first = (
+                                "19"
+                                if dob_raw[0:1] == "8" or dob_raw[0:1] == "9"
+                                else "20"
+                                if dob_raw[0:1] == "0" or dob_raw[0:1] == "1"
+                                else None
+                            )
+                            dob = dob_first + dob_last
+                            sex_raw = bmaccount_id_num.split("-")[1][0:1]
+                            sex = (
+                                "남"
+                                if sex_raw == "1" or sex_raw == "3"
+                                else "여"
+                                if sex_raw == "2" or sex_raw == "4"
+                                else None
+                            )
+                            try:
+                                admin_service.users().get(
+                                    userKey=bmaccount_eng_first_name.lower() + "@bluemove.or.kr"
+                                ).execute()
+                                primary_email = (
+                                    bmaccount_eng_first_name.lower()
+                                    + str(last_bluemover_id + 1)
+                                    + "@bluemove.or.kr"
+                                )
+                            except:
+                                primary_email = (
+                                    bmaccount_eng_first_name.lower() + "@bluemove.or.kr"
+                                )
+                            admin_service.users().insert(
+                                body={
+                                    "primaryEmail": primary_email,
+                                    "name": {
+                                        "familyName": request.user.last_name,
+                                        "givenName": request.user.first_name,
+                                    },
+                                    "password": request.user.profile.phone.replace("-", ""),
+                                    "changePasswordAtNextLogin": True,
+                                    "externalIds": [
+                                        {"value": last_bluemover_id + 1, "type": "organization"}
+                                    ],
+                                    "phones": [
+                                        {"value": request.user.profile.phone, "type": "mobile"}
+                                    ],
+                                    "languages": [
+                                        {"languageCode": "ko", "preference": "preferred"}
+                                    ],
+                                    "orgUnitPath": "/" + team,
+                                    "recoveryEmail": bmaccount_email,
+                                    "recoveryPhone": "+82" + request.user.profile.phone[1:],
+                                }
+                            ).execute()
+                            sheets_service.spreadsheets().values().append(
+                                spreadsheetId=register_id,
+                                range="register!A1:P1",
+                                valueInputOption="USER_ENTERED",
+                                insertDataOption="INSERT_ROWS",
+                                body={
+                                    "values": [
+                                        [
+                                            last_bluemover_id + 1,
+                                            wanted_term,
+                                            request.user.last_name + request.user.first_name,
+                                            team,
+                                            datetime.datetime.now().strftime("%Y-%m-%d"),
+                                            None,
+                                            "현재",
+                                            "alumni_false",
+                                            None,
+                                            dob,
+                                            sex,
+                                            request.user.profile.phone,
+                                            bmaccount_email,
+                                            bmaccount_address,
+                                            "활성 회원",
+                                            "신입 회원",
+                                            "TRUE",
+                                        ]
+                                    ]
+                                },
+                            ).execute()
+                            sheets_service.spreadsheets().batchUpdate(
+                                spreadsheetId=register_id,
+                                body={
+                                    "requests": [
+                                        {
+                                            "updateSpreadsheetProperties": {
+                                                "properties": {
+                                                    "title": "E03_명부_"
+                                                    + datetime.datetime.now().strftime("%y%m%d")
+                                                },
+                                                "fields": "title",
+                                            }
+                                        },
+                                    ]
+                                },
+                            ).execute()
+                            admin_service.members().insert(
+                                groupKey=group_key,
+                                body={
+                                    "email": bmaccount_eng_first_name.lower()
+                                    + "@bluemove.or.kr",
+                                    "role": "MEMBER",
+                                },
+                            ).execute()
+                            member_info = {
+                                "email_address": bmaccount_email,
+                                "status": "subscribed",
+                                "merge_fields": {
+                                    "NAME": request.user.last_name + request.user.first_name,
+                                    "BIRTHDAY": str(dob_raw[2:4]) + "/" + str(dob_raw[4:6]),
+                                },
+                            }
+                            mailchimp.lists.add_list_member(
+                                mailchimp_bluemover_list_id,
+                                member_info,
+                            )
+                            app.joined = True
+                            app.save()
+                            try:
+                                client.conversations_join(channel=management_all_channel_id)
+                            except:
+                                pass
+                            blocks, text = slack_blocks_and_text(
+                                request=request,
+                                str_wanted_title=wanted_title,
+                                obj_app=app,
+                                str_new_member_info=str(last_bluemover_id + 1)
+                                + "#"
+                                + primary_email,
+                            )
+                            client.chat_postMessage(
+                                channel=management_all_channel_id,
+                                link_names=True,
+                                as_user=True,
+                                blocks=blocks,
+                                text=text,
+                            )
+                        elif True in duplicate_check:
+                            unable_to_join = True
+                            try:
+                                client.conversations_join(channel=management_dev_channel_id)
+                            except:
+                                pass
+                            blocks, text = slack_blocks_and_text(
+                                request=request,
+                                str_wanted_id=wanted_id,
+                                obj_app=app,
+                                signal_unable_to_join=True,
+                            )
+                            client.chat_postMessage(
+                                channel=management_dev_channel_id,
+                                link_names=True,
+                                as_user=True,
+                                blocks=blocks,
+                                text=text,
+                            )
                         scroll_to_join = True
-                        app.joined = True
-                        app.save()
-                        client = WebClient(token=slack_bot_token)
-                        try:
-                            client.conversations_join(channel=management_all_channel_id)
-                        except:
-                            pass
-                        blocks, text = slack_blocks_and_text(
-                            request=request,
-                            str_wanted_title=wanted_title,
-                            obj_app=app,
-                        )
-                        client.chat_postMessage(
-                            channel=management_all_channel_id,
-                            link_names=True,
-                            as_user=True,
-                            blocks=blocks,
-                            text=text,
-                        )
                 except:
                     app_related_error = True
-                    client = WebClient(token=slack_bot_token)
                     try:
                         client.conversations_join(channel=management_dev_channel_id)
                     except:
@@ -2880,10 +3138,7 @@ def applymembership(request):
                         blocks=blocks,
                         text=text,
                     )
-            elif (
-                request.user.is_authenticated
-                and "@bluemove.or.kr" in request.user.email
-            ):
+            elif request.user.is_authenticated and "@bluemove.or.kr" in request.user.email:
                 apps_received = Applymembership.objects.filter(
                     wanted_id=wanted_id, received=True
                 ).order_by("-received_at")
@@ -3008,6 +3263,7 @@ def applymembership(request):
                         "inaccessible_portfolio": inaccessible_portfolio,
                         "wrong_portfolio": wrong_portfolio,
                         "timeout": timeout,
+                        "unable_to_join": unable_to_join,
                     },
                 )
             except:
@@ -3021,7 +3277,6 @@ def applymembership(request):
                     == 200
                 ):
                     error = True
-                    client = WebClient(token=slack_bot_token)
                     try:
                         client.conversations_join(channel=management_dev_channel_id)
                     except:
@@ -3243,7 +3498,6 @@ def applymembershipwithdrawal(request):
                 str_alumni_email=alumni_email,
             ),
         ).execute()
-        client = WebClient(token=slack_bot_token)
         try:
             client.conversations_join(channel=management_all_channel_id)
         except:
@@ -3318,7 +3572,6 @@ def applymembershipwithdrawal(request):
                 obj_queued_alumni=queued_alumni,
             ),
         ).execute()
-        client = WebClient(token=slack_bot_token)
         try:
             client.conversations_join(channel=management_all_channel_id)
         except:

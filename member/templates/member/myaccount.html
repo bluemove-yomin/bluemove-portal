@@ -282,7 +282,7 @@
         return string_to_json;
     }
     function finalMsg() {
-        err_msg = "문제가 발생했습니다.\n오류가 반복될 경우 사무국에 문의해주세요.\n\n☎️ 02-3296-0613\n📧 management@bluemove.or.kr"
+        const err_msg = "문제가 발생했습니다.\n오류가 반복될 경우 사무국에 문의해주세요.\n\n☎️ 02-3296-0613\n📧 management@bluemove.or.kr"
         if (phoneNumVCodeDiv.hidden == false) {
             if (phoneNumVCodeValidation() == true) {
                 $.ajax({

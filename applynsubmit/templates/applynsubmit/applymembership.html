@@ -889,8 +889,8 @@
                 <div class="col">
                     <label for="appPortfolio" class="form-label">(선택) 참고 자료 URL
                         <a href="#none" class="ms-1" data-bs-toggle="tooltip" data-bs-placement="right" title=""
-                            data-bs-original-title="링크트리, 인스타그램, 노션, 유튜브 등 뭐든 좋아요! 🙌" style="color: #545859 !important;"
-                            aria-label="도움말">
+                            data-bs-original-title="링크트리, 인스타그램, 노션, 유튜브 등 뭐든 좋아요! 🙌"
+                            style="color: #545859 !important;" aria-label="도움말">
                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
                                 class="bi bi-question-circle" viewBox="0 0 16 16" style="margin-bottom: .2rem;">
                                 <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z" />
@@ -1129,6 +1129,20 @@
     <div class="card-body" style="background-color: rgba(0,0,0,.025);">
         <h5 class="card-title pb-1">가입 확정</h5>
         <!-- alert -->
+        {% if unable_to_join %}
+        <!-- boolean UNABLE_TO_JOIN -->
+        <div class="alert alert-secondary d-flex align-items-center mb-0" role="alert">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor"
+                class="bi bi-info-circle flex-shrink-0 me-2" viewBox="0 0 16 16">
+                <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z" />
+                <path
+                    d="m8.93 6.588-2.29.287-.082.38.45.083c.294.07.352.176.288.469l-.738 3.468c-.194.897.105 1.319.808 1.319.545 0 1.178-.252 1.465-.598l.088-.416c-.2.176-.492.246-.686.246-.275 0-.375-.193-.304-.533L8.93 6.588zM9 4.5a1 1 0 1 1-2 0 1 1 0 0 1 2 0z" />
+            </svg>
+            <div class="vertical">
+                해당 정보로 단체 가입이 불가합니다. 사무국에 문의해주세요.
+            </div>
+        </div>
+        {% else %}
         <div class="alert alert-primary d-flex align-items-center mb-0" role="alert">
             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor"
                 class="bi bi-emoji-smile flex-shrink-0 me-2" viewBox="0 0 16 16">
@@ -1140,17 +1154,255 @@
                 축하합니다, {{ app.applicant.first_name }}님! 🎉 최종적으로 블루무브 가입 여부를 확정해주세요.
             </div>
         </div>
-        <!-- form -->
-        <form action="{% url 'applynsubmit:applymembership' %}?wanted_id={{ wanted_id }}" method="POST"
-            enctype="multipart/form-data" onsubmit="fadeOut(); setTimeout(inProgress, 0);">
-            {% csrf_token %}
-            <input type="hidden" id="wantedIdPost" name="wantedIdPost" value="{{ wanted_id }}" readonly hidden>
-            <input type="hidden" id="cmdPost" name="cmdPost" value="join" readonly hidden>
-            <div class="d-grid" style="padding-top: 1.25rem !important;">
-                <button type="submit" class="btn btn-outline-primary" aria-label="가입 확정">
-                    <i class="bi bi-check2 me-2"></i>가입 확정</button>
-            </div>
-        </form>
+        {% endif %}
+        <!-- trigger modal -->
+        <div class="d-grid" style="padding-top: 1.25rem !important;">
+            <button type="button" class="btn btn-outline-primary" aria-label="가입 확정" data-bs-toggle="modal"
+                data-bs-target="#bmaccountCreateModal" onclick="bmaccountCreateKnr()"><i
+                    class="bi bi-check2 me-2"></i>가입 확정</button>
+        </div>
+    </div>
+</div>
+<!-- modal -->
+<div class="modal fade" id="bmaccountCreateModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+    aria-labelledby="bmaccountCreateModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form action="{% url 'applynsubmit:applymembership' %}?wanted_id={{ wanted_id }}" method="POST"
+                enctype="multipart/form-data" id="bmaccountCreateForm">
+                {% csrf_token %}
+                <input type="hidden" id="wantedIdPost" name="wantedIdPost" value="{{ wanted_id }}" readonly hidden>
+                <input type="hidden" id="cmdPost" name="cmdPost" value="join" readonly hidden>
+                <input type="hidden" id="email_h" value="{{ user.email }}" readonly hidden>
+                <div class="modal-header">
+                    <h5 class="modal-title" id="bmaccountCreateModalLabel">가입 확정</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <!-- alert -->
+                    <div class="alert alert-primary" role="alert">
+                        <h5>개인정보 수집·이용 동의</h5>
+                        <p>본인은 개인정보보호법에 의거하여 파란물결 블루무브가 본인의 단체 가입과 관련하여 아래와 같이 개인정보를 수집하고 이용하는 것에 동의합니다.</p>
+                        <ol style="padding-left: 18px;">
+                            <li>수집 및 이용 목적</li>
+                            <ul style="padding-left: 20px;">
+                                <li>회원 관리: 본인 확인 및 개인 식별, 활동 내역 관리, 회원 경험 제공, 문의 사항 처리 및 고지 사항 전달 등</li>
+                                <li>블루무브 포털 서비스 제공: 전자문서 생성·제출·승인 처리, 블루무버 대상 업무 편의 기능 등</li>
+                            </ul>
+                            <li>수집 항목</li>
+                            <ul style="padding-left: 20px;">
+                                <li>국문 성명, 영문 성명, 주민등록번호(앞 6자리, 뒤 1자리), 휴대전화 번호, 이메일 주소, 거주지 주소(도·시, 시·군·구, 도로명)</li>
+                            </ul>
+                            <li>보유 및 이용 기간</li>
+                            <ul style="padding-left: 20px;">
+                                <li>단체 탈퇴 시 즉시 파기</li>
+                            </ul>
+                            <li>동의 거부 시 불이익</li>
+                            <ul style="padding-left: 20px;">
+                                <li>본인은 상기 개인정보의 수집 및 이용에 거부할 권리를 보유하고 있으며, 동의를 거부할 경우 단체 가입이 불가함을 인지하고 있습니다.</li>
+                            </ul>
+                        </ol>
+                        <div class="d-flex justify-content-end">
+                            <div class="form-check d-flex align-items-center">
+                                <input class="form-check-input bmaccountCreateEnter" type="checkbox" value="unchecked"
+                                    id="agreementCheckbox" onclick="agreementCheck(this)" required>
+                                <label class="form-check-label ms-2" for="agreementCheckbox">
+                                    위 내용에 동의합니다.
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="emailAlert" hidden>
+                        <div class="alert alert-secondary d-flex align-items-center" role="alert">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor"
+                                class="bi bi-info-circle flex-shrink-0 me-2" viewBox="0 0 16 16">
+                                <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z" />
+                                <path
+                                    d="m8.93 6.588-2.29.287-.082.38.45.083c.294.07.352.176.288.469l-.738 3.468c-.194.897.105 1.319.808 1.319.545 0 1.178-.252 1.465-.598l.088-.416c-.2.176-.492.246-.686.246-.275 0-.375-.193-.304-.533L8.93 6.588zM9 4.5a1 1 0 1 1-2 0 1 1 0 0 1 2 0z" />
+                            </svg>
+                            <div class="vertical">
+                                블루무브 포털 계정과 다른 이메일 주소로 가입하시려면 재인증이 필요합니다.
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row row-cols-1 g-3">
+                        <div class="col">
+                            <div class="d-flex justify-content-start">
+                                국문&nbsp;
+                                <label for="bmaccountCreateKorLastName" class="form-label">성</label><label
+                                    for="bmaccountCreateKorFirstName" class="form-label">명
+                                    <a href="#none" class="ms-1" data-bs-toggle="tooltip" data-bs-placement="right"
+                                        title="" data-bs-original-title="국문 성명은 '내 계정'에서 수정 가능합니다."
+                                        style="color: #545859 !important;" aria-label="도움말">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
+                                            fill="currentColor" class="bi bi-question-circle" viewBox="0 0 16 16"
+                                            style="margin-bottom: .2rem;">
+                                            <path
+                                                d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z" />
+                                            <path
+                                                d="M5.255 5.786a.237.237 0 0 0 .241.247h.825c.138 0 .248-.113.266-.25.09-.656.54-1.134 1.342-1.134.686 0 1.314.343 1.314 1.168 0 .635-.374.927-.965 1.371-.673.489-1.206 1.06-1.168 1.987l.003.217a.25.25 0 0 0 .25.246h.811a.25.25 0 0 0 .25-.25v-.105c0-.718.273-.927 1.01-1.486.609-.463 1.244-.977 1.244-2.056 0-1.511-1.276-2.241-2.673-2.241-1.267 0-2.655.59-2.75 2.286zm1.557 5.763c0 .533.425.927 1.01.927.609 0 1.028-.394 1.028-.927 0-.552-.42-.94-1.029-.94-.584 0-1.009.388-1.009.94z" />
+                                        </svg>
+                                    </a>
+                                </label>
+                            </div>
+                            <div class="input-group">
+                                <input type="text" class="form-control bmaccountCreateEnter"
+                                    id="bmaccountCreateKorLastName" name="bmaccountCreateKorLastName"
+                                    placeholder="국문 성을 입력하세요."
+                                    aria-label="{{ user.last_name }}{{ user.first_name }}님의 국문 성"
+                                    value="{{ user.last_name }}" readonly>
+                                <input type="text" class="form-control bmaccountCreateEnter"
+                                    id="bmaccountCreateKorFirstName" name="bmaccountCreateKorFirstName"
+                                    placeholder="국문 이름을 입력하세요."
+                                    aria-label="{{ user.last_name }}{{ user.first_name }}님의 국문 이름"
+                                    value="{{ user.first_name }}" readonly>
+                            </div>
+                        </div>
+                        <div class="col">
+                            <div class="d-flex justify-content-start">
+                                영문&nbsp;
+                                <label for="bmaccountCreateEngLastName" class="form-label">성</label><label
+                                    for="bmaccountCreateEngFirstName" class="form-label">명
+                                    <a href="#none" class="ms-1" data-bs-toggle="tooltip" data-bs-placement="right"
+                                        title="" data-bs-original-title="여권이나 국제운전면허증에 표기된 영문 성명을 입력해주세요."
+                                        style="color: #545859 !important;" aria-label="도움말">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
+                                            fill="currentColor" class="bi bi-question-circle" viewBox="0 0 16 16"
+                                            style="margin-bottom: .2rem;">
+                                            <path
+                                                d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z" />
+                                            <path
+                                                d="M5.255 5.786a.237.237 0 0 0 .241.247h.825c.138 0 .248-.113.266-.25.09-.656.54-1.134 1.342-1.134.686 0 1.314.343 1.314 1.168 0 .635-.374.927-.965 1.371-.673.489-1.206 1.06-1.168 1.987l.003.217a.25.25 0 0 0 .25.246h.811a.25.25 0 0 0 .25-.25v-.105c0-.718.273-.927 1.01-1.486.609-.463 1.244-.977 1.244-2.056 0-1.511-1.276-2.241-2.673-2.241-1.267 0-2.655.59-2.75 2.286zm1.557 5.763c0 .533.425.927 1.01.927.609 0 1.028-.394 1.028-.927 0-.552-.42-.94-1.029-.94-.584 0-1.009.388-1.009.94z" />
+                                        </svg>
+                                    </a>
+                                </label>
+                            </div>
+                            <div class="input-group">
+                                <input type="text" class="form-control bmaccountCreateEnter"
+                                    id="bmaccountCreateEngLastName" name="bmaccountCreateEngLastName"
+                                    placeholder="영문 성(Last Name)을 입력하세요."
+                                    aria-label="{{ user.last_name }}{{ user.first_name }}님의 영문 성 입력" required>
+                                <input type="text" class="form-control bmaccountCreateEnter"
+                                    id="bmaccountCreateEngFirstName" name="bmaccountCreateEngFirstName"
+                                    placeholder="영문 이름(First Name)을 입력하세요."
+                                    aria-label="{{ user.last_name }}{{ user.first_name }}님의 영문 이름 입력" required>
+                            </div>
+                        </div>
+                        <div class="col">
+                            <label for="bmaccountCreateIdNum" class="form-label">주민등록번호
+                                <a href="#none" class="ms-1" data-bs-toggle="tooltip" data-bs-placement="right" title=""
+                                    data-bs-original-title="개인정보 수집 최소화를 위해 앞 6자리와 뒤 1자리까지만 입력 가능합니다."
+                                    style="color: #545859 !important;" aria-label="도움말">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                                        class="bi bi-question-circle" viewBox="0 0 16 16" style="margin-bottom: .2rem;">
+                                        <path
+                                            d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z" />
+                                        <path
+                                            d="M5.255 5.786a.237.237 0 0 0 .241.247h.825c.138 0 .248-.113.266-.25.09-.656.54-1.134 1.342-1.134.686 0 1.314.343 1.314 1.168 0 .635-.374.927-.965 1.371-.673.489-1.206 1.06-1.168 1.987l.003.217a.25.25 0 0 0 .25.246h.811a.25.25 0 0 0 .25-.25v-.105c0-.718.273-.927 1.01-1.486.609-.463 1.244-.977 1.244-2.056 0-1.511-1.276-2.241-2.673-2.241-1.267 0-2.655.59-2.75 2.286zm1.557 5.763c0 .533.425.927 1.01.927.609 0 1.028-.394 1.028-.927 0-.552-.42-.94-1.029-.94-.584 0-1.009.388-1.009.94z" />
+                                    </svg>
+                                </a>
+                            </label>
+                            <input type="text" class="form-control bmaccountCreateEnter" id="bmaccountCreateIdNum"
+                                name="bmaccountCreateIdNum" placeholder="주민등록번호를 입력하세요."
+                                aria-label="{{ user.last_name }}{{ user.first_name }}님의 주민등록번호 입력" minlength="14"
+                                maxlength="14" onkeypress="onlyNumbers(event)" required>
+                        </div>
+                        <div class="col">
+                            <label for="bmaccountCreatePhone" class="form-label">휴대전화 번호
+                                <a href="#none" class="ms-1" data-bs-toggle="tooltip" data-bs-placement="right" title=""
+                                    data-bs-original-title="휴대전화 번호는 '내 계정'에서 수정 가능합니다."
+                                    style="color: #545859 !important;" aria-label="도움말">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                                        class="bi bi-question-circle" viewBox="0 0 16 16" style="margin-bottom: .2rem;">
+                                        <path
+                                            d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z" />
+                                        <path
+                                            d="M5.255 5.786a.237.237 0 0 0 .241.247h.825c.138 0 .248-.113.266-.25.09-.656.54-1.134 1.342-1.134.686 0 1.314.343 1.314 1.168 0 .635-.374.927-.965 1.371-.673.489-1.206 1.06-1.168 1.987l.003.217a.25.25 0 0 0 .25.246h.811a.25.25 0 0 0 .25-.25v-.105c0-.718.273-.927 1.01-1.486.609-.463 1.244-.977 1.244-2.056 0-1.511-1.276-2.241-2.673-2.241-1.267 0-2.655.59-2.75 2.286zm1.557 5.763c0 .533.425.927 1.01.927.609 0 1.028-.394 1.028-.927 0-.552-.42-.94-1.029-.94-.584 0-1.009.388-1.009.94z" />
+                                    </svg>
+                                </a>
+                            </label>
+                            <input type="text" class="form-control bmaccountCreateEnter" id="bmaccountCreatePhone"
+                                name="bmaccountCreatePhone" placeholder="휴대전화 번호를 입력하세요."
+                                aria-label="{{ user.last_name }}{{ user.first_name }}님의 휴대전화 번호" maxlength="13"
+                                minlength="13" value="{{ user.profile.phone }}" readonly>
+                        </div>
+                        <div class="col">
+                            <label for="bmaccountCreateEmail" class="form-label">이메일 주소
+                                <a href="#none" class="ms-1" data-bs-toggle="tooltip" data-bs-placement="right" title=""
+                                    data-bs-original-title="자주 사용하는 이메일 주소를 입력해주세요." style="color: #545859 !important;"
+                                    aria-label="도움말">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                                        class="bi bi-question-circle" viewBox="0 0 16 16" style="margin-bottom: .2rem;">
+                                        <path
+                                            d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z" />
+                                        <path
+                                            d="M5.255 5.786a.237.237 0 0 0 .241.247h.825c.138 0 .248-.113.266-.25.09-.656.54-1.134 1.342-1.134.686 0 1.314.343 1.314 1.168 0 .635-.374.927-.965 1.371-.673.489-1.206 1.06-1.168 1.987l.003.217a.25.25 0 0 0 .25.246h.811a.25.25 0 0 0 .25-.25v-.105c0-.718.273-.927 1.01-1.486.609-.463 1.244-.977 1.244-2.056 0-1.511-1.276-2.241-2.673-2.241-1.267 0-2.655.59-2.75 2.286zm1.557 5.763c0 .533.425.927 1.01.927.609 0 1.028-.394 1.028-.927 0-.552-.42-.94-1.029-.94-.584 0-1.009.388-1.009.94z" />
+                                    </svg>
+                                </a>
+                            </label>
+                            <input type="text" class="form-control bmaccountCreateEnter" id="bmaccountCreateEmail"
+                                name="bmaccountCreateEmail" placeholder="이메일 주소를 입력하세요."
+                                aria-label="{{ user.last_name }}{{ user.first_name }}님의 이메일 주소 입력"
+                                value="{{ user.email }}" required>
+                            <div id="emailAddrVCodeDiv" style="margin-top: 1rem;" hidden>
+                                <div class="screenLarge">
+                                    <div class="d-flex justify-content-between">
+                                        <label for="id_v_code" class="form-label">인증 코드</label>
+                                        <small style="margin-top: .125rem;"><i class="bi bi-clock me-1"></i><span
+                                                class="willExpireOnSpan"></span></small>
+                                    </div>
+                                </div>
+                                <div class="screenSmall">
+                                    <label for="id_v_code" class="form-label">인증 코드</label>
+                                    <small class="d-flex justify-content-center border border-secondary rounded-1 mb-3"
+                                        style="border-color: rgba(0,0,0,.3) !important;">
+                                        <i class="bi bi-clock me-1"></i><span class="willExpireOnSpan"></span></small>
+                                </div>
+                                <div class="input-group">
+                                    <input type="text" id="id_v_code" class="form-control bmaccountCreateEnter"
+                                        placeholder="인증 코드를 입력하세요." aria-label="위에 입력한 이메일 주소로 전송된 인증 코드 입력">
+                                    <span class="input-group-text" id="emailAddrVCodeInfo">전송 완료</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col">
+                            <div class="d-flex justify-content-between">
+                                <label for="bmaccountCreateAddress" class="form-label">거주지 주소
+                                    <a href="#none" class="ms-1" data-bs-toggle="tooltip" data-bs-placement="right"
+                                        title="" data-bs-original-title="개인정보 수집 최소화를 위해 도로명까지만 입력 가능합니다."
+                                        style="color: #545859 !important;" aria-label="도움말">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
+                                            fill="currentColor" class="bi bi-question-circle" viewBox="0 0 16 16"
+                                            style="margin-bottom: .2rem;">
+                                            <path
+                                                d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z" />
+                                            <path
+                                                d="M5.255 5.786a.237.237 0 0 0 .241.247h.825c.138 0 .248-.113.266-.25.09-.656.54-1.134 1.342-1.134.686 0 1.314.343 1.314 1.168 0 .635-.374.927-.965 1.371-.673.489-1.206 1.06-1.168 1.987l.003.217a.25.25 0 0 0 .25.246h.811a.25.25 0 0 0 .25-.25v-.105c0-.718.273-.927 1.01-1.486.609-.463 1.244-.977 1.244-2.056 0-1.511-1.276-2.241-2.673-2.241-1.267 0-2.655.59-2.75 2.286zm1.557 5.763c0 .533.425.927 1.01.927.609 0 1.028-.394 1.028-.927 0-.552-.42-.94-1.029-.94-.584 0-1.009.388-1.009.94z" />
+                                        </svg>
+                                    </a>
+                                </label>
+                            </div>
+                            <div class="input-group">
+                                <input type="text" class="form-control bmaccountCreateEnter" id="bmaccountCreateAddress"
+                                    name="bmaccountCreateAddress" placeholder="주소를 검색하세요."
+                                    aria-label="오른쪽 '주소 검색' 버튼 클릭" readonly required>
+                                <input type="button" class="btn btn-outline-secondary" id="bmaccountCreateAddressBtn"
+                                    onclick="bmaccountCreateExecDaumPostcode();" value="주소 검색">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">취소</button>
+                    <a href="javascript:void(0);" class="btn btn-outline-primary" id="bmaccountCreateBtn"
+                        onclick="bmaccountCreateEmailVCode()">가입 확정</a>
+                    <button type="button" id="emailAddrVCodeCheckBtn" class="btn btn-outline-primary"
+                        aria-label="인증 코드 확인" onclick="bmaccountCreateEmailVCode()" hidden disabled>인증 코드 확인</button>
+                    <button type="button" class="btn btn-outline-secondary" id="resetBtn" aria-label="초기화"
+                        onclick="init()" hidden disabled>초기화</button>
+                </div>
+            </form>
+        </div>
     </div>
 </div>
 {% elif app.pf == "선발" and app.notified and app.joined %}
@@ -1182,6 +1434,8 @@
 <!--
 ---- inner script for content 05-A (applicant)
 -->
+<!-- Daum Postcode API (https://postcode.map.daum.net) -->
+<script src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
 <script type="text/javascript">
     var formAppCreate = document.querySelector("#formAppCreate");
     var formApp = document.querySelector("#formApp");
@@ -1340,6 +1594,346 @@
             return false;
         }
     }
+    // confirmation of consent to the collection and use of personal information
+    function agreementCheck() {
+        var agreementCheckbox = document.querySelector("#agreementCheckbox");
+        if (agreementCheckbox.value == "unchecked") {
+            agreementCheckbox.value = "checked";
+            agreementCheckbox.setAttribute("checked", "");
+        } else {
+            agreementCheckbox.value = "unchecked";
+            agreementCheckbox.removeAttribute("checked");
+        }
+    }
+    // Daum Postcode API
+    function bmaccountCreateExecDaumPostcode() {
+        var themeObj = {
+            postcodeTextColor: "#0077C8"
+        };
+        new daum.Postcode({
+            oncomplete: function (data) {
+                var addr = "";
+                addr = data.sido + " " + data.sigungu + " " + data.roadname;
+                document.getElementById("bmaccountCreateAddress").value = addr;
+            },
+            theme: themeObj
+        }).open();
+    }
+    // NCP Korean Name Romanizer API
+    function objectToJson(object) {
+        const object_to_string = JSON.stringify(object);
+        const string_to_json = JSON.parse(object_to_string);
+        return string_to_json;
+    }
+    function bmaccountCreateKnr() {
+        $.ajax({
+            type: "POST",
+            url: "/member/kor-name-romanizer",
+            data: JSON.stringify(bmaccountCreateKorLastName.value + bmaccountCreateKorFirstName.value),
+            success: function (object) {
+                const engName = objectToJson(object).name;
+                const engLastName = engName.split(" ")[0];
+                const engFirstName = engName.split(" ")[1];
+                bmaccountCreateEngLastName.value = engLastName;
+                bmaccountCreateEngFirstName.value = engFirstName;
+            },
+            error: function (xhr, errmsg, err) {
+                console.log(xhr.status + ": " + xhr.responseText);
+                alert("한국 인명 로마자 변환에 실패했습니다.\n영문 성명을 직접 입력해주시기 바랍니다.");
+            }
+        });
+    }
+    // Email V Code
+    function bmaccountCreateEmailVCode() {
+        const err_msg = "문제가 발생했습니다.\n오류가 반복될 경우 사무국에 문의해주세요.\n\n☎️ 02-3296-0613\n📧 management@bluemove.or.kr"
+        if (emailAddrVCodeDiv.hidden == false) {
+            if (emailAddrVCodeValidation() == true) {
+                $.ajax({
+                    type: "POST",
+                    url: "/member/email-addr-validation",
+                    data: JSON.stringify(bmaccountCreateEmail.value + "#" + id_v_code.value),
+                    success: function (object) {
+                        const status = objectToJson(object).status;
+                        if (status == "passed") {
+                            id_v_code.readOnly = true;
+                            emailAddrVCodeCheckBtn.disabled = true;
+                            emailAddrVCodeInfo.innerText = "인증 성공"
+                            emailAddrVCodeInfo.setAttribute("style", "background: #0077C8; border-color: #0077C8; color: #FFFFFF;");
+                            bmaccountCreateForm.submit();
+                            document.querySelector(".modal-backdrop").setAttribute("class", "modal-backdrop fade hide");
+                            // call 'spinner (transition)' function
+                            fadeOut();
+                            // call 'avoiding duplicate requests (btn disabled)' function
+                            setTimeout(inProgress, 0);
+                        } else {
+                            emailAddrVCodeInfo.innerText = "인증 실패"
+                            emailAddrVCodeInfo.setAttribute("style", "background: #ffc107; border-color: #ffc107;")
+                            id_v_code.focus();
+                            alert("올바른 인증 코드를 입력해주세요.");
+                        }
+                    },
+                    error: function (xhr, errmsg, err) {
+                        console.log(xhr.status + ": " + xhr.responseText);
+                        alert(err_msg);
+                    }
+                });
+            } else {
+                return false;
+            };
+        } else if (bmaccountCreateValidation() == true) {
+            if (bmaccountCreateEmail.value !== email_h.value) {
+                if (confirm("올바른 정보인지 최종 확인해주세요.\n🙋 성명: " + bmaccountCreateKorLastName.value + bmaccountCreateKorFirstName.value + "(국문), " + bmaccountCreateEngLastName.value + " " + bmaccountCreateEngFirstName.value + "(영문)\n🔢 주민등록번호: " + bmaccountCreateIdNum.value + "\n📱 휴대전화 번호: " + bmaccountCreatePhone.value + "\n📧 이메일 주소: " + bmaccountCreateEmail.value + "\n🏠 거주지 주소: " + bmaccountCreateAddress.value + "\n\n위 정보로 블루무브에 최종 가입하시겠어요?")) {
+                    $.ajax({
+                        type: "POST",
+                        url: "/member/email-addr-validation",
+                        data: JSON.stringify(bmaccountCreateEmail.value),
+                        success: function (object) {
+                            const status = objectToJson(object).status;
+                            if (status == "generated") {
+                                agreementCheckbox.disabled = true;
+                                bmaccountCreatePhone.readOnly = true;
+                                bmaccountCreateEngLastName.readOnly = true;
+                                bmaccountCreateEngFirstName.readOnly = true;
+                                bmaccountCreateIdNum.readOnly = true;
+                                bmaccountCreateEmail.readOnly = true;
+                                bmaccountCreateAddressBtn.disabled = true;
+                                emailAddrVCodeDiv.hidden = false;
+                                emailAddrVCodeCheckBtn.hidden = false;
+                                emailAddrVCodeCheckBtn.disabled = false;
+                                bmaccountCreateBtn.hidden = true;
+                                id_v_code.required = true;
+                                countDown();
+                            } else {
+                                alert("STATUS CODE: UNKNOWN" + "\n\n" + err_msg);
+                            }
+                        },
+                        error: function (xhr, errmsg, err) {
+                            alert(err_msg);
+                        }
+                    });
+                };
+            } else {
+                return true;
+            }
+        };
+    }
+    function emailAddrVCodeValidation() {
+        if (id_v_code.value == "") {
+            alert("인증 코드를 입력해주세요.");
+            return false;
+        };
+        if (id_v_code.value.length !== 10) {
+            alert("올바른 인증 코드를 입력해주세요.");
+            return false;
+        };
+        if (id_v_code.value !== "" &&
+            id_v_code.value.length == 10) {
+            return true;
+        } else {
+            alert("올바른 인증 코드를 입력해주세요.");
+            return false;
+        };
+    }
+    // call 'bmaccountCreateEmailVCode' function when the user hits the enter key
+    $(".bmaccountCreateEnter").on("keyup", function (key) {
+        if (key.keyCode == 13) {
+            bmaccountCreateEmailVCode();
+        }
+    });
+    // validation for Bluemover account creation
+    $("#bmaccountCreateEngLastName").on("keyup", function (key) {
+        var foo = $(this).val().charAt(0).toUpperCase() + $(this).val().slice(1);
+        $(this).val(foo);
+    });
+    $("#bmaccountCreateEngFirstName").on("keyup", function (key) {
+        var foo = $(this).val().charAt(0).toUpperCase() + $(this).val().slice(1);
+        $(this).val(foo);
+    });
+    $("#bmaccountCreateIdNum").on("keyup", function (key) {
+        if ($(this).val().indexOf("*") == 8 && key.keyCode == 8) {
+            var foo = $(this).val().replace($(this).val().slice(7), "");
+            $(this).val(foo);
+        } else {
+            var foo = $(this).val().replace(/[^0-9]/g, "").replace(/([0-9]{6})([0-9]{1})$/, "$1-$2" + "******");
+            $(this).val(foo);
+        }
+    });
+    $("#bmaccountCreateEmail").on("keyup", function (key) {
+        if (bmaccountCreateEmail.value !== email_h.value) {
+            bmaccountCreateBtn.innerText = "인증 코드 전송";
+            emailAlert.hidden = false;
+        } else if (bmaccountCreateEmail.value == email_h.value) {
+            bmaccountCreateBtn.innerText = "가입 확정";
+            emailAlert.hidden = true;
+        }
+    });
+    function onlyNumbers(e) {
+        var regInt = /[^0-9]/gi;
+        var inputKeyChar = String.fromCharCode(event.keyCode);
+        if (regInt.test(inputKeyChar)) {
+            event.returnValue = false;
+        }
+    }
+    function bmaccountCreateValidation() {
+        var patternNum = /[0-9]/; // number
+        var patternSpc = /[~!@#$%^&*()_+|<>?:{}]/; // special characters
+        var patternEng = /[a-zA-Z]/; // alphabet
+        var patternKor = /[ㄱ-ㅎ|ㅏ-ㅣ|가-힣]/; // Hangul
+        var patternEml = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/ // email
+        if (agreementCheckbox.value !== "checked") {
+            alert("개인정보 수집·이용에 동의해주세요.");
+            agreementCheckbox.focus();
+            return false;
+        };
+        if (bmaccountCreateEngLastName.value.length <= 1) {
+            alert("영문 성은 두 글자 이상 입력해주세요.");
+            bmaccountCreateEngLastName.focus();
+            return false;
+        };
+        if (bmaccountCreateEngFirstName.value.length <= 1) {
+            alert("영문 이름은 두 글자 이상 입력해주세요.");
+            bmaccountCreateEngFirstName.focus();
+            return false;
+        };
+        if (!patternEng.test(bmaccountCreateEngLastName.value)) {
+            alert("영문 성은 알파벳만 입력해주세요.");
+            bmaccountCreateEngLastName.focus();
+            return false;
+        };
+        if (!patternEng.test(bmaccountCreateEngFirstName.value)) {
+            alert("영문 이름은 알파벳만 입력해주세요.");
+            bmaccountCreateEngFirstName.focus();
+            return false;
+        };
+        if (bmaccountCreateIdNum.value.length !== 14) {
+            alert("주민등록번호는 앞 6자리와 뒤 1자리를 입력해주세요.");
+            bmaccountCreateIdNum.focus();
+            return false;
+        };
+        if (!patternNum.test(bmaccountCreateIdNum.value)) {
+            alert("주민등록번호는 숫자만 입력해주세요.");
+            bmaccountCreateIdNum.focus();
+            return false;
+        };
+        if (bmaccountCreateIdNum.value.indexOf("-") !== 6) {
+            alert("올바른 주민등록번호를 입력해주세요.");
+            bmaccountCreateIdNum.focus();
+            return false;
+        };
+        if ((Number(bmaccountCreateIdNum.value.slice(0, 1) == 0) && Number(bmaccountCreateIdNum.value.slice(1, 2) > Number(String(new Date().getFullYear()).slice(2)) - 19)) ||
+            Number(bmaccountCreateIdNum.value.slice(2, 4)) == 0 ||
+            Number(bmaccountCreateIdNum.value.slice(2, 4)) > 12 ||
+            Number(bmaccountCreateIdNum.value.slice(4, 6)) == 0 ||
+            Number(bmaccountCreateIdNum.value.slice(4, 6)) > 31 ||
+            Number(bmaccountCreateIdNum.value.slice(7, 8)) < 1 ||
+            Number(bmaccountCreateIdNum.value.slice(7, 8)) > 4 ||
+            bmaccountCreateIdNum.value.slice(8) !== "******") {
+            alert("올바른 주민등록번호를 입력해주세요.");
+            bmaccountCreateIdNum.focus();
+            return false;
+        };
+        if (bmaccountCreateEmail.value == "") {
+            alert("이메일 주소를 입력해주세요.");
+            bmaccountCreateEmail.focus();
+            return false;
+        };
+        if (!patternEml.test(bmaccountCreateEmail.value)) {
+            alert("올바른 이메일 주소를 입력해주세요.");
+            bmaccountCreateEmail.focus();
+            return false;
+        };
+        if (bmaccountCreateAddress.value == "") {
+            alert("거주지 주소를 입력해주세요.");
+            bmaccountCreateAddress.focus();
+            return false;
+        }
+        if (agreementCheckbox.value == "checked" &&
+            patternNum.test(bmaccountCreateEngLastName.value) &&
+            patternSpc.test(bmaccountCreateEngLastName.value) &&
+            patternKor.test(bmaccountCreateEngLastName.value) &&
+            patternNum.test(bmaccountCreateEngFirstName.value) &&
+            patternSpc.test(bmaccountCreateEngFirstName.value) &&
+            patternKor.test(bmaccountCreateEngFirstName.value) &&
+            patternSpc.test(bmaccountCreateIdNum.value) &&
+            patternEng.test(bmaccountCreateIdNum.value) &&
+            patternKor.test(bmaccountCreateIdNum.value) &&
+            !bmaccountCreateIdNum.value.indexOf("-") == 6 &&
+            !bmaccountCreateIdNum.value.match(/-/g).length == 1 &&
+            !patternEml.test(bmaccountCreateEmail.value)) {
+            alert("잘못된 값이 있습니다.\n올바른 값을 입력해주세요.")
+            return false;
+        } else {
+            if (bmaccountCreateEmail.value !== email_h.value) {
+                return true;
+            } else if (bmaccountCreateEmail.value == email_h.value) {
+                if (confirm("올바른 정보인지 최종 확인해주세요.\n🙋 성명: " + bmaccountCreateKorLastName.value + bmaccountCreateKorFirstName.value + "(국문), " + bmaccountCreateEngLastName.value + " " + bmaccountCreateEngFirstName.value + "(영문)\n🔢 주민등록번호: " + bmaccountCreateIdNum.value + "\n📱 휴대전화 번호: " + bmaccountCreatePhone.value + "\n📧 이메일 주소: " + bmaccountCreateEmail.value + "\n🏠 거주지 주소: " + bmaccountCreateAddress.value + "\n\n위 정보로 블루무브에 최종 가입하시겠어요?")) {
+                    bmaccountCreateForm.submit();
+                    document.querySelector(".modal-backdrop").setAttribute("class", "modal-backdrop fade hide");
+                    // call 'spinner (transition)' function
+                    fadeOut();
+                    // call 'avoiding duplicate requests (btn disabled)' function
+                    setTimeout(inProgress, 0);
+                    return true;
+                } else { return false; };
+            };
+        };
+    }
+    // time remaining until v code expires
+    function pleaseReset() {
+        document.querySelectorAll(".willExpireOnSpan").forEach(element => {
+            element.textContent = "인증 시간 만료됨";
+        });
+        emailAddrVCodeInfo.innerText = "시간 만료"
+        emailAddrVCodeInfo.setAttribute("style", "background: #ffc107; border-color: #ffc107;")
+        id_v_code.readOnly = true;
+        emailAddrVCodeCheckBtn.hidden = true;
+        emailAddrVCodeCheckBtn.disabled = true;
+        resetBtn.hidden = false;
+        resetBtn.disabled = false;
+        alert("인증 시간이 만료되었습니다.\n초기화 후 다시 시도해주세요.");
+    };
+    function startCountDown(duration) {
+        let sec = 0;
+        let countInterval = setInterval(function () {
+            sec = parseInt(duration % 180);
+            document.querySelectorAll(".willExpireOnSpan").forEach(element => {
+                element.textContent = `${sec}초 후 만료됨`;
+            });
+            duration = duration - 1;
+            if (sec == 0) {
+                clearInterval(countInterval);
+                pleaseReset();
+            };
+        }, 1000);
+    }
+    function countDown() {
+        let duration = 180;
+        document.querySelectorAll(".willExpireOnSpan").forEach(element => {
+            element.textContent = `${duration}초 후 만료됨`;
+        });
+        startCountDown(--duration);
+    };
+    // reset
+    function init() {
+        agreementCheckbox.disabled = false;
+        bmaccountCreateEngLastName.readOnly = false;
+        bmaccountCreateEngFirstName.readOnly = false;
+        bmaccountCreateIdNum.readOnly = false;
+        bmaccountCreateEmail.readOnly = false;
+        bmaccountCreateAddressBtn.disabled = false;
+        bmaccountCreateEmail.value = email_h.value;
+        bmaccountCreateBtn.innerText = "가입 확정";
+        bmaccountCreateBtn.hidden = false;
+        emailAlert.hidden = true;
+        emailAddrVCodeDiv.hidden = true;
+        emailAddrVCodeCheckBtn.hidden = true;
+        emailAddrVCodeCheckBtn.disabled = true;
+        id_v_code.value = "";
+        id_v_code.readOnly = false;
+        id_v_code.required = false;
+        resetBtn.hidden = true;
+        resetBtn.disabled = true;
+    }
 </script>
 {% if app and not app.received == True %}
 <!-- when the application exists -->
@@ -1443,8 +2037,8 @@
             <div class="accordion-item">
                 <h2 class="accordion-header" id="heading_{{ app.applicant }}">
                     <button class="accordion-button accordion-button-20px bg-black025 collapsed" type="button"
-                        data-bs-toggle="collapse" data-bs-target="#collapse_{{ app.applicant|cut:'.' }}" aria-expanded="false"
-                        aria-controls="collapse_{{ app.applicant|cut:'.' }}">
+                        data-bs-toggle="collapse" data-bs-target="#collapse_{{ app.applicant|cut:'.' }}"
+                        aria-expanded="false" aria-controls="collapse_{{ app.applicant|cut:'.' }}">
                         <img alt="{{ app.applicant.last_name }}{{ app.applicant.first_name }}님의 Google 계정 프로필 사진"
                             height="28" class="rounded-circle me-2"
                             src="{{ app.applicant.socialaccount_set.all.0.get_avatar_url }}" />

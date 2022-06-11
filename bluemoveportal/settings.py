@@ -53,11 +53,15 @@ MAILCHIMP_KEY = get_secret("MAILCHIMP_KEY")
 
 SHORT_IO_KEY = get_secret("SHORT_IO_KEY")
 
-NCP_SENS_ID = get_secret("NCP_SENS_ID")
-
 NCP_KEY_ID = get_secret("NCP_KEY_ID")
 
 NCP_SECRET = get_secret("NCP_SECRET")
+
+NCP_SENS_ID = get_secret("NCP_SENS_ID")
+
+NCP_KNR_CLIENT_ID = get_secret("NCP_KNR_CLIENT_ID")
+
+NCP_KNR_CLIENT_SECRET = get_secret("NCP_KNR_CLIENT_SECRET")
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
