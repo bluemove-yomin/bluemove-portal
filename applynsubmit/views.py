@@ -2154,6 +2154,7 @@ def slack_blocks_and_text(
     signal_cancel_the_application_for_withdrawal=None,
     signal_gone=None,
     signal_unable_to_join=None,
+    signal_failed_to_list_in_mailchimp=None,
 ):
     # message blocks and a text for the application receipt notification
     if obj_app and not obj_app.notified:
@@ -2222,6 +2223,10 @@ def slack_blocks_and_text(
         text = f"📄 {masked_name}님 지원서 접수됨"
     # message blocks and a text for the sign-up completion notification
     elif obj_app and obj_app.notified and obj_app.joined:
+        if signal_failed_to_list_in_mailchimp == True:
+            mc_result = "🔴 추가 실패"
+        elif signal_failed_to_list_in_mailchimp == False:
+            mc_result = "🟢 추가 성공"
         blocks = [
             {
                 "type": "header",
@@ -2265,8 +2270,23 @@ def slack_blocks_and_text(
                     },
                     {
                         "type": "mrkdwn",
-                        "text": "*블루무버 계정 이메일 주소:*\n"
+                        "text": "*소속:*\n"
                         + str_new_member_info.split("#")[1],
+                    },
+                ],
+            },
+            {
+                "type": "section",
+                "fields": [
+                    {
+                        "type": "mrkdwn",
+                        "text": "*블루무버 계정 이메일 주소:*\n"
+                        + str_new_member_info.split("#")[2],
+                    },
+                    {
+                        "type": "mrkdwn",
+                        "text": "*Mailchimp 연락처 추가 여부:*\n"
+                        + mc_result,
                     },
                 ],
             },
@@ -3082,6 +3102,7 @@ def applymembership(request):
     scroll_to_join = None
     scroll_to_noti = None
     unable_to_join = None
+    failed_to_list_in_mailchimp = None
     # cmd
     cmd_get = request.GET.get("cmdGet")
     cmd_post = request.POST.get("cmdPost")
@@ -3395,21 +3416,25 @@ def applymembership(request):
                                     "role": "MEMBER",
                                 },
                             ).execute()
-                            member_info = {
-                                "email_address": bmaccount_email,
-                                "status": "subscribed",
-                                "merge_fields": {
-                                    "NAME": request.user.last_name
-                                    + request.user.first_name,
-                                    "BIRTHDAY": str(dob_raw[2:4])
-                                    + "/"
-                                    + str(dob_raw[4:6]),
-                                },
-                            }
-                            mailchimp.lists.add_list_member(
-                                mailchimp_bluemover_list_id,
-                                member_info,
-                            )
+                            try:
+                                member_info = {
+                                    "email_address": bmaccount_email,
+                                    "status": "subscribed",
+                                    "merge_fields": {
+                                        "NAME": request.user.last_name
+                                        + request.user.first_name,
+                                        "BIRTHDAY": str(dob_raw[2:4])
+                                        + "/"
+                                        + str(dob_raw[4:6]),
+                                    },
+                                }
+                                mailchimp.lists.add_list_member(
+                                    mailchimp_bluemover_list_id,
+                                    member_info,
+                                )
+                                failed_to_list_in_mailchimp = False
+                            except:
+                                failed_to_list_in_mailchimp = True
                             app.joined = True
                             app.save()
                             mail_service.users().messages().send(
@@ -3441,7 +3466,10 @@ def applymembership(request):
                                 obj_app=app,
                                 str_new_member_info=str(last_bluemover_id + 1)
                                 + "#"
+                                + team
+                                + "#"
                                 + primary_email,
+                                signal_failed_to_list_in_mailchimp=failed_to_list_in_mailchimp,
                             )
                             client.chat_postMessage(
                                 channel=management_all_channel_id,
