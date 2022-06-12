@@ -387,7 +387,11 @@ def phone_num_validation(request):
                     code=v_code,
                     will_expire_on=will_expire_on,
                 )
-                context = {"status": "generated"}
+                exp_datetime = str(will_expire_on).split(".")[0]
+                context = {
+                    "status": "generated",
+                    "expDatetime": datetime.datetime.strptime(exp_datetime, "%Y-%m-%d %H:%M:%S"),
+                }
             else:
                 context = {"status": status_code}
     return JsonResponse(context)
@@ -402,7 +406,8 @@ def email_addr_validation(request):
             try:
                 v_code_obj = Vcode.objects.get(
                     last_name=request.user.last_name,
-                    email_last_letter_with_host=email_addr.split("@")[0][-1] + email_addr.split("@")[1],
+                    email_last_letter_with_host=email_addr.split("@")[0][-1]
+                    + email_addr.split("@")[1],
                     code=v_code_input_value,
                 )
                 if v_code_obj.will_expire_on > datetime.datetime.now():
@@ -431,11 +436,16 @@ def email_addr_validation(request):
             will_expire_on = datetime.datetime.now() + datetime.timedelta(minutes=3)
             Vcode.objects.create(
                 last_name=request.user.last_name,
-                email_last_letter_with_host=email_addr.split("@")[0][-1] + email_addr.split("@")[1],
+                email_last_letter_with_host=email_addr.split("@")[0][-1]
+                + email_addr.split("@")[1],
                 code=v_code,
                 will_expire_on=will_expire_on,
             )
-            context = {"status": "generated"}
+            exp_datetime = str(will_expire_on).split(".")[0]
+            context = {
+                "status": "generated",
+                "expDatetime": datetime.datetime.strptime(exp_datetime, "%Y-%m-%d %H:%M:%S"),
+            }
     return JsonResponse(context)
 
 
@@ -530,9 +540,7 @@ def slack_blocks_and_text(qrs_users_inactivated=None):
 #### functions for incoming requests from outside
 ####
 def cron_delete_all_expired_v_codes(request):
-    expired_v_codes = Vcode.objects.filter(
-        will_expire_on__lt=datetime.datetime.now()
-    )
+    expired_v_codes = Vcode.objects.filter(will_expire_on__lt=datetime.datetime.now())
     if expired_v_codes:
         for v_code in expired_v_codes:
             v_code.delete()

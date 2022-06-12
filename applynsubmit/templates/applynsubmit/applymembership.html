@@ -1450,6 +1450,7 @@
     var appTrackingEtc = document.querySelector("#appTrackingEtc");
     var appPortfolio = document.querySelector("#appPortfolio");
     var cmdPost = document.querySelector("#cmdPost");
+    var patternEml = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/ // email
     // check the number of letters in the application
     $("#appSelfIntro").keyup(function (e) {
         var text = $(this).val();
@@ -1690,6 +1691,7 @@
                         success: function (object) {
                             const status = objectToJson(object).status;
                             if (status == "generated") {
+                                const expDatetime = objectToJson(object).expDatetime;
                                 agreementCheckbox.disabled = true;
                                 bmaccountCreatePhone.readOnly = true;
                                 bmaccountCreateEngLastName.readOnly = true;
@@ -1702,7 +1704,7 @@
                                 emailAddrVCodeCheckBtn.disabled = false;
                                 bmaccountCreateBtn.hidden = true;
                                 id_v_code.required = true;
-                                countDown();
+                                timeRemaining(expDatetime);
                             } else {
                                 alert("STATUS CODE: UNKNOWN" + "\n\n" + err_msg);
                             }
@@ -1759,10 +1761,10 @@
         }
     });
     $("#bmaccountCreateEmail").on("keyup", function (key) {
-        if (bmaccountCreateEmail.value !== email_h.value) {
+        if (patternEml.test(bmaccountCreateEmail.value) && bmaccountCreateEmail.value !== email_h.value) {
             bmaccountCreateBtn.innerText = "인증 코드 전송";
             emailAlert.hidden = false;
-        } else if (bmaccountCreateEmail.value == email_h.value) {
+        } else if (!patternEml.test(bmaccountCreateEmail.value) || bmaccountCreateEmail.value == email_h.value) {
             bmaccountCreateBtn.innerText = "가입 확정";
             emailAlert.hidden = true;
         }
@@ -1779,7 +1781,6 @@
         var patternSpc = /[~!@#$%^&*()_+|<>?:{}]/; // special characters
         var patternEng = /[a-zA-Z]/; // alphabet
         var patternKor = /[ㄱ-ㅎ|ㅏ-ㅣ|가-힣]/; // Hangul
-        var patternEml = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/ // email
         if (agreementCheckbox.value !== "checked") {
             alert("개인정보 수집·이용에 동의해주세요.");
             agreementCheckbox.focus();
@@ -1879,40 +1880,61 @@
         };
     }
     // time remaining until v code expires
-    function pleaseReset() {
-        document.querySelectorAll(".willExpireOnSpan").forEach(element => {
-            element.textContent = "인증 시간 만료됨";
-        });
-        emailAddrVCodeInfo.innerText = "시간 만료"
-        emailAddrVCodeInfo.setAttribute("style", "background: #ffc107; border-color: #ffc107;")
-        id_v_code.readOnly = true;
-        emailAddrVCodeCheckBtn.hidden = true;
-        emailAddrVCodeCheckBtn.disabled = true;
-        resetBtn.hidden = false;
-        resetBtn.disabled = false;
-        alert("인증 시간이 만료되었습니다.\n초기화 후 다시 시도해주세요.");
-    };
-    function startCountDown(duration) {
-        let sec = 0;
-        let countInterval = setInterval(function () {
-            sec = parseInt(duration % 180);
+    function timeRemaining(expDatetime) {
+        const expDate = expDatetime.split("T")[0];
+        const expTime = expDatetime.split("T")[1];
+        var expYear = expDate.split("-")[0];
+        var expMonth = expDate.split("-")[1];
+        var expDay = expDate.split("-")[2];
+        var expHour = expTime.split(":")[0];
+        var expMinute = expTime.split(":")[1];
+        var expSecond = expTime.split(":")[2];
+        setMonth();
+        var endTime = new Date(expYear, expMonth, expDay, expHour, expMinute, expSecond);
+        function setClock() {
+            var now = new Date();
+            var totalTime = endTime;
+            var _second = 1000;
+            var _minute = _second * 60;
+            var _hour = _minute * 60;
+            var _day = _hour * 24;
+            var distance = totalTime - now;
+            if (distance < 0) {
+                document.querySelectorAll(".willExpireOnSpan").forEach(element => {
+                    element.textContent = "인증 시간 만료됨";
+                });
+                emailAddrVCodeInfo.innerText = "시간 만료"
+                emailAddrVCodeInfo.setAttribute("style", "background: #ffc107; border-color: #ffc107;")
+                id_v_code.readOnly = true;
+                emailAddrVCodeCheckBtn.hidden = true;
+                emailAddrVCodeCheckBtn.disabled = true;
+                resetBtn.hidden = false;
+                resetBtn.disabled = false;
+                alert("인증 시간이 만료되었습니다.\n초기화 후 다시 시도해주세요.");
+                return false;
+            }
+            var days = Math.floor(distance / _day);
+            var hours = Math.floor((distance % _day) / _hour);
+            var minutes = Math.floor((distance % _hour) / _minute);
+            var seconds = Math.floor((distance % _minute) / _second);
+            var days = days.toString();
+            var hours = hours.toString();
+            var minutes = minutes.toString();
+            var seconds = seconds.toString();
+            setTimeout(setClock, 1000);
             document.querySelectorAll(".willExpireOnSpan").forEach(element => {
-                element.textContent = `${sec}초 후 만료됨`;
+                if (minutes > 0) {
+                    element.textContent = `${minutes}분 ${seconds}초 후 만료됨`;
+                } else {
+                    element.textContent = `${seconds}초 후 만료됨`;
+                }
             });
-            duration = duration - 1;
-            if (sec == 0) {
-                clearInterval(countInterval);
-                pleaseReset();
-            };
-        }, 1000);
+        }
+        setClock();
+        function setMonth() {
+            expMonth = expMonth - 1;
+        }
     }
-    function countDown() {
-        let duration = 180;
-        document.querySelectorAll(".willExpireOnSpan").forEach(element => {
-            element.textContent = `${duration}초 후 만료됨`;
-        });
-        startCountDown(--duration);
-    };
     // reset
     function init() {
         agreementCheckbox.disabled = false;
