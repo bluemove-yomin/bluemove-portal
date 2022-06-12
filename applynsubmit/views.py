@@ -241,11 +241,13 @@ def gmail_message(
     str_v_code=None,
     str_alumni_name=None,
     str_alumni_email=None,
+    str_new_member_info=None,
     signal_removed_from_queue=None,
     signal_gone=None,
+    signal_joined=None,
 ):
     # a mail to the applicant who submitted the application
-    if obj_app:
+    if obj_app and not signal_joined:
         message_text = (
             """
             <!doctype html>
@@ -1830,6 +1832,329 @@ def gmail_message(
         message["from"] = "Bluemove Portal <" + google_delegated_email + ">"
         message["to"] = email
         message["subject"] = name + "님의 블루무브 탈퇴가 완료되었습니다."
+    # a mail to new members
+    if signal_joined:
+        id_num = str_new_member_info.split("#")[0]
+        term = str_new_member_info.split("#")[1]
+        team = str_new_member_info.split("#")[2]
+        bluemover_email = str_new_member_info.split("#")[3]
+        personal_email = str_new_member_info.split("#")[4]
+        message_text = (
+            """
+            <!doctype html>
+            <html xmlns="http://www.w3.org/1999/xhtml">
+
+            <head>
+                <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+                <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+                <title>"""
+            + obj_app.applicant.last_name
+            + obj_app.applicant.first_name
+            + """님의 블루무브 가입이 확정되었습니다.</title>
+            </head>
+
+            <body>
+                <center style="font-family: AppleSDGothic, apple sd gothic neo, noto sans korean, noto sans korean regular, noto sans cjk kr, noto sans cjk, nanum gothic, malgun gothic, dotum, arial, helvetica, MS Gothic, sans-serif;">
+                    <table align="center" border="0" cellpadding="0" cellspacing="0" height="100%" width="100%" id="bodyTable">
+                        <tr>
+                            <td align="center" valign="top" id="bodyCell">
+                                <!-- BEGIN TEMPLATE // -->
+                                <table align="center" border="0" cellspacing="0" cellpadding="0" width="600" style="width:600px;">
+                                    <tr>
+                                        <td align="center" valign="top" width="600" style="width:600px;">
+                                            <table border="0" cellpadding="0" cellspacing="0" width="100%"
+                                                class="templateContainer">
+                                                <tr>
+                                                    <td valign="top" id="templatePreheader"></td>
+                                                </tr>
+                                                <tr>
+                                                    <td valign="top" id="templateHeader">
+                                                        <table border="0" cellpadding="0" cellspacing="0" width="100%"
+                                                            class="mcnImageBlock" style="min-width:100%;">
+                                                            <tbody class="mcnImageBlockOuter">
+                                                                <tr>
+                                                                    <td valign="top" style="padding:9px" class="mcnImageBlockInner">
+                                                                        <table align="left" width="100%" border="0" cellpadding="0"
+                                                                            cellspacing="0" class="mcnImageContentContainer"
+                                                                            style="min-width:100%;">
+                                                                            <tbody>
+                                                                                <tr>
+                                                                                    <td class="mcnImageContent" valign="top"
+                                                                                        style="padding-right: 9px; padding-left: 9px; padding-top: 0; padding-bottom: 0;">
+                                                                                        <a href="https://portal.bluemove.or.kr" target="_blank">
+                                                                                            <img align="left"
+                                                                                                src="https://mcusercontent.com/8e85249d3fe980e2482c148b1/images/681b79e3-e459-6f97-567b-928c8229a6c9.png"
+                                                                                                alt="블루무브 포털"
+                                                                                                width="110"
+                                                                                                style="max-width:1000px; padding-bottom: 0; display: inline !important; vertical-align: bottom;"
+                                                                                                class="mcnRetinaImage">
+                                                                                        </a>
+                                                                                    </td>
+                                                                                </tr>
+                                                                            </tbody>
+                                                                        </table>
+                                                                    </td>
+                                                                </tr>
+                                                            </tbody>
+                                                        </table>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td valign="top" id="templateBody">
+                                                        <table border="0" cellpadding="0" cellspacing="0" width="100%"
+                                                            class="mcnTextBlock" style="min-width:100%;">
+                                                            <tbody class="mcnTextBlockOuter">
+                                                                <tr>
+                                                                    <td valign="top" class="mcnTextBlockInner"
+                                                                        style="padding-top:9px;">
+                                                                        <table align="left" border="0" cellpadding="0"
+                                                                            cellspacing="0" style="max-width:100%; min-width:100%;"
+                                                                            width="100%" class="mcnTextContentContainer">
+                                                                            <tbody>
+                                                                                <tr>
+                                                                                    <td valign="top" class="mcnTextContent"
+                                                                                        style="padding-top:0; padding-right:18px; padding-bottom:0px; padding-left:18px;">
+                                                                                        <h1>
+                                                                                            """
+            + obj_app.applicant.last_name
+            + obj_app.applicant.first_name
+            + """님의 블루무브 가입이 확정되었습니다.
+                                                                                        </h1>
+                                                                                    </td>
+                                                                                </tr>
+                                                                            </tbody>
+                                                                        </table>
+                                                                    </td>
+                                                                </tr>
+                                                            </tbody>
+                                                        </table>
+                                                        <table border="0" cellpadding="0" cellspacing="0" width="100%"
+                                                            class="mcnTextBlock" style="min-width:100%;">
+                                                            <tbody class="mcnTextBlockOuter">
+                                                                <tr>
+                                                                    <td valign="top" class="mcnTextBlockInner"
+                                                                        style="padding-top:9px;">
+                                                                        <table align="left" border="0" cellpadding="0"
+                                                                            cellspacing="0" style="max-width:100%; min-width:100%;"
+                                                                            width="100%" class="mcnTextContentContainer">
+                                                                            <tbody>
+                                                                                <tr>
+                                                                                    <td valign="top" class="mcnTextContent"
+                                                                                        style="padding-top:0; padding-right:18px; padding-bottom:9px; padding-left:18px; font-size:14px;">
+                                                                                        <p>
+                                                                                            안녕하세요, """
+            + obj_app.applicant.last_name
+            + obj_app.applicant.first_name
+            + """님!<br>
+                                                                                            """
+            + obj_app.applicant.first_name
+            + """님의 블루무브 가입이 최종 확정되었습니다.
+                                                                                        </p>
+                                                                                    </td>
+                                                                                </tr>
+                                                                            </tbody>
+                                                                        </table>
+                                                                    </td>
+                                                                </tr>
+                                                            </tbody>
+                                                        </table>
+                                                        <table border="0" cellpadding="0" cellspacing="0" width="100%"
+                                                            class="mcnBoxedTextBlock" style="min-width:100%;">
+                                                            <tbody class="mcnBoxedTextBlockOuter">
+                                                                <tr>
+                                                                    <td valign="top" class="mcnBoxedTextBlockInner">
+                                                                        <table align="left" border="0" cellpadding="0"
+                                                                            cellspacing="0" width="100%" style="min-width:100%;"
+                                                                            class="mcnBoxedTextContentContainer">
+                                                                            <tbody>
+                                                                                <tr>
+                                                                                    <td
+                                                                                        style="padding-top:9px; padding-left:18px; padding-bottom:9px; padding-right:18px;">
+                                                                                        <table border="0" cellspacing="0"
+                                                                                            class="mcnTextContentContainer"
+                                                                                            width="100%"
+                                                                                            style="min-width: 100% !important;background-color: #F7F7F7;">
+                                                                                            <tbody>
+                                                                                                <tr>
+                                                                                                    <td valign="top"
+                                                                                                        class="mcnTextContent"
+                                                                                                        style="padding: 18px;color: #545859;font-size: 14px;font-weight: normal;">
+                                                                                                        <b>회번</b>: """
+            + id_num
+            + """<br>
+                                                                                                        <b>기간</b>: """
+            + term
+            + """<br>
+                                                                                                        <b>성명</b>: """
+            + obj_app.applicant.last_name
+            + obj_app.applicant.first_name
+            + """<br>
+                                                                                                        <b>소속</b>: """
+            + team
+            + """<br>
+                                                                                                        <b>블루무버 계정 ID</b>: """
+            + bluemover_email
+            + """<br>
+                                                                                                        <b>블루무버 계정 PW</b>: 휴대전화 번호 11자리<br>
+                                                                                                        <b>확정일시</b>: """
+            + obj_app.updated_at.strftime("%Y-%m-%d %H:%M:%S")
+            + """
+                                                                                                    </td>
+                                                                                                </tr>
+                                                                                            </tbody>
+                                                                                        </table>
+                                                                                    </td>
+                                                                                </tr>
+                                                                            </tbody>
+                                                                        </table>
+                                                                    </td>
+                                                                </tr>
+                                                            </tbody>
+                                                        </table>
+                                                        <table border="0" cellpadding="0" cellspacing="0" width="100%"
+                                                            class="mcnTextBlock" style="min-width:100%;">
+                                                            <tbody class="mcnTextBlockOuter">
+                                                                <tr>
+                                                                    <td valign="top" class="mcnTextBlockInner"
+                                                                        style="padding-top:9px;">
+                                                                        <table align="left" border="0" cellpadding="0"
+                                                                            cellspacing="0" style="max-width:100%; min-width:100%;"
+                                                                            width="100%" class="mcnTextContentContainer">
+                                                                            <tbody>
+                                                                                <tr>
+                                                                                    <td valign="top" class="mcnTextContent"
+                                                                                        style="padding-top:0; padding-right:18px; padding-bottom:9px; padding-left:18px; font-size:14px;">
+                                                                                        <p>
+                                                                                            이제 블루무버 계정으로 Google Workspace, Slack, Notion을 이용하실 수 있습니다.<br>
+                                                                                            각 툴에서 'Google로 로그인(Sign in with Google)' 선택 후 블루무버 계정으로 로그인하시기 바랍니다.<br>
+                                                                                            아울러 아래 언급된 툴은 사용 빈도가 높으므로 스마트폰 애플리케이션도 함께 설치해주시기 바랍니다.<br>
+                                                                                            - Gmail: <a href="http://mail.bluemove.or.kr" target="_blank">http://mail.bluemove.or.kr</a><br>
+                                                                                            - Google Drive: <a href="http://drive.bluemove.or.kr" target="_blank">http://drive.bluemove.or.kr</a><br>
+                                                                                            - Slack: <a href="https://bwbluemove.slack.com" target="_blank">https://bwbluemove.slack.com</a><br>
+                                                                                            - Notion: <a href="https://notion.so/bluemove" target="_blank">https://notion.so/bluemove</a>
+                                                                                        </p>
+                                                                                    </td>
+                                                                                </tr>
+                                                                            </tbody>
+                                                                        </table>
+                                                                    </td>
+                                                                </tr>
+                                                            </tbody>
+                                                        </table>
+                                                        <table border="0" cellpadding="0" cellspacing="0" width="100%"
+                                                            class="mcnTextBlock" style="min-width:100%;">
+                                                            <tbody class="mcnTextBlockOuter">
+                                                                <tr>
+                                                                    <td valign="top" class="mcnTextBlockInner"
+                                                                        style="padding-top:9px;">
+                                                                        <table align="left" border="0" cellpadding="0"
+                                                                            cellspacing="0" style="max-width:100%; min-width:100%;"
+                                                                            width="100%" class="mcnTextContentContainer">
+                                                                            <tbody>
+                                                                                <tr>
+                                                                                    <td valign="top" class="mcnTextContent"
+                                                                                        style="padding-top:0; padding-right:18px; padding-bottom:9px; padding-left:18px; font-size:14px;">
+                                                                                        <p>
+                                                                                            """
+            + request.user.first_name
+            + """님과 블루무브 """
+            + term
+            + """를 함께할 수 있게 되어 기쁘게 생각합니다.<br>
+                                                                                            온보딩 및 향후 활동에 관한 세부 사항은 Slack을 통해 안내해드리겠습니다.<br>
+                                                                                            궁금한 점이 있으실 경우 아래 연락처 또는 Slack으로 문의해주시기 바랍니다.
+                                                                                        </p>
+                                                                                    </td>
+                                                                                </tr>
+                                                                            </tbody>
+                                                                        </table>
+                                                                    </td>
+                                                                </tr>
+                                                            </tbody>
+                                                        </table>
+                                                        <table border="0" cellpadding="0" cellspacing="0" width="100%"
+                                                            class="mcnButtonBlock" style="min-width:100%;">
+                                                            <tbody class="mcnButtonBlockOuter">
+                                                                <tr>
+                                                                    <td width="100%" valign="top" align="center" class="mcnButtonBlockInner"
+                                                                        style="min-width:100%; padding-top:9px; padding-right:18px; padding-bottom:9px; padding-left:18px;">
+                                                                        <a class="mcnButton" title="블루무브 Slack 참여" href="https://bwbluemove.slack.com" target="_blank"
+                                                                            style="font-weight: bold;letter-spacing: normal;line-height: 100%;text-align: center;text-decoration: none;color: #FFFFFF;">
+                                                                            <table border="0" cellpadding="0" cellspacing="0"
+                                                                                width="100%" class="mcnButtonContentContainer"
+                                                                                style="min-width:100%; border-collapse: separate !important;border-radius: 4px;background-color: #0077C8;">
+                                                                                <tbody>
+                                                                                    <tr>
+                                                                                        <td align="center"
+                                                                                            valign="middle" class="mcnButtonContent"
+                                                                                            style="font-size: 16px; padding: 12px;">
+                                                                                            블루무브 Slack 참여
+                                                                                        </td>
+                                                                                    </tr>
+                                                                                </tbody>
+                                                                            </table>
+                                                                        </a>
+                                                                    </td>
+                                                                </tr>
+                                                            </tbody>
+                                                        </table>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td valign="top" id="templateFooter">
+                                                        <table border="0" cellpadding="0" cellspacing="0" width="100%"
+                                                            class="mcnTextBlock" style="min-width:100%;">
+                                                            <tbody class="mcnTextBlockOuter">
+                                                                <tr>
+                                                                    <td valign="top" class="mcnTextBlockInner"
+                                                                        style="padding-top:9px;">
+                                                                        <table align="left" border="0" cellpadding="0"
+                                                                            cellspacing="0" style="max-width:100%; min-width:100%;"
+                                                                            width="100%" class="mcnTextContentContainer">
+                                                                            <tbody>
+                                                                                <tr>
+                                                                                    <td valign="top" class="mcnTextContent"
+                                                                                        style="padding: 0px 18px 9px; text-align: left;">
+                                                                                        <hr
+                                                                                            style="border:0;height:.5px;background-color:#EEEEEE;">
+                                                                                        <small style="color: #545859;">
+                                                                                            이 메일은 블루무브 포털에서 자동 발송되었습니다. 궁금한 점이 있으실
+                                                                                            경우 <a
+                                                                                                href="mailto:management@bluemove.or.kr">management@bluemove.or.kr</a>로
+                                                                                            문의해주시기 바랍니다.<br>
+                                                                                            ⓒ 파란물결 블루무브
+                                                                                        </small>
+                                                                                    </td>
+                                                                                </tr>
+                                                                            </tbody>
+                                                                        </table>
+                                                                    </td>
+                                                                </tr>
+                                                            </tbody>
+                                                        </table>
+                                                    </td>
+                                                </tr>
+                                            </table>
+                                        </td>
+                                    </tr>
+                                </table>
+                                <!-- // END TEMPLATE -->
+                            </td>
+                        </tr>
+                    </table>
+                </center>
+            </body>
+
+            </html>
+            """
+        )
+        message = MIMEText(message_text, "html")
+        message["from"] = "Bluemove Portal <" + google_delegated_email + ">"
+        message["to"] = personal_email
+        message["subject"] = (
+            obj_app.applicant.last_name
+            + obj_app.applicant.first_name
+            + "님의 블루무브 가입이 확정되었습니다."
+        )
     message = {"raw": base64.urlsafe_b64encode(message.as_bytes()).decode("utf8")}
     return message
 
@@ -2873,7 +3198,8 @@ def applymembership(request):
                         )
                         if (
                             portfolio == ""
-                            or requests.get(portfolio, headers=bs4_headers).status_code == 200
+                            or requests.get(portfolio, headers=bs4_headers).status_code
+                            == 200
                         ):
                             if timeout:
                                 app.last_saved = True
@@ -2886,7 +3212,9 @@ def applymembership(request):
                                 app.save()
                                 app_submitted = True
                                 try:
-                                    client.conversations_join(channel=management_all_channel_id)
+                                    client.conversations_join(
+                                        channel=management_all_channel_id
+                                    )
                                 except:
                                     pass
                                 blocks, text = slack_blocks_and_text(
@@ -2910,7 +3238,10 @@ def applymembership(request):
                                     ),
                                 ).execute()
                         else:
-                            if requests.get(portfolio, headers=bs4_headers).status_code == 401:
+                            if (
+                                requests.get(portfolio, headers=bs4_headers).status_code
+                                == 401
+                            ):
                                 inaccessible_portfolio = True
                             else:
                                 wrong_portfolio = True
@@ -2961,7 +3292,9 @@ def applymembership(request):
                                 team = "콘텐츠팀"
                                 group_key = "content@bluemove.or.kr"
                             dob_raw = bmaccount_id_num.split("-")[0]
-                            dob_last = dob_raw[0:2] + "-" + dob_raw[2:4] + "-" + dob_raw[4:6]
+                            dob_last = (
+                                dob_raw[0:2] + "-" + dob_raw[2:4] + "-" + dob_raw[4:6]
+                            )
                             dob_first = (
                                 "19"
                                 if dob_raw[0:1] == "8" or dob_raw[0:1] == "9"
@@ -2980,7 +3313,8 @@ def applymembership(request):
                             )
                             try:
                                 admin_service.users().get(
-                                    userKey=bmaccount_eng_first_name.lower() + "@bluemove.or.kr"
+                                    userKey=bmaccount_eng_first_name.lower()
+                                    + "@bluemove.or.kr"
                                 ).execute()
                                 primary_email = (
                                     bmaccount_eng_first_name.lower()
@@ -2998,20 +3332,32 @@ def applymembership(request):
                                         "familyName": request.user.last_name,
                                         "givenName": request.user.first_name,
                                     },
-                                    "password": request.user.profile.phone.replace("-", ""),
+                                    "password": request.user.profile.phone.replace(
+                                        "-", ""
+                                    ),
                                     "changePasswordAtNextLogin": True,
                                     "externalIds": [
-                                        {"value": last_bluemover_id + 1, "type": "organization"}
+                                        {
+                                            "value": last_bluemover_id + 1,
+                                            "type": "organization",
+                                        }
                                     ],
                                     "phones": [
-                                        {"value": request.user.profile.phone, "type": "mobile"}
+                                        {
+                                            "value": request.user.profile.phone,
+                                            "type": "mobile",
+                                        }
                                     ],
                                     "languages": [
-                                        {"languageCode": "ko", "preference": "preferred"}
+                                        {
+                                            "languageCode": "ko",
+                                            "preference": "preferred",
+                                        }
                                     ],
                                     "orgUnitPath": "/" + team,
                                     "recoveryEmail": bmaccount_email,
-                                    "recoveryPhone": "+82" + request.user.profile.phone[1:],
+                                    "recoveryPhone": "+82"
+                                    + request.user.profile.phone[1:],
                                 }
                             ).execute()
                             sheets_service.spreadsheets().values().append(
@@ -3024,9 +3370,12 @@ def applymembership(request):
                                         [
                                             last_bluemover_id + 1,
                                             wanted_term,
-                                            request.user.last_name + request.user.first_name,
+                                            request.user.last_name
+                                            + request.user.first_name,
                                             team,
-                                            datetime.datetime.now().strftime("%Y-%m-%d"),
+                                            datetime.datetime.now().strftime(
+                                                "%Y-%m-%d"
+                                            ),
                                             None,
                                             "현재",
                                             "alumni_false",
@@ -3051,7 +3400,9 @@ def applymembership(request):
                                             "updateSpreadsheetProperties": {
                                                 "properties": {
                                                     "title": "E03_명부_"
-                                                    + datetime.datetime.now().strftime("%y%m%d")
+                                                    + datetime.datetime.now().strftime(
+                                                        "%y%m%d"
+                                                    )
                                                 },
                                                 "fields": "title",
                                             }
@@ -3071,8 +3422,11 @@ def applymembership(request):
                                 "email_address": bmaccount_email,
                                 "status": "subscribed",
                                 "merge_fields": {
-                                    "NAME": request.user.last_name + request.user.first_name,
-                                    "BIRTHDAY": str(dob_raw[2:4]) + "/" + str(dob_raw[4:6]),
+                                    "NAME": request.user.last_name
+                                    + request.user.first_name,
+                                    "BIRTHDAY": str(dob_raw[2:4])
+                                    + "/"
+                                    + str(dob_raw[4:6]),
                                 },
                             }
                             mailchimp.lists.add_list_member(
@@ -3081,8 +3435,27 @@ def applymembership(request):
                             )
                             app.joined = True
                             app.save()
+                            mail_service.users().messages().send(
+                                userId=google_delegated_email,
+                                body=gmail_message(
+                                    request=request,
+                                    obj_app=app,
+                                    str_new_member_info=str(last_bluemover_id + 1)
+                                    + "#"
+                                    + wanted_term
+                                    + "#"
+                                    + team
+                                    + "#"
+                                    + primary_email
+                                    + "#"
+                                    + bmaccount_email,
+                                    signal_joined=True,
+                                ),
+                            ).execute()
                             try:
-                                client.conversations_join(channel=management_all_channel_id)
+                                client.conversations_join(
+                                    channel=management_all_channel_id
+                                )
                             except:
                                 pass
                             blocks, text = slack_blocks_and_text(
@@ -3103,7 +3476,9 @@ def applymembership(request):
                         elif True in duplicate_check:
                             unable_to_join = True
                             try:
-                                client.conversations_join(channel=management_dev_channel_id)
+                                client.conversations_join(
+                                    channel=management_dev_channel_id
+                                )
                             except:
                                 pass
                             blocks, text = slack_blocks_and_text(
@@ -3138,7 +3513,10 @@ def applymembership(request):
                         blocks=blocks,
                         text=text,
                     )
-            elif request.user.is_authenticated and "@bluemove.or.kr" in request.user.email:
+            elif (
+                request.user.is_authenticated
+                and "@bluemove.or.kr" in request.user.email
+            ):
                 apps_received = Applymembership.objects.filter(
                     wanted_id=wanted_id, received=True
                 ).order_by("-received_at")
