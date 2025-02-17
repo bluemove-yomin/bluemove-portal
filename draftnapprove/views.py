@@ -133,6 +133,24 @@ def get_google_token(request):
     except SocialToken.DoesNotExist:
         return JsonResponse({'error': 'No Google token found'}, status=404)
 
+
+def temp_image_process(docs, drive, doc_id, image_ids):
+    reqs = []
+    temp_ids = []
+    obj_id_list = image_object_id(doc_id)
+    for i, img_id in enumerate(image_ids):
+        copied_file = drive.files().copy(fileId=img_id, supportsAllDrives=True, body={'parents': ['root']}).execute()
+        copied_id = copied_file['id']
+        temp_ids.append(copied_id)
+        # permission = drive.permissions().create(fileId=copied_id, body={'role': 'reader', 'type': 'anyone'}).execute()
+        public_url = drive.files().get(fileId=copied_id, fields='webContentLink').execute()['webContentLink']
+        obj_id = obj_id_list[i]
+        reqs.append({'replaceImage': {'imageObjectId': obj_id, 'uri': public_url, 'imageReplaceMethod': 'CENTER_CROP'}})
+    docs.documents().batchUpdate(documentId=doc_id, body={'requests': reqs}).execute()
+    for temp_id in temp_ids:
+        drive.files().delete(fileId=temp_id).execute()
+
+
 def image_object_id(str_activity_report_id):
     image_object_id_list = list(
         docs_service.documents()
@@ -545,7 +563,8 @@ def gmail_message(
         )
         message = MIMEMultipart()
         message["from"] = "Bluemove Portal <" + google_delegated_email + ">"
-        message["to"] = "jawon@sb.go.kr"
+        # message["to"] = "jawon@sb.go.kr"
+        message["to"] = "yomin@bluemove.or.kr"
         message["subject"] = "'" + str_activity_report_title + "' 일일활동보고서입니다."
         main_type, sub_type = "application/pdf".split("/", 1)
         temp = open(str_activity_report_name, "rb")
@@ -2063,6 +2082,11 @@ def activityreport(request):
         image_one_object_id = image_object_id(activity_report_id)[1]
         image_two_object_id = image_object_id(activity_report_id)[2]
         image_three_object_id = image_object_id(activity_report_id)[0]
+        print("image_one_id", image_one_id)
+        print("image_two_id", image_two_id)
+        print("image_three_id", image_three_id)
+        image_file_id_list = [image_one_id, image_two_id, image_three_id]
+        temp_image_process(docs_service, drive_service, activity_report_id, image_file_id_list)
         docs_service.documents().batchUpdate(
             documentId=activity_report_id,
             body={
@@ -2153,30 +2177,30 @@ def activityreport(request):
                             "replaceText": content,
                         }
                     },
-                    {
-                        "replaceImage": {
-                            "imageObjectId": image_one_object_id,
-                            "uri": "https://lh3.googleusercontent.com/d/"
-                            + image_one_id,
-                            "imageReplaceMethod": "CENTER_CROP",
-                        }
-                    },
-                    {
-                        "replaceImage": {
-                            "imageObjectId": image_two_object_id,
-                            "uri": "https://lh3.googleusercontent.com/d/"
-                            + image_two_id,
-                            "imageReplaceMethod": "CENTER_CROP",
-                        }
-                    },
-                    {
-                        "replaceImage": {
-                            "imageObjectId": image_three_object_id,
-                            "uri": "https://lh3.googleusercontent.com/d/"
-                            + image_three_id,
-                            "imageReplaceMethod": "CENTER_CROP",
-                        }
-                    },
+                    # {
+                    #     "replaceImage": {
+                    #         "imageObjectId": image_one_object_id,
+                    #         "uri": "https://lh3.googleusercontent.com/d/"
+                    #         + image_one_id,
+                    #         "imageReplaceMethod": "CENTER_CROP",
+                    #     }
+                    # },
+                    # {
+                    #     "replaceImage": {
+                    #         "imageObjectId": image_two_object_id,
+                    #         "uri": "https://lh3.googleusercontent.com/d/"
+                    #         + image_two_id,
+                    #         "imageReplaceMethod": "CENTER_CROP",
+                    #     }
+                    # },
+                    # {
+                    #     "replaceImage": {
+                    #         "imageObjectId": image_three_object_id,
+                    #         "uri": "https://lh3.googleusercontent.com/d/"
+                    #         + image_three_id,
+                    #         "imageReplaceMethod": "CENTER_CROP",
+                    #     }
+                    # },
                 ]
             },
         ).execute()

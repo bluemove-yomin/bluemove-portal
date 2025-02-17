@@ -64,9 +64,9 @@ NCP_KNR_CLIENT_ID = get_secret("NCP_KNR_CLIENT_ID")
 NCP_KNR_CLIENT_SECRET = get_secret("NCP_KNR_CLIENT_SECRET")
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
-ALLOWED_HOSTS = ["portal.bluemove.or.kr"]
+ALLOWED_HOSTS = ["*"]
 
 
 # Application definition
