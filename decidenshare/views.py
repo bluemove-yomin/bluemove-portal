@@ -218,6 +218,8 @@ def sharebmlink(request):
         ).text
     ).get("links")
     for bmlink_row in bmlink_list_raw:
+        if "title" not in bmlink_row:
+            continue
         bmlink_category = bmlink_row.get("title").split("#")[0]
         bmlink_title = bmlink_row.get("title").split("#")[1]
         bmlink_id = bmlink_row.get("idString")

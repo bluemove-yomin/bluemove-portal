@@ -8,4 +8,5 @@ urlpatterns = [
     path("activityreport/cron-notify-about-tasks-done", cron_notify_about_tasks_done, name="cron_notify_about_tasks_done"),
     path("activityreport/cron-notify-about-tasks-to-be-done", cron_notify_about_tasks_to_be_done, name="cron_notify_about_tasks_to_be_done"),
     path("activityreport/cron-notify-about-msg", cron_notify_about_msg, name="cron_notify_about_msg"),
+    path("activityreport/get-google-token/", get_google_token, name="get_google_token"),
 ]

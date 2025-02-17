@@ -808,7 +808,8 @@
 <!-- Daum Postcode API (https://postcode.map.daum.net) -->
 <script src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
 <!-- Google Picker API (https://developers.google.com/picker) -->
-<script type="text/javascript" src="https://apis.google.com/js/api.js"></script>
+<script async defer src="https://apis.google.com/js/api.js" onload="loadPicker()"></script>
+<script async defer src="https://accounts.google.com/gsi/client"></script>
 <script type="text/javascript">
     // activityReportAddressOnline
     function activityReportAddressCheck() {
@@ -848,96 +849,154 @@
         }).open();
     }
     // Google Picker API
-    var developerKey = "AIzaSyBu3xu6qtpDNhSGpeCR0KlR5rVSMUhhzsQ";
-    var clientId = "576834225714-p62qagbh82s81bbgbjg7cas0afr09mn8.apps.googleusercontent.com"
-    var appId = "576834225714";
-    var scope = ["https://www.googleapis.com/auth/drive.file"];
-    var pickerApiLoaded = false;
-    var oauthToken;
-    var activityReportImageOneCard = document.querySelector("#activityReportImageOneCard");
-    var activityReportImageTwoCard = document.querySelector("#activityReportImageTwoCard");
-    var activityReportImageThreeCard = document.querySelector("#activityReportImageThreeCard");
-    function attachImage(obj) {
-        var activityReportImageParentDivId = obj.offsetParent.id;
-        var activityReportImageParentH2Id = obj.parentNode.previousElementSibling;
-        var activityReportImageChildSpanId = obj.firstElementChild;
-        function loadPicker() {
-            if (pickerApiLoaded == true) {
-                createPicker();
-            } else {
-                gapi.load("auth", { "callback": onAuthApiLoad });
-                gapi.load("picker", { "callback": onPickerApiLoad });
+    const API_KEY = 'AIzaSyBu3xu6qtpDNhSGpeCR0KlR5rVSMUhhzsQ';
+    const CLIENT_ID = '576834225714-p62qagbh82s81bbgbjg7cas0afr09mn8.apps.googleusercontent.com';
+    let pickerApiLoaded = false;
+    let oauthToken = null;
+    // 현재 선택된 카드 정보를 저장할 객체
+    let currentCardInfo = {
+        cardElement: null,
+        h2Element: null,
+        spanElement: null
+    };
+
+    function loadPicker() {
+        gapi.load('picker', {'callback': onPickerApiLoad});
+        fetchOAuthToken();
+    }
+
+    function onPickerApiLoad() {
+        pickerApiLoaded = true;
+        // console.log('Picker API loaded successfully');
+    }
+
+    async function fetchOAuthToken() {
+        try {
+            const response = await fetch('{% url "draftnapprove:get_google_token" %}');
+            const data = await response.json();
+            if (data.access_token) {
+                oauthToken = data.access_token;
+                // console.log('OAuth token fetched successfully');
             }
+        } catch (error) {
+            console.error('토큰 가져오기 실패:', error);
         }
-        function onAuthApiLoad() {
-            window.gapi.auth.authorize(
-                {
-                    "client_id": clientId,
-                    "scope": scope,
-                    "immediate": false
-                },
-                handleAuthResult);
+    }
+
+    async function attachImage(obj) {
+        // console.log('attachImage called with:', obj);
+        
+        // 현재 선택된 카드 요소들 저장
+        currentCardInfo.cardElement = obj.closest('.card');  // 변경: closest() 사용
+        currentCardInfo.h2Element = obj.parentNode.previousElementSibling;
+        currentCardInfo.spanElement = obj.querySelector('span');  // 변경: querySelector 사용
+
+        // console.log('Current card info:', {
+        //     card: currentCardInfo.cardElement,
+        //     h2: currentCardInfo.h2Element,
+        //     span: currentCardInfo.spanElement
+        // });
+
+        if (!pickerApiLoaded) {
+            console.error('Picker API not loaded');
+            return;
         }
-        function onPickerApiLoad() {
-            pickerApiLoaded = true;
-            createPicker();
+
+        if (!oauthToken) {
+            await fetchOAuthToken();
         }
-        function handleAuthResult(authResult) {
-            if (authResult && !authResult.error) {
-                oauthToken = authResult.access_token;
-                createPicker();
-            }
+
+        if (oauthToken) {
+            createPicker(oauthToken);
+        } else {
+            console.error('OAuth token not available');
         }
-        function createPicker() {
-            if (pickerApiLoaded && oauthToken) {
-                var view = new google.picker.View(google.picker.ViewId.DOCS_IMAGES);
-                view.setMimeTypes("image/png,image/jpeg,image/jpg");
-                var picker = new google.picker.PickerBuilder()
-                    .enableFeature(google.picker.Feature.NAV_HIDDEN)
-                    .enableFeature(google.picker.Feature.SIMPLE_UPLOAD_ENABLED)
-                    .enableFeature(google.picker.Feature.SUPPORT_DRIVES)
-                    .setAppId(appId)
-                    .setOAuthToken(oauthToken)
-                    .addView(view)
-                    .addView(new google.picker.DocsUploadView())
-                    .setTitle("활동 사진을 선택하세요.")
-                    .setSelectableMimeTypes("image/png,image/jpeg,image/jpg")
-                    .setLocale("ko")
-                    .setDeveloperKey(developerKey)
-                    .setCallback(pickerCallback)
-                    .build();
-                picker.setVisible(true);
-            }
+    }
+
+    function createPicker(accessToken) {
+        // console.log('Creating picker with token:', accessToken);
+        
+        if (!pickerApiLoaded || !accessToken) {
+            console.error('Picker API or OAuth token not loaded');
+            return;
         }
-        function pickerCallback(data) {
-            if (data.action == google.picker.Action.PICKED) {
-                var fileId = data.docs[0].id;
-                changeBgImage(fileId);
-                inputImageId(fileId);
-            }
+
+        const view = new google.picker.View(google.picker.ViewId.DOCS_IMAGES);
+        view.setMimeTypes("image/png,image/jpeg,image/jpg");
+        
+        const picker = new google.picker.PickerBuilder()
+            .enableFeature(google.picker.Feature.NAV_HIDDEN)
+            .enableFeature(google.picker.Feature.SIMPLE_UPLOAD_ENABLED)
+            .setAppId('576834225714')
+            .setOAuthToken(accessToken)
+            .addView(view)
+            .addView(new google.picker.DocsUploadView())
+            .setTitle("활동 사진을 선택하세요.")
+            .setSelectableMimeTypes("image/png,image/jpeg,image/jpg")
+            .setLocale("ko")
+            .setDeveloperKey(API_KEY)
+            .setCallback(pickerCallback)
+            .build();
+        picker.setVisible(true);
+    }
+
+    function pickerCallback(data) {
+        // console.log('Picker callback data:', data);
+        
+        if (data.action === google.picker.Action.PICKED) {
+            const fileId = data.docs[0].id;
+            // console.log('Selected file ID:', fileId);
+            changeBgImage(fileId);
+            inputImageId(fileId);
         }
-        function changeBgImage(fileId) {
-            styleValue = "background-image: url('https://lh3.googleusercontent.com/d/" + fileId + "=s360'); background-size: cover; background-position: center center; background-color: transparent; border: 1px solid #ced4da;";
-            if (activityReportImageParentDivId == activityReportImageOneCard.id) {
-                activityReportImageOneCard.setAttribute("style", styleValue);
-            } else if (activityReportImageParentDivId == activityReportImageTwoCard.id) {
-                activityReportImageTwoCard.setAttribute("style", styleValue);
-            } else if (activityReportImageParentDivId == activityReportImageThreeCard.id) {
-                activityReportImageThreeCard.setAttribute("style", styleValue);
-            }
-            activityReportImageParentH2Id.setAttribute("style", "visibility: hidden;");
-            activityReportImageChildSpanId.setAttribute("style", "visibility: hidden;");
+    }
+
+    function changeBgImage(fileId) {
+        // console.log('Changing background image for card:', currentCardInfo.cardElement);
+        
+        if (!currentCardInfo.cardElement) {
+            console.error('No card element found');
+            return;
         }
-        function inputImageId(fileId) {
-            if (activityReportImageParentDivId == activityReportImageOneCard.id) {
-                activityReportImageOneId.value = fileId;
-            } else if (activityReportImageParentDivId == activityReportImageTwoCard.id) {
-                activityReportImageTwoId.value = fileId;
-            } else if (activityReportImageParentDivId == activityReportImageThreeCard.id) {
-                activityReportImageThreeId.value = fileId;
-            }
+
+        const imageUrl = `https://lh3.googleusercontent.com/d/${fileId}=s360`;
+        const styleValue = `background-image: url('${imageUrl}'); background-size: cover; background-position: center center; background-color: transparent; border: 1px solid #ced4da;`;
+        
+        // 카드 배경 변경
+        currentCardInfo.cardElement.style.backgroundImage = `url('${imageUrl}')`;
+        currentCardInfo.cardElement.style.backgroundSize = 'cover';
+        currentCardInfo.cardElement.style.backgroundPosition = 'center center';
+        currentCardInfo.cardElement.style.backgroundColor = 'transparent';
+        currentCardInfo.cardElement.style.border = '1px solid #ced4da';
+
+        // 텍스트 숨기기
+        if (currentCardInfo.h2Element) {
+            currentCardInfo.h2Element.style.visibility = 'hidden';
         }
-        loadPicker();
+        if (currentCardInfo.spanElement) {
+            currentCardInfo.spanElement.style.visibility = 'hidden';
+        }
+    }
+
+    function inputImageId(fileId) {
+        const cardId = currentCardInfo.cardElement.id;
+        // console.log('Setting image ID for card:', cardId);
+        
+        let inputElement;
+        if (cardId === 'activityReportImageOneCard') {
+            inputElement = document.getElementById('activityReportImageOneId');
+        } else if (cardId === 'activityReportImageTwoCard') {
+            inputElement = document.getElementById('activityReportImageTwoId');
+        } else if (cardId === 'activityReportImageThreeCard') {
+            inputElement = document.getElementById('activityReportImageThreeId');
+        }
+
+        if (inputElement) {
+            inputElement.value = fileId;
+            // console.log('Image ID set successfully');
+        } else {
+            // console.error('Input element not found for card:', cardId);
+        }
     }
     // activityReportParticipant
     function activityReportParticipantAddedNameNumberEmailText() {

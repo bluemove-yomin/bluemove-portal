@@ -182,7 +182,7 @@
             // navLarge
             for (var i = 0; i < document.querySelectorAll(".a-nav-item").length; i++) {
                 var navItemStr = document.querySelectorAll(".a-nav-item")[i].id.replace("menu", "").replace("Large", "").toLowerCase();
-                console.log(window.location.href.indexOf(navItemStr) !== -1)
+                // console.log(window.location.href.indexOf(navItemStr) !== -1)
                 if (window.location.href.indexOf(navItemStr) !== -1) {
                     document.querySelectorAll(".a-nav-item")[i].classList.add("active");
                 }
@@ -190,7 +190,7 @@
             // navSmall
             for (var i = 0; i < document.querySelectorAll(".accordion-button").length; i++) {
                 var accordionStr = document.querySelectorAll(".accordion-button")[i].getAttribute("aria-controls").replace("menu", "").replace("Small", "").toLowerCase();
-                console.log(window.location.href.indexOf(accordionStr) !== -1)
+                // console.log(window.location.href.indexOf(accordionStr) !== -1)
                 if (window.location.href.indexOf(accordionStr) !== -1) {
                     document.querySelectorAll(".accordion-button")[i].classList.remove("collapsed");
                     document.querySelectorAll(".accordion-button")[i].setAttribute("aria-expanded", "true")
@@ -198,14 +198,14 @@
             }
             for (var i = 0; i < document.querySelectorAll(".accordion-collapse").length; i++) {
                 var collapseStr = document.querySelectorAll(".accordion-collapse")[i].id.replace("menu", "").replace("Small", "").toLowerCase();
-                console.log(window.location.href.indexOf(collapseStr) !== -1)
+                // console.log(window.location.href.indexOf(collapseStr) !== -1)
                 if (window.location.href.indexOf(collapseStr) !== -1) {
                     document.querySelectorAll(".accordion-collapse")[i].classList.add("show");
                 }
             }
             for (var i = 0; i < document.querySelectorAll(".list-group-item").length; i++) {
                 var listGroupItemHref = document.querySelectorAll(".list-group-item")[i].href;
-                console.log(window.location.href == listGroupItemHref)
+                // console.log(window.location.href == listGroupItemHref)
                 if (window.location.href == listGroupItemHref) {
                     document.querySelectorAll(".list-group-item")[i].classList.add("active");
                 }
@@ -314,7 +314,7 @@
             // Internet Explorer unsupported guide
             (function msieAlert() {
                 let agent = navigator.userAgent.toLowerCase();
-                console.log((agent.indexOf("trident") || agent.indexOf("msie")) !== -1)
+                // console.log((agent.indexOf("trident") || agent.indexOf("msie")) !== -1)
                 if ((agent.indexOf("trident") || agent.indexOf("msie")) !== -1) {
                     alert("블루무브 포털은 Internet Explorer를 지원하지 않습니다.\n번거로우시겠지만 블루무브 포털에 최적화된 Chrome으로 이용 부탁드립니다. 🙏")
                     document.body.setAttribute("style", "text-align: center; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);")

@@ -2,6 +2,7 @@ from allauth.socialaccount import fields
 from django.shortcuts import render, redirect
 from django.conf import settings
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
+from django.http import JsonResponse
 
 # models
 from django.contrib.auth.models import User
@@ -118,6 +119,20 @@ management_dev_channel_id = "C01L8PETS5S"
 ####
 #### utils
 ####
+def get_google_token(request):
+    try:
+        # 현재 사용자의 Google 소셜 계정 토큰 가져오기
+        social_token = SocialToken.objects.get(
+            account__user=request.user,
+            account__provider='google'
+        )
+        return JsonResponse({
+            'access_token': social_token.token,
+            'token_type': 'Bearer'
+        })
+    except SocialToken.DoesNotExist:
+        return JsonResponse({'error': 'No Google token found'}, status=404)
+
 def image_object_id(str_activity_report_id):
     image_object_id_list = list(
         docs_service.documents()
